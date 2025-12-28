@@ -35,7 +35,10 @@ async def health():
 
 
 @router.get("/ready", response_model=ReadyCheck)
-async def ready(redis: Annotated[Redis, Depends(async_get_redis)], db: Annotated[AsyncSession, Depends(async_get_db)]):
+async def ready(
+    redis: Annotated[Redis, Depends(async_get_redis)],
+    db: Annotated[AsyncSession, Depends(async_get_db)],
+):
     database_status = await check_database_health(db=db)
     LOGGER.debug(f"Database health check status: {database_status}")
     redis_status = await check_redis_health(redis=redis)

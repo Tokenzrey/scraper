@@ -1,0 +1,84 @@
+{
+	"version": "3.0.0",
+	"description": "PROJECT NODRIVER: Tier 3 Full Browser Configuration",
+
+	"_comment_tier3": "=== TIER 3 CONFIGURATION (Nodriver Full Browser) ===",
+
+	"tier3": {
+		"browser": {
+			"headless": false,
+			"browser_executable_path": null,
+			"user_data_dir": null,
+			"lang": "en-US",
+
+			"startup": {
+				"expert_mode": false,
+				"sandbox": true
+			},
+
+			"args": []
+		},
+
+		"navigation": {
+			"wait_for_body": true,
+			"body_timeout_seconds": 10,
+			"page_load_wait_seconds": 2,
+			"use_cf_verify": true
+		},
+
+		"cloudflare": {
+			"auto_detect": true,
+			"cf_verify_enabled": true,
+			"challenge_wait_seconds": 5,
+			"max_cf_retries": 3
+		},
+
+		"timeouts": {
+			"page_load": 30,
+			"element_wait": 10,
+			"cf_verify": 15,
+			"total": 90
+		},
+
+		"retry": {
+			"max_retries": 3,
+			"backoff_factor": 1.5,
+			"backoff_max": 10
+		},
+
+		"cookies": {
+			"persist": true,
+			"file_path": null
+		},
+
+		"session": {
+			"profile_prefix": "nodriver_",
+			"auto_cleanup": true
+		},
+
+		"challenge_detection": {
+			"cloudflare_signatures": [
+				"checking your browser",
+				"ray id:",
+				"cf-browser-verification",
+				"__cf_chl",
+				"turnstile",
+				"just a moment",
+				"verify you are human"
+			],
+			"captcha_signatures": [
+				"captcha",
+				"recaptcha",
+				"hcaptcha",
+				"g-recaptcha",
+				"h-captcha"
+			],
+			"bot_detection_signatures": [
+				"bot detected",
+				"unusual traffic",
+				"automated access",
+				"access denied"
+			]
+		}
+	}
+}

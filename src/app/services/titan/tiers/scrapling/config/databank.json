@@ -1,0 +1,87 @@
+{
+	"version": "4.0.0",
+	"description": "PROJECT SCRAPLING: Tier 4 Stealth Browser Configuration",
+
+	"_comment_tier4": "=== TIER 4 CONFIGURATION (Scrapling StealthyFetcher) ===",
+
+	"tier4": {
+		"fetcher_mode": "stealthy",
+
+		"stealthy": {
+			"headless": true,
+			"solve_cloudflare": true,
+			"humanize": true,
+			"os_randomize": true,
+			"google_search": false,
+			"disable_resources": false,
+			"network_idle": true,
+			"block_images": false
+		},
+
+		"dynamic": {
+			"headless": true,
+			"disable_resources": true,
+			"network_idle": true,
+			"stealth_mode": true,
+			"real_chrome": false,
+			"block_images": false
+		},
+
+		"http": {
+			"impersonate": "chrome",
+			"stealthy_headers": true,
+			"http3": true,
+			"follow_redirects": true
+		},
+
+		"timeouts": {
+			"page_load": 60,
+			"network_idle": 30,
+			"element_wait": 15,
+			"cloudflare_solve": 30,
+			"total": 120
+		},
+
+		"retry": {
+			"max_retries": 3,
+			"backoff_factor": 2.0,
+			"backoff_max": 30
+		},
+
+		"session": {
+			"persist_cookies": true,
+			"max_pages": 5
+		},
+
+		"adaptive": {
+			"enabled": true,
+			"auto_save": true
+		},
+
+		"challenge_detection": {
+			"cloudflare_signatures": [
+				"checking your browser",
+				"ray id:",
+				"cf-browser-verification",
+				"__cf_chl",
+				"turnstile",
+				"just a moment",
+				"verify you are human"
+			],
+			"captcha_signatures": [
+				"captcha",
+				"recaptcha",
+				"hcaptcha",
+				"g-recaptcha",
+				"h-captcha"
+			],
+			"bot_detection_signatures": [
+				"bot detected",
+				"unusual traffic",
+				"automated access",
+				"access denied",
+				"suspicious activity"
+			]
+		}
+	}
+}

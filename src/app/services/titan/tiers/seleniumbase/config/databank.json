@@ -1,0 +1,91 @@
+{
+	"version": "5.0.0",
+	"description": "PROJECT SELENIUMBASE: Tier 5 CDP Mode + CAPTCHA Solving Configuration",
+
+	"_comment_tier5": "=== TIER 5 CONFIGURATION (SeleniumBase UC + CDP Mode) ===",
+
+	"tier5": {
+		"mode": "uc_cdp",
+
+		"uc_mode": {
+			"enabled": true,
+			"headless": true,
+			"incognito": false,
+			"guest": false,
+			"dark": false,
+			"locale": "en",
+			"agent": null,
+			"mobile": false,
+			"devtools": false
+		},
+
+		"cdp_mode": {
+			"enabled": true,
+			"log_cdp": false,
+			"remote_debug": false,
+			"uc_cdp_events": false
+		},
+
+		"captcha": {
+			"auto_solve": true,
+			"solve_timeout": 30,
+			"max_attempts": 3
+		},
+
+		"browser": {
+			"type": "chrome",
+			"binary_location": null,
+			"driver_version": null,
+			"disable_csp": false,
+			"disable_js": false,
+			"block_images": false,
+			"ad_block": true,
+			"do_not_track": true
+		},
+
+		"timeouts": {
+			"page_load": 60,
+			"element_wait": 15,
+			"captcha_solve": 30,
+			"total": 120
+		},
+
+		"retry": {
+			"max_retries": 3,
+			"backoff_factor": 2.0,
+			"backoff_max": 30
+		},
+
+		"session": {
+			"reuse_session": false,
+			"reuse_class_session": false,
+			"crumbs": true
+		},
+
+		"challenge_detection": {
+			"cloudflare_signatures": [
+				"checking your browser",
+				"ray id:",
+				"cf-browser-verification",
+				"__cf_chl",
+				"turnstile",
+				"just a moment",
+				"verify you are human"
+			],
+			"captcha_signatures": [
+				"captcha",
+				"recaptcha",
+				"hcaptcha",
+				"g-recaptcha",
+				"h-captcha"
+			],
+			"bot_detection_signatures": [
+				"bot detected",
+				"unusual traffic",
+				"automated access",
+				"access denied",
+				"suspicious activity"
+			]
+		}
+	}
+}

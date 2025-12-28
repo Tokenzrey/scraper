@@ -1,0 +1,125 @@
+{
+    "_comment": "HITL Tier 7 Configuration - Human-in-the-Loop Bridge",
+    "_version": "7.0.0",
+    "_description": "Configuration for HITL browser streaming, remote control, and Golden Ticket harvesting",
+
+    "version": "7.0.0",
+
+    "tier7": {
+        "_comment": "HITL Bridge - The Nuclear Option",
+        "enabled": true,
+        "mode": "streaming",
+        "browser_source": "tier6",
+
+        "streaming": {
+            "_comment": "Browser streaming configuration (CDP Page.startScreencast)",
+            "fps": 10,
+            "jpeg_quality": 80,
+            "max_width": 1280,
+            "max_height": 720,
+            "format": "jpeg",
+            "show_cursor": true,
+            "frame_buffer_size": 3
+        },
+
+        "remote_control": {
+            "_comment": "Remote mouse/keyboard control configuration",
+            "mouse_enabled": true,
+            "keyboard_enabled": true,
+            "mouse_debounce_ms": 50,
+            "humanize_mouse": true,
+            "mouse_speed": 10,
+            "key_delay_ms": 50
+        },
+
+        "harvesting": {
+            "_comment": "Golden Ticket harvesting configuration",
+            "auto_harvest": true,
+            "priority_cookies": [
+                "cf_clearance",
+                "__cf_bm",
+                "_cfuvid",
+                "PHPSESSID",
+                "JSESSIONID",
+                "session",
+                "auth_token"
+            ],
+            "harvest_all_cookies": true,
+            "harvest_headers": true,
+            "capture_headers": [
+                "user-agent",
+                "accept-language",
+                "accept-encoding",
+                "sec-ch-ua",
+                "sec-ch-ua-mobile",
+                "sec-ch-ua-platform"
+            ],
+            "harvest_storage": false
+        },
+
+        "storage": {
+            "_comment": "Redis storage for Golden Tickets",
+            "session_key_prefix": "hitl:session",
+            "session_ttl": 3600,
+            "session_max_ttl": 7200,
+            "task_key_prefix": "hitl:task",
+            "events_channel": "hitl:events",
+            "share_sessions": true
+        },
+
+        "challenge_detection": {
+            "_comment": "Challenge detection patterns",
+            "cloudflare_indicators": [
+                "checking your browser",
+                "ray id:",
+                "cf-browser-verification",
+                "__cf_chl",
+                "turnstile",
+                "just a moment",
+                "verify you are human",
+                "cf-spinner",
+                "challenge-platform"
+            ],
+            "captcha_indicators": [
+                "recaptcha",
+                "hcaptcha",
+                "funcaptcha",
+                "arkose",
+                "geetest",
+                "puzzle",
+                "slider captcha",
+                "image captcha"
+            ],
+            "behavior_indicators": [
+                "prove you're human",
+                "behavior verification",
+                "bot detection",
+                "suspicious activity",
+                "unusual traffic"
+            ],
+            "success_indicators": [
+                "challenge-success",
+                "cf_clearance",
+                "verification complete"
+            ]
+        },
+
+        "timeouts": {
+            "_comment": "Timeout configuration",
+            "admin_connect_timeout": 300,
+            "solve_timeout": 600,
+            "heartbeat_interval": 30,
+            "idle_timeout": 120,
+            "session_timeout": 900
+        },
+
+        "notification": {
+            "_comment": "Notification settings for HITL events",
+            "push_enabled": true,
+            "webhook_enabled": false,
+            "webhook_url": null,
+            "sound_enabled": true,
+            "priority_high_threshold": 8
+        }
+    }
+}

@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(black:*)",
+      "Bash(python -m black:*)",
+      "Bash(source .venv/bin/activate)",
+      "Bash(.venv/bin/python:*)",
+      "Bash(/home/surip/.pyenv/versions/3.11.9/bin/python:*)",
+      "Bash(uv run black:*)",
+      "Bash(isort:*)",
+      "Bash(ruff check:*)",
+      "Bash(mypy:*)",
+      "Bash(test:*)",
+      "Bash(echo:*)",
+      "Bash(printf:*)",
+      "Bash(uv pip list:*)",
+      "Bash(uv run:*)",
+      "Bash(mkdir:*)",
+      "Bash(cd:*)",
+      "Bash(dir:*)"
+    ]
+  }
+}

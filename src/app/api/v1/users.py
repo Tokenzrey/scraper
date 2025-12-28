@@ -1,4 +1,4 @@
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 from fastapi import APIRouter, Depends, Request
 from fastcrud import PaginatedListResponse, compute_offset, paginated_response
@@ -19,7 +19,9 @@ router = APIRouter(tags=["users"])
 
 @router.post("/user", response_model=UserRead, status_code=201)
 async def write_user(
-    request: Request, user: UserCreate, db: Annotated[AsyncSession, Depends(async_get_db)]
+    request: Request,
+    user: UserCreate,
+    db: Annotated[AsyncSession, Depends(async_get_db)],
 ) -> dict[str, Any]:
     email_row = await crud_users.exists(db=db, email=user.email)
     if email_row:
@@ -39,12 +41,15 @@ async def write_user(
     if created_user is None:
         raise NotFoundException("Failed to create user")
 
-    return created_user
+    return cast(dict[str, Any], created_user)
 
 
 @router.get("/users", response_model=PaginatedListResponse[UserRead])
 async def read_users(
-    request: Request, db: Annotated[AsyncSession, Depends(async_get_db)], page: int = 1, items_per_page: int = 10
+    request: Request,
+    db: Annotated[AsyncSession, Depends(async_get_db)],
+    page: int = 1,
+    items_per_page: int = 10,
 ) -> dict:
     users_data = await crud_users.get_multi(
         db=db,
@@ -70,7 +75,7 @@ async def read_user(
     if db_user is None:
         raise NotFoundException("User not found")
 
-    return db_user
+    return cast(dict[str, Any], db_user)
 
 
 @router.patch("/user/{username}")
@@ -189,7 +194,10 @@ async def read_user_tier(
 
 @router.patch("/user/{username}/tier", dependencies=[Depends(get_current_superuser)])
 async def patch_user_tier(
-    request: Request, username: str, values: UserTierUpdate, db: Annotated[AsyncSession, Depends(async_get_db)]
+    request: Request,
+    username: str,
+    values: UserTierUpdate,
+    db: Annotated[AsyncSession, Depends(async_get_db)],
 ) -> dict[str, str]:
     db_user = await crud_users.get(db=db, username=username, schema_to_select=UserRead)
     if db_user is None:

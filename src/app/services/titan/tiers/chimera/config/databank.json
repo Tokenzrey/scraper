@@ -1,0 +1,130 @@
+{
+	"version": "4.5.0",
+	"description": "PROJECT CHIMERA: Tier 1 Data Acquisition Configuration",
+
+	"_comment_general": "=== GENERAL CONFIGURATION (Shared across all tiers) ===",
+
+	"general": {
+		"project_id": "CHIMERA_V4_5",
+		"log_level": "INFO",
+		"metrics_enabled": true,
+
+		"session_management": {
+			"storage_backend": "redis",
+			"key_prefix": "chimera:sess:",
+			"cookie_key_prefix": "chimera:cookies:",
+			"ttl_seconds": 3600,
+			"auto_persist": true
+		},
+
+		"proxy_pool": {
+			"rotation_strategy": "sticky_session",
+			"sticky_ttl_seconds": 300,
+			"ban_duration_seconds": 300,
+			"max_consecutive_failures": 5
+		},
+
+		"detection_evasion": {
+			"request_delay": {
+				"enabled": true,
+				"min_ms": 100,
+				"max_ms": 500,
+				"distribution": "uniform"
+			},
+			"header_order_randomization": true
+		}
+	},
+
+	"_comment_tier1": "=== TIER 1 SPECIFIC CONFIGURATION (curl_cffi) ===",
+
+	"tier1": {
+		"fingerprint_profile": {
+			"impersonate": "chrome120",
+			"impersonate_pool": [
+				"chrome120",
+				"chrome119",
+				"chrome116",
+				"chrome110",
+				"edge101",
+				"edge99",
+				"safari17_0",
+				"safari15_5"
+			],
+			"os_platform": "random",
+			"os_pool": ["windows", "macos", "linux"],
+			"tls_permutations": {
+				"enable_grease": true,
+				"permute_extensions": true
+			}
+		},
+
+		"network": {
+			"max_concurrency": 50,
+			"timeout": {
+				"connect": 10,
+				"read": 30,
+				"total": 60
+			},
+			"retry": {
+				"max_retries": 3,
+				"backoff_factor": 1.5,
+				"backoff_max": 30,
+				"codes_to_retry": [429, 500, 502, 503, 504]
+			},
+			"http_version": {
+				"prefer_h3": true,
+				"fallback_h2": true,
+				"allow_h1": true
+			}
+		},
+
+		"headers": {
+			"static": {
+				"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+				"Accept-Language": "en-US,en;q=0.9",
+				"Accept-Encoding": "gzip, deflate, br",
+				"Cache-Control": "max-age=0",
+				"Sec-Fetch-Dest": "document",
+				"Sec-Fetch-Mode": "navigate",
+				"Sec-Fetch-Site": "none",
+				"Sec-Fetch-User": "?1",
+				"Upgrade-Insecure-Requests": "1"
+			},
+			"dynamic": {
+				"enabled": true,
+				"client_hints": {
+					"Sec-Ch-Ua": true,
+					"Sec-Ch-Ua-Mobile": true,
+					"Sec-Ch-Ua-Platform": true
+				}
+			},
+			"user_agent_rotation": "per_session"
+		},
+
+		"challenge_detection": {
+			"cloudflare_signatures": [
+				"checking your browser",
+				"ray id:",
+				"cf-browser-verification",
+				"__cf_chl",
+				"turnstile"
+			],
+			"captcha_signatures": ["captcha", "recaptcha", "hcaptcha"],
+			"bot_detection_signatures": [
+				"bot detected",
+				"unusual traffic",
+				"verify you are human"
+			]
+		}
+	},
+
+	"_comment_future": "=== FUTURE TIER PLACEHOLDERS ===",
+
+	"tier2": {
+		"_placeholder": "Browser session + driver.requests.get() configuration"
+	},
+
+	"tier3": {
+		"_placeholder": "Full browser rendering configuration"
+	}
+}

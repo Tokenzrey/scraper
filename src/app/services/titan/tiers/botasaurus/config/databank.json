@@ -1,0 +1,108 @@
+{
+	"version": "2.0.0",
+	"description": "PROJECT BOTASAURUS: Tier 2 Data Acquisition Configuration",
+
+	"_comment_tier2": "=== TIER 2 CONFIGURATION (Botasaurus Browser + Request) ===",
+
+	"tier2": {
+		"browser": {
+			"headless": false,
+			"block_images": true,
+			"block_images_and_css": false,
+			"wait_for_complete_page_load": false,
+			"reuse_driver": true,
+
+			"fingerprint": {
+				"user_agent": "HASHED",
+				"window_size": "HASHED",
+				"tiny_profile": true
+			},
+
+			"cloudflare": {
+				"bypass_enabled": true,
+				"challenge_wait_seconds": 5,
+				"use_google_get": true
+			},
+
+			"timeouts": {
+				"page_load": 30,
+				"element_wait": 10,
+				"challenge_resolution": 10
+			},
+
+			"retry": {
+				"max_retries": 3,
+				"rate_limit_sleep": 1.13,
+				"backoff_factor": 1.5
+			}
+		},
+
+		"request": {
+			"max_retry": 5,
+			"use_google_referer": true,
+			"parallel": 1,
+
+			"timeouts": {
+				"connect": 10,
+				"read": 30,
+				"total": 60
+			}
+		},
+
+		"proxy": {
+			"rotation_enabled": true,
+			"rotation_strategy": "round_robin",
+			"sticky_per_profile": true
+		},
+
+		"session": {
+			"profile_prefix": "bota_",
+			"persist_cookies": true,
+			"profile_ttl_hours": 24
+		},
+
+		"detection_evasion": {
+			"human_mode": true,
+			"random_delays": {
+				"enabled": true,
+				"min_ms": 500,
+				"max_ms": 2000
+			}
+		},
+
+		"challenge_detection": {
+			"cloudflare_signatures": [
+				"checking your browser",
+				"ray id:",
+				"cf-browser-verification",
+				"__cf_chl",
+				"turnstile",
+				"just a moment"
+			],
+			"captcha_signatures": [
+				"captcha",
+				"recaptcha",
+				"hcaptcha",
+				"g-recaptcha",
+				"h-captcha"
+			],
+			"bot_detection_signatures": [
+				"bot detected",
+				"unusual traffic",
+				"verify you are human",
+				"automated access"
+			]
+		}
+	},
+
+	"_comment_escalation": "=== ESCALATION RULES ===",
+
+	"escalation": {
+		"to_tier3_on": [
+			"captcha_required",
+			"browser_crash",
+			"persistent_challenge"
+		],
+		"max_tier2_attempts": 2
+	}
+}

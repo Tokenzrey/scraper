@@ -38,7 +38,12 @@ async def login_for_access_token(
     max_age = settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
 
     response.set_cookie(
-        key="refresh_token", value=refresh_token, httponly=True, secure=True, samesite="lax", max_age=max_age
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=max_age,
     )
 
     return {"access_token": access_token, "token_type": "bearer"}

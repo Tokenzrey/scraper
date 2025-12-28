@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from .admin.initialize import create_admin_interface
-from .api import router
+from .api import captcha_internal_router, router, ws_router
 from .core.config import settings
 from .core.setup import create_application, lifespan_factory
 
@@ -28,6 +28,14 @@ async def lifespan_with_admin(app: FastAPI) -> AsyncGenerator[None, None]:
 
 
 app = create_application(router=router, settings=settings, lifespan=lifespan_with_admin)
+
+# Include WebSocket routes at root level (no /api prefix)
+# /ws/captcha - Real-time CAPTCHA events
+app.include_router(ws_router)
+
+# Include internal routes at root level (no /api prefix)
+# /internal/solver-frame/{id} - Proxied iframe content
+app.include_router(captcha_internal_router)
 
 # Mount admin interface if enabled
 if admin:

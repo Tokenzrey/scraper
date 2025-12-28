@@ -1,0 +1,130 @@
+{
+    "_comment": "DrissionPage Tier 6 Configuration - No WebDriver Browser Automation",
+    "_version": "6.0.0",
+    "_description": "Configuration for DrissionPage-based scraping without webdriver dependency",
+
+    "version": "6.0.0",
+
+    "tier6": {
+        "_comment": "Mode selection: chromium (browser), session (HTTP), web (hybrid)",
+        "mode": "chromium",
+
+        "chromium": {
+            "_comment": "ChromiumPage browser automation settings",
+            "headless": true,
+            "auto_port": true,
+            "new_env": false,
+            "timeout": 30.0,
+            "load_mode": "normal",
+            "browser_path": null,
+            "user_data_path": null,
+            "download_path": null,
+            "proxy": null,
+            "no_imgs": false,
+            "no_js": false,
+            "mute": true,
+            "incognito": false,
+            "set_window_rect": null
+        },
+
+        "session": {
+            "_comment": "SessionPage HTTP request settings",
+            "timeout": 30.0,
+            "retry": 3,
+            "retry_interval": 2.0,
+            "impersonate": "chrome",
+            "headers": {},
+            "proxy": null
+        },
+
+        "web": {
+            "_comment": "WebPage hybrid mode settings",
+            "default_mode": "d",
+            "auto_switch": true,
+            "session": {
+                "timeout": 30.0,
+                "retry": 3,
+                "retry_interval": 2.0,
+                "impersonate": "chrome",
+                "headers": {},
+                "proxy": null
+            },
+            "chromium": {
+                "headless": true,
+                "auto_port": true,
+                "new_env": false,
+                "timeout": 30.0,
+                "load_mode": "normal",
+                "browser_path": null,
+                "user_data_path": null,
+                "download_path": null,
+                "proxy": null,
+                "no_imgs": false,
+                "no_js": false,
+                "mute": true,
+                "incognito": false,
+                "set_window_rect": null
+            }
+        },
+
+        "wait": {
+            "_comment": "Wait and timeout configuration",
+            "page_load": 60,
+            "element": 15,
+            "network_idle": 30,
+            "script": 30,
+            "wait_loading": true,
+            "wait_stop_loading": true
+        },
+
+        "retry": {
+            "_comment": "Retry behavior configuration",
+            "max_retries": 3,
+            "backoff_factor": 2.0,
+            "backoff_max": 30,
+            "retry_on_status": [429, 500, 502, 503, 504]
+        },
+
+        "locator": {
+            "_comment": "DrissionPage locator settings",
+            "default_strategy": "css",
+            "implicit_wait": 10.0
+        },
+
+        "action": {
+            "_comment": "Action/interaction settings",
+            "type_delay": 0.05,
+            "click_delay": 0.1,
+            "scroll_behavior": "smooth",
+            "human_mode": true
+        },
+
+        "challenge_detection": {
+            "_comment": "Challenge and bot detection signatures",
+            "cloudflare_signatures": [
+                "checking your browser",
+                "ray id:",
+                "cf-browser-verification",
+                "__cf_chl",
+                "turnstile",
+                "just a moment",
+                "verify you are human",
+                "cloudflare"
+            ],
+            "captcha_signatures": [
+                "captcha",
+                "recaptcha",
+                "hcaptcha",
+                "g-recaptcha",
+                "h-captcha"
+            ],
+            "bot_detection_signatures": [
+                "bot detected",
+                "unusual traffic",
+                "automated access",
+                "access denied",
+                "suspicious activity"
+            ]
+        }
+    }
+}

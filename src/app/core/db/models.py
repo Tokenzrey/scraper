@@ -9,7 +9,10 @@ from uuid6 import uuid7
 
 class UUIDMixin:
     uuid: Mapped[uuid_pkg.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid7, server_default=text("gen_random_uuid()")
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid7,
+        server_default=text("gen_random_uuid()"),
     )
 
 
@@ -18,7 +21,10 @@ class TimestampMixin:
         DateTime, default=datetime.now(UTC), server_default=text("current_timestamp(0)")
     )
     updated_at: Mapped[datetime | None] = mapped_column(
-        DateTime, nullable=True, onupdate=datetime.now(UTC), server_default=text("current_timestamp(0)")
+        DateTime,
+        nullable=True,
+        onupdate=datetime.now(UTC),
+        server_default=text("current_timestamp(0)"),
     )
 
 

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 from arq.jobs import Job as ArqJob
 from fastapi import APIRouter, Depends, HTTPException
@@ -10,7 +10,12 @@ from ...schemas.job import Job
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 
-@router.post("/task", response_model=Job, status_code=201, dependencies=[Depends(rate_limiter_dependency)])
+@router.post(
+    "/task",
+    response_model=Job,
+    status_code=201,
+    dependencies=[Depends(rate_limiter_dependency)],
+)
 async def create_task(message: str) -> dict[str, str]:
     """Create a new background task.
 
@@ -56,4 +61,4 @@ async def get_task(task_id: str) -> dict[str, Any] | None:
     if job_info is None:
         return None
 
-    return job_info.__dict__
+    return cast(dict[str, Any], job_info.__dict__)

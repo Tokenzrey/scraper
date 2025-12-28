@@ -1,4 +1,4 @@
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 from fastapi import APIRouter, Depends, Request
 from fastcrud import PaginatedListResponse, compute_offset, paginated_response
@@ -15,9 +15,16 @@ from ...schemas.tier import TierRead
 router = APIRouter(tags=["rate_limits"])
 
 
-@router.post("/tier/{tier_name}/rate_limit", dependencies=[Depends(get_current_superuser)], status_code=201)
+@router.post(
+    "/tier/{tier_name}/rate_limit",
+    dependencies=[Depends(get_current_superuser)],
+    status_code=201,
+)
 async def write_rate_limit(
-    request: Request, tier_name: str, rate_limit: RateLimitCreate, db: Annotated[AsyncSession, Depends(async_get_db)]
+    request: Request,
+    tier_name: str,
+    rate_limit: RateLimitCreate,
+    db: Annotated[AsyncSession, Depends(async_get_db)],
 ) -> dict[str, Any]:
     db_tier = await crud_tiers.get(db=db, name=tier_name, schema_to_select=TierRead)
     if not db_tier:
@@ -38,7 +45,7 @@ async def write_rate_limit(
     if created_rate_limit is None:
         raise NotFoundException("Failed to create rate limit")
 
-    return created_rate_limit
+    return cast(dict[str, Any], created_rate_limit)
 
 
 @router.get("/tier/{tier_name}/rate_limits", response_model=PaginatedListResponse[RateLimitRead])
@@ -66,7 +73,10 @@ async def read_rate_limits(
 
 @router.get("/tier/{tier_name}/rate_limit/{id}", response_model=RateLimitRead)
 async def read_rate_limit(
-    request: Request, tier_name: str, id: int, db: Annotated[AsyncSession, Depends(async_get_db)]
+    request: Request,
+    tier_name: str,
+    id: int,
+    db: Annotated[AsyncSession, Depends(async_get_db)],
 ) -> dict[str, Any]:
     db_tier = await crud_tiers.get(db=db, name=tier_name, schema_to_select=TierRead)
     if not db_tier:
@@ -76,7 +86,7 @@ async def read_rate_limit(
     if db_rate_limit is None:
         raise NotFoundException("Rate Limit not found")
 
-    return db_rate_limit
+    return cast(dict[str, Any], db_rate_limit)
 
 
 @router.patch("/tier/{tier_name}/rate_limit/{id}", dependencies=[Depends(get_current_superuser)])
@@ -101,7 +111,10 @@ async def patch_rate_limit(
 
 @router.delete("/tier/{tier_name}/rate_limit/{id}", dependencies=[Depends(get_current_superuser)])
 async def erase_rate_limit(
-    request: Request, tier_name: str, id: int, db: Annotated[AsyncSession, Depends(async_get_db)]
+    request: Request,
+    tier_name: str,
+    id: int,
+    db: Annotated[AsyncSession, Depends(async_get_db)],
 ) -> dict[str, str]:
     db_tier = await crud_tiers.get(db=db, name=tier_name, schema_to_select=TierRead)
     if not db_tier:
