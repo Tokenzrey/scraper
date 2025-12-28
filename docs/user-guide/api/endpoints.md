@@ -84,7 +84,7 @@ async def create_user(
     # Check if user already exists
     if await crud_users.exists(db=db, email=user_data.email):
         raise HTTPException(status_code=409, detail="Email already exists")
-    
+
     # Create user
     new_user = await crud_users.create(db=db, object=user_data)
     return new_user
@@ -102,7 +102,7 @@ async def update_user(
     # Check if user exists
     if not await crud_users.exists(db=db, id=user_id):
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     # Update user
     updated_user = await crud_users.update(db=db, object=user_data, id=user_id)
     return updated_user
@@ -118,7 +118,7 @@ async def delete_user(
 ):
     if not await crud_users.exists(db=db, id=user_id):
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     await crud_users.delete(db=db, id=user_id)
     return {"message": "User deleted"}
 ```
@@ -128,7 +128,7 @@ async def delete_user(
 To require login, add the `get_current_user` dependency:
 
 ```python
-@router.get("/me", response_model=UserRead)  
+@router.get("/me", response_model=UserRead)
 async def get_my_profile(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
@@ -171,7 +171,7 @@ async def permanently_delete_user(
 @router.get("/search")
 async def search_users(
     name: str | None = None,        # Optional string
-    age: int | None = None,         # Optional integer  
+    age: int | None = None,         # Optional integer
     is_active: bool = True,         # Boolean with default
     db: Annotated[AsyncSession, Depends(async_get_db)]
 ):
@@ -180,7 +180,7 @@ async def search_users(
         filters["name"] = name
     if age:
         filters["age"] = age
-        
+
     users = await crud_users.get_multi(db=db, **filters)
     return users["data"]
 ```
@@ -212,7 +212,7 @@ The boilerplate includes custom exceptions you can use:
 
 ```python
 from app.core.exceptions.http_exceptions import (
-    NotFoundException, 
+    NotFoundException,
     DuplicateValueException,
     ForbiddenException
 )
@@ -228,7 +228,7 @@ async def get_user(user_id: int, db: AsyncSession):
 async def create_user(user_data: UserCreate, db: AsyncSession):
     if await crud_users.exists(db=db, email=user_data.email):
         raise DuplicateValueException("Email already exists")  # Returns 409
-    
+
     return await crud_users.create(db=db, object=user_data)
 ```
 
@@ -247,10 +247,10 @@ async def upload_avatar(
     # Check file type
     if not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="File must be an image")
-    
+
     # Save file and update user
     # ... file handling logic ...
-    
+
     return {"message": "Avatar uploaded successfully"}
 ```
 
@@ -285,7 +285,7 @@ async def create_post(
     # Add current user as post author
     post_dict = post_data.model_dump()
     post_dict["author_id"] = current_user["id"]
-    
+
     new_post = await crud_posts.create(db=db, object=post_dict)
     return new_post
 ```
@@ -303,18 +303,19 @@ api_router.include_router(posts_router)
 ### Step 3: Test Your Endpoints
 
 Your new endpoints will be available at:
+
 - `GET /api/v1/posts/` - Get all posts
 - `POST /api/v1/posts/` - Create new post (requires login)
 
 ## Best Practices
 
 1. **Always use the database dependency**: `Depends(async_get_db)`
-2. **Use existing CRUD methods**: `crud_users.get()`, `crud_users.create()`, etc.
-3. **Check if items exist before operations**: Use `crud_users.exists()`
-4. **Use proper HTTP status codes**: `status_code=201` for creation
-5. **Add authentication when needed**: `Depends(get_current_user)`
-6. **Use response models**: `response_model=UserRead`
-7. **Handle errors with custom exceptions**: `NotFoundException`, `DuplicateValueException`
+1. **Use existing CRUD methods**: `crud_users.get()`, `crud_users.create()`, etc.
+1. **Check if items exist before operations**: Use `crud_users.exists()`
+1. **Use proper HTTP status codes**: `status_code=201` for creation
+1. **Add authentication when needed**: `Depends(get_current_user)`
+1. **Use response models**: `response_model=UserRead`
+1. **Handle errors with custom exceptions**: `NotFoundException`, `DuplicateValueException`
 
 ## What's Next
 
@@ -324,4 +325,4 @@ Now that you understand basic endpoints:
 - **[Exceptions](exceptions.md)** - Custom error handling and HTTP exceptions<br>
 - **[CRUD Operations](../database/crud.md)** - Understand the CRUD layer<br>
 
-The boilerplate provides everything you need - just follow these patterns! 
+The boilerplate provides everything you need - just follow these patterns!

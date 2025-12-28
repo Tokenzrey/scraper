@@ -19,15 +19,18 @@
 # ============================================
 
 from .base import TierExecutor, TierLevel, TierResult
-from .tier1_request import Tier1RequestExecutor
-from .tier2_browser_request import Tier2BrowserRequestExecutor
-from .tier3_full_browser import Tier3FullBrowserExecutor
+
+# Botasaurus - Alternative Tier 2 with @request + @browser
+from .botasaurus import Tier2BotasaurusExecutor
 
 # Chimera - Alternative Tier 1 with advanced features
 from .chimera import Tier1ChimeraExecutor
 
-# Botasaurus - Alternative Tier 2 with @request + @browser
-from .botasaurus import Tier2BotasaurusExecutor
+# DrissionPage - Tier 6 with no webdriver, iframe/shadow-root support
+from .drissionpage import Tier6DrissionPageExecutor
+
+# HITL - Tier 7 Human-in-the-Loop Bridge (Golden Ticket harvesting)
+from .hitl import GoldenTicket, SessionHarvester, Tier7HITLExecutor
 
 # Nodriver - Alternative Tier 3 with async CDP and cf_verify
 from .nodriver import Tier3NodriverExecutor
@@ -37,12 +40,9 @@ from .scrapling import Tier4ScraplingExecutor
 
 # SeleniumBase - Tier 5 with UC Mode, CDP Mode, CAPTCHA solving
 from .seleniumbase import Tier5SeleniumBaseExecutor
-
-# DrissionPage - Tier 6 with no webdriver, iframe/shadow-root support
-from .drissionpage import Tier6DrissionPageExecutor
-
-# HITL - Tier 7 Human-in-the-Loop Bridge (Golden Ticket harvesting)
-from .hitl import Tier7HITLExecutor, SessionHarvester, GoldenTicket
+from .tier1_request import Tier1RequestExecutor
+from .tier2_browser_request import Tier2BrowserRequestExecutor
+from .tier3_full_browser import Tier3FullBrowserExecutor
 
 __all__ = [
     # Base

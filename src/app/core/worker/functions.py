@@ -19,8 +19,7 @@ async def sample_background_task(ctx: Worker, name: str) -> str:
 
 
 async def titan_execute(ctx: Worker, task_data: dict[str, Any]) -> dict[str, Any]:
-    """
-    ARQ task function for executing Titan scrape operations.
+    """ARQ task function for executing Titan scrape operations.
 
     This is the entry point for all scrape jobs queued via the API.
     The task runs in the worker process with full access to browser automation.

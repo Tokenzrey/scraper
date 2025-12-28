@@ -28,7 +28,6 @@ from .exceptions import (
     ChimeraNetworkError,
     ChimeraTimeoutError,
 )
-from .proxy_rotator import ProxyRotator
 
 if TYPE_CHECKING:
     from app.core.config import Settings
@@ -38,8 +37,7 @@ logger = logging.getLogger(__name__)
 
 
 class Tier1ChimeraExecutor(TierExecutor):
-    """
-    Tier 1 Executor using Chimera/curl_cffi.
+    """Tier 1 Executor using Chimera/curl_cffi.
 
     Alternative to Tier1RequestExecutor with enhanced features:
     - Full browser impersonation (JA3/JA4 fingerprinting)
@@ -64,8 +62,7 @@ class Tier1ChimeraExecutor(TierExecutor):
         proxies: list[str] | None = None,
         redis_client: Any = None,
     ) -> None:
-        """
-        Initialize Tier 1 Chimera Executor.
+        """Initialize Tier 1 Chimera Executor.
 
         Args:
             settings: Application settings (Titan configuration)
@@ -131,8 +128,7 @@ class Tier1ChimeraExecutor(TierExecutor):
         url: str,
         options: "ScrapeOptions | None" = None,
     ) -> TierResult:
-        """
-        Execute HTTP request using Chimera client.
+        """Execute HTTP request using Chimera client.
 
         Args:
             url: Target URL to fetch
@@ -171,8 +167,7 @@ class Tier1ChimeraExecutor(TierExecutor):
             # Convert ChimeraResponse to TierResult
             if response.success:
                 logger.debug(
-                    f"[CHIMERA] Success: {url} (status={response.status_code}, "
-                    f"time={execution_time_ms:.0f}ms)"
+                    f"[CHIMERA] Success: {url} (status={response.status_code}, " f"time={execution_time_ms:.0f}ms)"
                 )
 
                 return TierResult(

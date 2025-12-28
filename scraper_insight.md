@@ -5,7 +5,7 @@
 > **Key Capability**: "Smart Escalate" 3-Tier Hybrid Engine
 > **Last Updated**: December 25, 2025
 
----
+______________________________________________________________________
 
 ## 🏗️ 1. High-Level Architecture
 
@@ -136,7 +136,7 @@ graph TD
 
 </details>
 
----
+______________________________________________________________________
 
 ### 🔄 Data Flow & Logic Fallback Strategy
 
@@ -288,7 +288,7 @@ flowchart TD
 
 </details>
 
----
+______________________________________________________________________
 
 ## 🧠 2. The "Titan" Engine (Core Logic)
 
@@ -302,7 +302,7 @@ Specific performance targets derived from `STAGE_1_TITAN_IMPLEMENTATION.md`:
 
 | Tier       | Tech Stack              | Characteristics                                     | Bandwidth/Cost        | Ideal For                                                                                                          |
 | :--------- | :---------------------- | :-------------------------------------------------- | :-------------------- | :----------------------------------------------------------------------------------------------------------------- |
-| **Tier 1** | **`curl_cffi`**         | ⚡️ <1s latency, TLS Fingerprint Spoofing (JA3/JA4) | **~50KB** (Low)       | API endpoints, unprotected HTML, JSON APIs                                                                         |
+| **Tier 1** | **`curl_cffi`**         | ⚡️ \<1s latency, TLS Fingerprint Spoofing (JA3/JA4) | **~50KB** (Low)       | API endpoints, unprotected HTML, JSON APIs                                                                         |
 | **Tier 2** | **Headless Browser**    | 🐇 ~3-5s, JS Execution, **Bandwidth Saver**         | **~50KB** (Optimized) | Sites checking for "valid browser" but no severe WAF. Uses `driver.requests.get()` to fetch HTML _without_ assets. |
 | **Tier 3** | **Full Browser (XVFB)** | 🐢 ~15-30s, "Human" mode, `google_get` bypass       | **~2MB** (High)       | Cloudflare Turnstile, DataDome, Akamai. Uses `google_get` trick (Google Cache referrer).                           |
 
@@ -312,7 +312,7 @@ Specific performance targets derived from `STAGE_1_TITAN_IMPLEMENTATION.md`:
 - **Smart Skip**: If Tier 1 detects a specific Cloudflare signatures (e.g., "Just a moment..."), the orchestrator **skips Tier 2** (which usually fails CF) and jumps straight to Tier 3.
 - **Session Persistence**: Hashed "TinyProfiles" allow the worker to reuse cookies/localstorage across jobs for the same domain, reducing login/challenge frequency.
 
----
+______________________________________________________________________
 
 ## 🚦 3. Manual Captcha Solving System (Deep Dive)
 
@@ -324,12 +324,12 @@ Unique to this repo is a **Human-in-the-Loop** subsystem for unblockable CAPTCHA
 
 Instead of just showing a screenshot, the system creates a live tunnel:
 
-1.  **Worker Blocked**: Tier 3 fails, creates `CaptchaTask`.
-2.  **Operator UI**: Loads an `<iframe>`.
-3.  **Proxy Endpoint**: `GET /api/v1/captcha/proxy/render/{task_id}` acts as the tunnel.
-    - **Impersonation**: Uses `curl_cffi` to mimic the _exact_ TLS fingerprint of the worker.
-    - **Header Stripping**: Removes `X-Frame-Options` and `Content-Security-Policy` from the upstream response to allow iframe embedding.
-    - **Cookie Sniffing**: Inspects every `Set-Cookie` header. If `cf_clearance` is found, it's immediately cached in Redis.
+1. **Worker Blocked**: Tier 3 fails, creates `CaptchaTask`.
+1. **Operator UI**: Loads an `<iframe>`.
+1. **Proxy Endpoint**: `GET /api/v1/captcha/proxy/render/{task_id}` acts as the tunnel.
+   - **Impersonation**: Uses `curl_cffi` to mimic the _exact_ TLS fingerprint of the worker.
+   - **Header Stripping**: Removes `X-Frame-Options` and `Content-Security-Policy` from the upstream response to allow iframe embedding.
+   - **Cookie Sniffing**: Inspects every `Set-Cookie` header. If `cf_clearance` is found, it's immediately cached in Redis.
 
 ### 3.2 Real-Time Communication (WebSocket)
 
@@ -345,7 +345,7 @@ Instead of just showing a screenshot, the system creates a live tunnel:
 | `titan:session:{domain}` | String (JSON) | **The Holy Grail**. Contains valid `cf_clearance`. TTL: 1 hour. |
 | `titan:lock:{uuid}`      | String        | Locks a task to a specific human operator.                      |
 
----
+______________________________________________________________________
 
 ## 🛠️ 4. Engineering Challenges & Historical Context
 
@@ -382,7 +382,7 @@ The system uses a strict mapping defined in `src/app/core/worker/functions.py` t
 | `dns_error`     | **FAILED**   | ❌ **No**   | Domain doesn't exist. No tier can fix this. **Fail Fast** logic. |
 | `network_error` | **FAILED**   | ⚠️ Maybe    | Connection issues. Escalate if transient.                        |
 
----
+______________________________________________________________________
 
 ## 🔐 5. Core Infrastructure & Security
 
@@ -408,7 +408,7 @@ This is **critical** infrastructure and differs for the Titan worker.
 - **Pinned Versions**: Chromium and Chromedriver are pinned to version `131.*`.
 - **Self-Hosted Test Svc**: The `docker-compose.yml` includes a local `httpbin` service to prevent test flakiness from external API downtimes.
 
----
+______________________________________________________________________
 
 ## 🚀 6. Developer Cheat Sheet
 
@@ -421,7 +421,7 @@ This is **critical** infrastructure and differs for the Titan worker.
   - `botasaurus`: For browser automation (Tier 2/3).
   - `redis`: For Queues, Cache, and Pub/Sub.
 
----
+______________________________________________________________________
 
 ## 🛠️ 7. Technology Stack & Tools Mapping
 
@@ -452,6 +452,7 @@ It is isolated within the `src/app/services/titan/tiers/` directory to keep depe
   - **Benefit**: Saves **97% bandwidth** and speeds up execution by 3-5x compared to full page loading, while maintaining high trust.
 
 - **Tier 3 (Full Browser)**: `tier3_full_browser.py`
+
   - **Technique**: Uses `driver.google_get(url, bypass_cloudflare=True)` to navigate via Google search referrers, which often bypasses protections.
   - **Human Simulation**: Calls `driver.enable_human_mode()` to inject real-time mouse movements, scrolling, and typing delays, making the bot indistinguishable from a real user.
   - **Purpose**: The "Nuclear Option" for the most stubborn sites that require full JavaScript execution and behavioral analysis.

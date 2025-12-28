@@ -39,8 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 class StealthyClient:
-    """
-    Async wrapper for Scrapling StealthyFetcher.
+    """Async wrapper for Scrapling StealthyFetcher.
 
     Uses Camoufox browser for maximum stealth:
     - Bypasses bot detection by default
@@ -59,8 +58,7 @@ class StealthyClient:
         config: StealthyFetcherConfig | None = None,
         thread_pool: ThreadPoolExecutor | None = None,
     ) -> None:
-        """
-        Initialize StealthyClient.
+        """Initialize StealthyClient.
 
         Args:
             config: StealthyFetcher configuration. If None, loads from databank.json
@@ -75,7 +73,7 @@ class StealthyClient:
         self._thread_pool = thread_pool or ThreadPoolExecutor(max_workers=2)
         self._owns_pool = thread_pool is None
 
-    async def __aenter__(self) -> "StealthyClient":
+    async def __aenter__(self) -> StealthyClient:
         """Async context manager entry."""
         await self._ensure_fetcher()
         return self
@@ -113,9 +111,8 @@ class StealthyClient:
         wait_selector: str | None = None,
         timeout: int | None = None,
         extra_headers: dict[str, str] | None = None,
-    ) -> "StealthyFetchResult":
-        """
-        Fetch a URL using StealthyFetcher.
+    ) -> StealthyFetchResult:
+        """Fetch a URL using StealthyFetcher.
 
         Args:
             url: Target URL to fetch
@@ -202,9 +199,8 @@ class StealthyClient:
         wait_selector: str | None,
         timeout: int | None,
         extra_headers: dict[str, str] | None,
-    ) -> "StealthyFetchResult":
-        """
-        Synchronous fetch implementation.
+    ) -> StealthyFetchResult:
+        """Synchronous fetch implementation.
 
         This runs in a thread pool to avoid blocking the event loop.
         """
@@ -263,9 +259,7 @@ class StealthyClient:
 
         # Check for challenges in response
         html_content = response.html if hasattr(response, "html") else str(response)
-        status_code = getattr(response, "status", None) or getattr(
-            response, "status_code", 200
-        )
+        status_code = getattr(response, "status", None) or getattr(response, "status_code", 200)
 
         # Detect challenges
         challenge = self._detect_challenge(html_content, status_code)
@@ -363,8 +357,7 @@ class StealthyClient:
 
 
 class StealthyFetchResult:
-    """
-    Result from a StealthyFetcher fetch operation.
+    """Result from a StealthyFetcher fetch operation.
 
     Provides easy access to page content and metadata.
     """
@@ -387,8 +380,7 @@ class StealthyFetchResult:
         return self.html
 
     def css(self, selector: str) -> list[Any]:
-        """
-        Select elements using CSS selector.
+        """Select elements using CSS selector.
 
         Uses Scrapling's adaptive selector if available.
         """
@@ -400,8 +392,7 @@ class StealthyFetchResult:
         )
 
     def xpath(self, query: str) -> list[Any]:
-        """
-        Select elements using XPath.
+        """Select elements using XPath.
 
         Uses Scrapling's XPath support if available.
         """

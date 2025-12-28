@@ -23,7 +23,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from app.services.titan.tiers.chimera import (
     ChimeraClient,
-    ChimeraConfig,
     ConfigLoader,
     ProxyRotator,
     RedisStateStore,
@@ -50,7 +49,7 @@ async def test_single_request():
 
     async with ChimeraClient(config=config) as client:
         logger.info(f"Session ID: {client.session_id[:8]}...")
-        logger.info(f"Making request to httpbin.org...")
+        logger.info("Making request to httpbin.org...")
 
         response = await client.get("https://httpbin.org/get")
 

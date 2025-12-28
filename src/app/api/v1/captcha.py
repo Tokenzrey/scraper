@@ -1,5 +1,4 @@
-"""
-CAPTCHA API Endpoints for Manual CAPTCHA Resolver System.
+"""CAPTCHA API Endpoints for Manual CAPTCHA Resolver System.
 
 Provides endpoints for:
 - Creating CAPTCHA tasks when scraper encounters challenges
@@ -117,14 +116,11 @@ async def create_captcha_task(
     db: Annotated[AsyncSession, Depends(async_get_db)],
     redis: Annotated[Redis, Depends(async_get_redis)],
 ) -> CaptchaTask:
-    """
-    Create a new CAPTCHA task for manual solving.
+    """Create a new CAPTCHA task for manual solving.
 
-    Called by the Titan Worker when it encounters a CAPTCHA challenge
-    that cannot be automatically bypassed.
+    Called by the Titan Worker when it encounters a CAPTCHA challenge that cannot be automatically bypassed.
 
-    If a pending task already exists for the same domain, it will be
-    updated instead of creating a duplicate.
+    If a pending task already exists for the same domain, it will be updated instead of creating a duplicate.
     """
     domain = extract_domain(task_data.url)
 
@@ -221,8 +217,7 @@ async def list_tasks(
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=20, ge=1, le=100),
 ) -> dict:
-    """
-    List CAPTCHA tasks with filtering and pagination.
+    """List CAPTCHA tasks with filtering and pagination.
 
     Returns tasks ordered by priority (descending) and creation time (ascending).
     """
@@ -276,11 +271,9 @@ async def list_pending_tasks(
     db: Annotated[AsyncSession, Depends(async_get_db)],
     limit: int = Query(default=20, le=100),
 ) -> dict:
-    """
-    List pending CAPTCHA tasks that need solving.
+    """List pending CAPTCHA tasks that need solving.
 
-    Convenience endpoint for the solver UI grid.
-    Returns unassigned pending tasks ordered by priority.
+    Convenience endpoint for the solver UI grid. Returns unassigned pending tasks ordered by priority.
     """
     await expire_old_tasks(db)
 
@@ -333,8 +326,7 @@ async def assign_task(
     db: Annotated[AsyncSession, Depends(async_get_db)],
     redis: Annotated[Redis, Depends(async_get_redis)],
 ) -> dict:
-    """
-    Assign (lock) a task to an operator.
+    """Assign (lock) a task to an operator.
 
     Returns 409 Conflict if task is already assigned to another operator.
     """
@@ -421,12 +413,10 @@ async def submit_solution(
     db: Annotated[AsyncSession, Depends(async_get_db)],
     redis: Annotated[Redis, Depends(async_get_redis)],
 ) -> dict:
-    """
-    Submit a CAPTCHA solution.
+    """Submit a CAPTCHA solution.
 
-    Accepts cookie, token, or session solutions. The solution is validated,
-    stored in the database, cached in Redis, and a pub/sub event is published
-    to notify waiting workers.
+    Accepts cookie, token, or session solutions. The solution is validated, stored in the database, cached in Redis, and
+    a pub/sub event is published to notify waiting workers.
     """
     result = await db.execute(select(CaptchaTask).where(CaptchaTask.uuid == task_uuid))
     task = result.scalar_one_or_none()
@@ -547,11 +537,10 @@ async def mark_unsolvable(
     db: Annotated[AsyncSession, Depends(async_get_db)],
     redis: Annotated[Redis, Depends(async_get_redis)],
 ) -> dict:
-    """
-    Mark a CAPTCHA task as unsolvable.
+    """Mark a CAPTCHA task as unsolvable.
 
-    Use this when the CAPTCHA cannot be solved (e.g., site is broken,
-    requires specific conditions that can't be replicated).
+    Use this when the CAPTCHA cannot be solved (e.g., site is broken, requires specific conditions that can't be
+    replicated).
     """
     result = await db.execute(select(CaptchaTask).where(CaptchaTask.uuid == task_uuid))
     task = result.scalar_one_or_none()
@@ -600,8 +589,7 @@ async def update_task_status(
     status_update: CaptchaStatusUpdate,
     db: Annotated[AsyncSession, Depends(async_get_db)],
 ) -> CaptchaTask:
-    """
-    Update the status of a CAPTCHA task.
+    """Update the status of a CAPTCHA task.
 
     Use for transitioning between states (e.g., PENDING -> SOLVING).
     """
@@ -630,11 +618,9 @@ async def get_cached_session(
     domain: str,
     redis: Annotated[Redis, Depends(async_get_redis)],
 ) -> dict:
-    """
-    Check if there's a valid cached session for a domain.
+    """Check if there's a valid cached session for a domain.
 
-    Workers should call this before creating a new CAPTCHA task
-    to check if a previously solved session can be reused.
+    Workers should call this before creating a new CAPTCHA task to check if a previously solved session can be reused.
     """
     session_service = CaptchaSessionService(redis)
     session = await session_service.get_session(domain)
@@ -672,11 +658,10 @@ async def proxy_render(
     db: Annotated[AsyncSession, Depends(async_get_db)],
     redis: Annotated[Redis, Depends(async_get_redis)],
 ) -> Response:
-    """
-    Streaming proxy endpoint for solver iframe.
+    """Streaming proxy endpoint for solver iframe.
 
-    Fetches target URL with browser impersonation, strips security headers,
-    and streams content back. Automatically captures clearance cookies.
+    Fetches target URL with browser impersonation, strips security headers, and streams content back. Automatically
+    captures clearance cookies.
     """
     result = await db.execute(select(CaptchaTask).where(CaptchaTask.uuid == task_uuid))
     task = result.scalar_one_or_none()
@@ -712,11 +697,10 @@ async def get_solver_frame(
     db: Annotated[AsyncSession, Depends(async_get_db)],
     redis: Annotated[Redis, Depends(async_get_redis)],
 ) -> HTMLResponse:
-    """
-    Return proxied/sanitized HTML for solver iframe.
+    """Return proxied/sanitized HTML for solver iframe.
 
-    This endpoint fetches the target page server-side and returns it
-    with security headers stripped for iframe embedding.
+    This endpoint fetches the target page server-side and returns it with security headers stripped for iframe
+    embedding.
     """
     result = await db.execute(select(CaptchaTask).where(CaptchaTask.uuid == task_uuid))
     task = result.scalar_one_or_none()
@@ -747,8 +731,7 @@ async def get_solver_frame(
 async def cleanup_expired_tasks(
     db: Annotated[AsyncSession, Depends(async_get_db)],
 ) -> dict:
-    """
-    Cleanup expired CAPTCHA tasks.
+    """Cleanup expired CAPTCHA tasks.
 
     Can be called periodically to expire old pending tasks.
     """

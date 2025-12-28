@@ -62,8 +62,7 @@ def get_tier2_executor() -> ThreadPoolExecutor:
 
 
 def _generate_profile_id(url: str, seed: str = "") -> str:
-    """
-    Generate consistent profile ID for URL domain.
+    """Generate consistent profile ID for URL domain.
 
     Uses HASHED approach - same domain always gets same profile,
     enabling session persistence and consistent fingerprinting.
@@ -82,8 +81,7 @@ def _sync_browser_request_fetch(
     profile_id: str | None,
     max_retries: int = 2,
 ) -> dict[str, Any]:
-    """
-    Synchronous Tier 2 fetch using Botasaurus with best practices.
+    """Synchronous Tier 2 fetch using Botasaurus with best practices.
 
     Key technique: driver.requests.get()
     - Uses browser's session (cookies, TLS fingerprint)
@@ -144,8 +142,7 @@ def _sync_browser_request_fetch(
             proxy=proxy,
         )
         def fetch_with_browser_session(driver: Driver, data: dict[str, Any]) -> dict[str, Any]:
-            """
-            Inner function that uses browser session for HTTP request.
+            """Inner function that uses browser session for HTTP request.
 
             Flow:
             1. Navigate to URL (establishes session, solves challenges)
@@ -445,8 +442,7 @@ class Tier2BrowserRequestExecutor(TierExecutor):
         url: str,
         options: "ScrapeOptions | None" = None,
     ) -> TierResult:
-        """
-        Execute browser session + HTTP request fetch.
+        """Execute browser session + HTTP request fetch.
 
         Uses UserAgent.HASHED, WindowSize.HASHED, and driver.requests.get()
         for optimal stealth and efficiency.

@@ -1,5 +1,4 @@
-"""
-CAPTCHA Session Service
+"""CAPTCHA Session Service.
 
 Manages caching and retrieval of solved CAPTCHA sessions.
 
@@ -23,9 +22,9 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from typing import Any
 from urllib.parse import urlparse
+from weakref import WeakKeyDictionary
 
 from ...core.config import settings
-from weakref import WeakKeyDictionary
 
 logger = logging.getLogger(__name__)
 
@@ -83,8 +82,7 @@ class CaptchaSession:
 
 
 class CaptchaSessionService:
-    """
-    Service for managing cached CAPTCHA sessions.
+    """Service for managing cached CAPTCHA sessions.
 
     Provides session storage, retrieval, and invalidation using Redis.
     Sessions are keyed by domain and include all data needed to replay
@@ -108,8 +106,7 @@ class CaptchaSessionService:
     """
 
     def __init__(self, redis_client=None):
-        """
-        Initialize session service.
+        """Initialize session service.
 
         Args:
             redis_client: Async Redis client.
@@ -129,8 +126,7 @@ class CaptchaSessionService:
         return f"{settings.CAPTCHA_SESSION_KEY_PREFIX}:{domain}"
 
     async def get_session(self, url_or_domain: str) -> CaptchaSession | None:
-        """
-        Get cached session for a URL or domain.
+        """Get cached session for a URL or domain.
 
         Args:
             url_or_domain: URL or domain to get session for.
@@ -198,8 +194,7 @@ class CaptchaSessionService:
         proxy_url: str | None = None,
         ttl_seconds: int | None = None,
     ) -> CaptchaSession:
-        """
-        Store a solved session.
+        """Store a solved session.
 
         Args:
             domain: Target domain.
@@ -250,8 +245,7 @@ class CaptchaSessionService:
         task: Any,  # CaptchaTask model
         ttl_seconds: int | None = None,
     ) -> CaptchaSession | None:
-        """
-        Store session from a solved CaptchaTask.
+        """Store session from a solved CaptchaTask.
 
         Extracts cookies from task's solver_result or legacy fields.
 
@@ -295,8 +289,7 @@ class CaptchaSessionService:
         )
 
     async def invalidate_session(self, url_or_domain: str) -> bool:
-        """
-        Invalidate (remove) cached session.
+        """Invalidate (remove) cached session.
 
         Args:
             url_or_domain: URL or domain to invalidate.
@@ -328,8 +321,7 @@ class CaptchaSessionService:
         return False
 
     async def get_all_sessions(self) -> list[CaptchaSession]:
-        """
-        Get all cached sessions.
+        """Get all cached sessions.
 
         Returns:
             List of all valid sessions.
@@ -360,8 +352,7 @@ class CaptchaSessionService:
         domain: str,
         additional_seconds: int = 300,
     ) -> CaptchaSession | None:
-        """
-        Extend an existing session's TTL.
+        """Extend an existing session's TTL.
 
         Args:
             domain: Domain to extend.
@@ -394,8 +385,7 @@ _session_service: CaptchaSessionService | None = None
 
 
 def get_session_service(redis_client=None) -> CaptchaSessionService:
-    """
-    Get or create the global session service.
+    """Get or create the global session service.
 
     Args:
         redis_client: Redis client for first initialization.

@@ -51,6 +51,8 @@ Configuration:
 """
 
 # Config
+# Clients
+from .browser_client import BrowserClient, BrowserResponse, generate_profile_id
 from .config import (
     BotasaurusConfig,
     BrowserConfig,
@@ -83,12 +85,9 @@ from .exceptions import (
     BotasaurusTimeoutError,
 )
 
-# Clients
-from .browser_client import BrowserClient, BrowserResponse, generate_profile_id
-from .request_client import RequestClient, RequestResponse
-
 # Executor
 from .executor import Tier2BotasaurusExecutor
+from .request_client import RequestClient, RequestResponse
 
 __all__ = [
     # Main Executor

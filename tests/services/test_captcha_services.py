@@ -1,5 +1,4 @@
-"""
-Unit Tests for CAPTCHA Resolver Services
+"""Unit Tests for CAPTCHA Resolver Services.
 
 Tests for:
 - CaptchaSessionService: Session caching and retrieval

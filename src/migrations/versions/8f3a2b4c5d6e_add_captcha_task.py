@@ -1,21 +1,19 @@
-"""Add captcha_task table for manual CAPTCHA solving
+"""Add captcha_task table for manual CAPTCHA solving.
 
 Revision ID: 8f3a2b4c5d6e
 Revises: 115759dc7142
 Create Date: 2025-01-15 10:00:00.000000
-
 """
 
 from collections.abc import Sequence
-from typing import Union
 
 from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "8f3a2b4c5d6e"
-down_revision: Union[str, None] = "115759dc7142"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "115759dc7142"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

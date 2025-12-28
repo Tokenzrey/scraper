@@ -1,5 +1,4 @@
-"""
-Unit tests for Titan Orchestrator.
+"""Unit tests for Titan Orchestrator.
 
 Comprehensive tests covering:
 - Tier escalation logic (Tier 1 → Tier 2 → Tier 3)
@@ -428,8 +427,8 @@ class TestCloudflareEscalation:
     ) -> None:
         """Test Cloudflare 403 response triggers Smart Skip to Tier 3.
 
-        Cloudflare challenges require JavaScript execution, which Tier 2
-        (driver.requests.get) cannot provide. So we skip directly to Tier 3.
+        Cloudflare challenges require JavaScript execution, which Tier 2 (driver.requests.get) cannot provide. So we
+        skip directly to Tier 3.
         """
         cloudflare_403 = TierResult(
             success=False,

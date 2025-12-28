@@ -3,7 +3,7 @@
 The FastAPI boilerplate comes with a pre-configured web-based admin interface powered by [CRUDAdmin](https://github.com/benavlabs/crudadmin) that provides instant database management capabilities. Learn how to access, configure, and customize the admin panel for your development and production needs.
 
 > **Powered by CRUDAdmin**: This admin panel is built with [CRUDAdmin](https://github.com/benavlabs/crudadmin), a modern admin interface generator for FastAPI applications.
-> 
+>
 > - **📚 CRUDAdmin Documentation**: [benavlabs.github.io/crudadmin](https://benavlabs.github.io/crudadmin/)
 > - **💻 CRUDAdmin GitHub**: [github.com/benavlabs/crudadmin](https://github.com/benavlabs/crudadmin)
 
@@ -28,14 +28,15 @@ Your FastAPI boilerplate includes a fully configured admin interface that's read
 **Accessing the Admin Panel:**
 
 1. Start your application: `uv run fastapi dev`
-2. Navigate to: `http://localhost:8000/admin`
-3. Login with default credentials (configured via environment variables)
+1. Navigate to: `http://localhost:8000/admin`
+1. Login with default credentials (configured via environment variables)
 
 ## Pre-Registered Models
 
 The boilerplate comes with three models already set up in the admin interface:
 
 ### User Management
+
 ```python
 # Already registered in your admin
 admin.add_view(
@@ -55,13 +56,14 @@ admin.add_view(
 - Tier assignment for subscription management
 
 ### Tier Management
+
 ```python
 # Subscription tiers for your application
 admin.add_view(
-    model=Tier, 
-    create_schema=TierCreate, 
-    update_schema=TierUpdate, 
-    allowed_actions={"view", "create", "update", "delete"}
+    model=Tier,
+    create_schema=TierCreate,
+    update_schema=TierUpdate,
+    allowed_actions={"view", "create", "update", "delete"},
 )
 ```
 
@@ -72,13 +74,14 @@ admin.add_view(
 - Full CRUD operations available
 
 ### Content Management
+
 ```python
 # Post/content management
 admin.add_view(
     model=Post,
     create_schema=PostCreateAdmin,  # Special admin schema
     update_schema=PostUpdate,
-    allowed_actions={"view", "create", "update", "delete"}
+    allowed_actions={"view", "create", "update", "delete"},
 )
 ```
 
@@ -117,8 +120,8 @@ uv run fastapi dev
 ### 3. Login and Explore
 
 1. **Access**: Navigate to `/admin` in your browser
-2. **Login**: Use the credentials from your environment variables
-3. **Explore**: Browse the pre-configured models (Users, Tiers, Posts)
+1. **Login**: Use the credentials from your environment variables
+1. **Explore**: Browse the pre-configured models (Users, Tiers, Posts)
 
 ## Environment Configuration
 
@@ -180,12 +183,14 @@ The admin panel integrates seamlessly with your FastAPI application through seve
 # In src/app/main.py - already configured
 admin = create_admin_interface()
 
+
 @asynccontextmanager
 async def lifespan_with_admin(app: FastAPI):
     async with default_lifespan(app):
         if admin:
             await admin.initialize()  # Sets up admin database
         yield
+
 
 # Admin is mounted automatically at your configured path
 if admin:
@@ -197,9 +202,9 @@ if admin:
 ```python
 # In src/app/admin/initialize.py - uses your existing settings
 admin = CRUDAdmin(
-    session=async_get_db,                      # Your database session
-    SECRET_KEY=settings.SECRET_KEY,            # Your app's secret key
-    mount_path=settings.CRUD_ADMIN_MOUNT_PATH, # Configurable path
+    session=async_get_db,  # Your database session
+    SECRET_KEY=settings.SECRET_KEY,  # Your app's secret key
+    mount_path=settings.CRUD_ADMIN_MOUNT_PATH,  # Configurable path
     secure_cookies=settings.SESSION_SECURE_COOKIES,
     enforce_https=settings.ENVIRONMENT == EnvironmentOption.PRODUCTION,
     # ... all configured via environment variables
@@ -217,7 +222,7 @@ def register_admin_views(admin: CRUDAdmin):
         hashed_field="hashed_password",
         hash_function=get_password_hash,  # Uses your app's password hashing
     )
-    
+
     # Register your models with appropriate schemas
     admin.add_view(model=User, create_schema=UserCreate, ...)
     admin.add_view(model=Tier, create_schema=TierCreate, ...)
@@ -289,7 +294,7 @@ Critical for production deployments where multiple team members need admin acces
 Ready to start using your admin panel? Follow this path:
 
 1. **[Configuration](configuration.md)** - Set up your environment variables and understand deployment options
-2. **[Adding Models](adding-models.md)** - Add your new models to the admin interface  
-3. **[User Management](user-management.md)** - Implement secure admin authentication
+1. **[Adding Models](adding-models.md)** - Add your new models to the admin interface
+1. **[User Management](user-management.md)** - Implement secure admin authentication
 
-The admin panel is ready to use immediately with sensible defaults, and each guide shows you how to customize it for your specific needs. 
+The admin panel is ready to use immediately with sensible defaults, and each guide shows you how to customize it for your specific needs.

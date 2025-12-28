@@ -114,6 +114,7 @@ app.include_router(api_v2_router, prefix="/api/v2")
 Here's how you might evolve the user endpoints in v2:
 
 ### v1 User Endpoint
+
 ```python
 # src/app/api/v1/users.py
 from app.schemas.user import UserRead, UserCreate
@@ -129,6 +130,7 @@ async def create_user(user_data: UserCreate):
 ```
 
 ### v2 User Endpoint (with breaking changes)
+
 ```python
 # src/app/api/v2/users.py
 from app.schemas.user import UserReadV2, UserCreateV2  # New schemas
@@ -159,6 +161,7 @@ async def create_user(
 Create separate schemas for different versions:
 
 ### Version 1 Schema
+
 ```python
 # src/app/schemas/user.py (existing)
 class UserRead(BaseModel):
@@ -177,6 +180,7 @@ class UserCreate(BaseModel):
 ```
 
 ### Version 2 Schema (with changes)
+
 ```python
 # src/app/schemas/user_v2.py (new file)
 from datetime import datetime
@@ -221,7 +225,7 @@ async def get_users(response: Response):
     # Add deprecation header
     response.headers["X-API-Deprecation"] = "v1 is deprecated. Use v2."
     response.headers["X-API-Sunset"] = "2024-12-31"  # When v1 will be removed
-    
+
     users = await crud_users.get_multi(db=db, schema_to_select=UserRead)
     return users["data"]
 ```
@@ -242,7 +246,7 @@ async def version_tracking_middleware(request: Request, call_next):
         logger.info(f"v1 usage: {request.method} {request.url.path}")
     elif request.url.path.startswith("/api/v2/"):
         logger.info(f"v2 usage: {request.method} {request.url.path}")
-    
+
     response = await call_next(request)
     return response
 ```
@@ -252,6 +256,7 @@ async def version_tracking_middleware(request: Request, call_next):
 Keep common logic in shared modules:
 
 ### Shared Dependencies
+
 ```python
 # src/app/api/dependencies.py - shared across all versions
 async def get_current_user(...):
@@ -264,6 +269,7 @@ async def get_db():
 ```
 
 ### Shared CRUD Operations
+
 ```python
 # The CRUD layer can be shared between versions
 # Only the schemas and endpoints change
@@ -274,7 +280,7 @@ async def get_users_v1():
     users = await crud_users.get_multi(schema_to_select=UserRead)
     return users["data"]
 
-# v2 endpoint  
+# v2 endpoint
 @router.get("/", response_model=PaginatedListResponse[UserReadV2])
 async def get_users_v2():
     users = await crud_users.get_multi(schema_to_select=UserReadV2)
@@ -304,6 +310,7 @@ async def get_api_versions():
 ```
 
 Register it in main.py:
+
 ```python
 # src/app/main.py
 from app.api.versions import router as versions_router
@@ -326,16 +333,16 @@ async def test_v1_users(client: AsyncClient):
     """Test v1 returns simple list"""
     response = await client.get("/api/v1/users/")
     assert response.status_code == 200
-    
+
     data = response.json()
     assert isinstance(data, list)  # v1 returns list
 
-@pytest.mark.asyncio  
+@pytest.mark.asyncio
 async def test_v2_users(client: AsyncClient):
     """Test v2 returns paginated response"""
     response = await client.get("/api/v2/users/")
     assert response.status_code == 200
-    
+
     data = response.json()
     assert "data" in data  # v2 returns paginated response
     assert "total_count" in data
@@ -365,6 +372,7 @@ main_app.mount("/api/v2", v2_app)
 ```
 
 Now you have separate documentation:
+
 - `/api/v1/docs` - v1 documentation
 - `/api/v2/docs` - v2 documentation
 
@@ -393,10 +401,10 @@ API v2 Changes:
 ### 3. Gradual Deprecation
 
 1. Release v2 alongside v1
-2. Add deprecation warnings to v1
-3. Set sunset date for v1
-4. Monitor v1 usage
-5. Remove v1 after sunset date
+1. Add deprecation warnings to v1
+1. Set sunset date for v1
+1. Monitor v1 usage
+1. Remove v1 after sunset date
 
 ### 4. Consistent Patterns
 

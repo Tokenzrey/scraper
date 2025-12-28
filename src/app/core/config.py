@@ -74,7 +74,8 @@ class FirstUserSettings(BaseSettings):
     ADMIN_PASSWORD: str = "!Ch4ng3Th1sP4ssW0rd!"
 
 
-class TestSettings(BaseSettings): ...
+class TestSettings(BaseSettings):
+    ...
 
 
 class RedisCacheSettings(BaseSettings):
@@ -149,8 +150,7 @@ class CORSSettings(BaseSettings):
 
 
 class CaptchaSettings(BaseSettings):
-    """
-    Configuration for Manual CAPTCHA Resolver System
+    """Configuration for Manual CAPTCHA Resolver System.
 
     Redis Keys:
     - captcha:session:{domain} => Cached solver sessions (cookies, UA, proxy)
@@ -218,7 +218,7 @@ class CaptchaSettings(BaseSettings):
 
 
 class TitanStrategyOption(str, Enum):
-    """Default scraping strategy for Titan Worker"""
+    """Default scraping strategy for Titan Worker."""
 
     AUTO = "auto"
     REQUEST = "request"
@@ -226,7 +226,7 @@ class TitanStrategyOption(str, Enum):
 
 
 class TitanTierOption(str, Enum):
-    """Starting tier for escalation"""
+    """Starting tier for escalation."""
 
     TIER_1 = "tier1"  # curl_cffi
     TIER_2 = "tier2"  # Browser + driver.requests.get()
@@ -234,8 +234,7 @@ class TitanTierOption(str, Enum):
 
 
 class TitanSettings(BaseSettings):
-    """
-    Configuration for Titan 3-Tier Scraping Engine
+    """Configuration for Titan 3-Tier Scraping Engine.
 
     Tier System:
     - Tier 1: curl_cffi with TLS fingerprinting (fast, ~50KB)

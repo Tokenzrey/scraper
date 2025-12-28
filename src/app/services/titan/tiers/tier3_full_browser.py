@@ -57,8 +57,7 @@ def get_tier3_executor() -> ThreadPoolExecutor:
 
 
 def _generate_profile_id(url: str, seed: str = "tier3") -> str:
-    """
-    Generate consistent profile ID for URL domain.
+    """Generate consistent profile ID for URL domain.
 
     Uses HASHED approach - same domain always gets same profile,
     enabling session persistence and consistent fingerprinting.
@@ -68,7 +67,145 @@ def _generate_profile_id(url: str, seed: str = "tier3") -> str:
     return hashlib.md5(hash_input.encode()).hexdigest()[:16]
 
 
-def _sync_full_browser_fetch(  # noqa: C901
+# Challenge indicators for secondary validation
+_STRONG_CHALLENGE_INDICATORS = [
+    "checking your browser",
+    "turnstile",
+    "challenge-form",
+    "challenge-running",
+    "cf-browser-verification",
+]
+
+_SECONDARY_CHALLENGE_INDICATORS = [
+    # Cloudflare patterns
+    "checking your browser",
+    "cf-browser-verification",
+    "cf_chl_opt",
+    "turnstile",
+    "just a moment",
+    "ray id:",
+    "cloudflare",
+    "challenge-form",
+    "challenge-running",
+    # Bot detection patterns (less aggressive)
+    "please verify you are human",
+    "access denied",
+    "blocked",
+    "bot detected",
+    "automated access",
+    "unusual traffic",
+    # Error patterns
+    "page not found",
+    "404 error",
+    "server error",
+    "something went wrong",
+]
+
+
+def _validate_content_for_challenges(
+    content: str,
+    current_url: str,
+    execution_time_ms: float,
+    effective_profile_id: str,
+    bypass_cf: bool,
+    human_mode: bool,
+) -> dict[str, Any] | None:
+    """Validate content for challenges and return result dict if challenge detected.
+
+    Returns None if content is valid, otherwise returns a result dict with error info.
+    """
+    page_lower = content.lower()
+
+    # Only flag as false success if MULTIPLE indicators are present or strong indicators
+    challenge_count = sum(1 for ind in _SECONDARY_CHALLENGE_INDICATORS if ind in page_lower)
+    has_strong_indicator = any(ind in page_lower for ind in _STRONG_CHALLENGE_INDICATORS)
+
+    if has_strong_indicator:
+        print("[TIER3] !!! SECONDARY VALIDATION FAILED: Strong challenge indicator detected")
+        return {
+            "success": False,
+            "error": "Cloudflare challenge still active - may require manual CAPTCHA",
+            "error_type": "captcha_required",
+            "content": content,
+            "execution_time_ms": execution_time_ms,
+        }
+    elif challenge_count >= 3:
+        print(f"[TIER3] !!! SECONDARY VALIDATION WARNING: {challenge_count} weak indicators")
+        return {
+            "success": True,
+            "content": content,
+            "url": current_url,
+            "execution_time_ms": execution_time_ms,
+            "method": "google_get" if bypass_cf else "standard",
+            "profile_id": effective_profile_id,
+            "human_mode": human_mode,
+            "warning": f"Possible false success ({challenge_count} challenge indicators detected)",
+        }
+
+    return None  # Content is valid
+
+
+def _check_navigation_error_type(error_str: str) -> dict[str, Any] | None:
+    """Check if navigation error is a DNS or connection error that should fail fast.
+
+    Returns error result dict if should fail fast, None otherwise.
+    """
+    dns_indicators = ["no such host", "name not resolved", "dns", "nxdomain"]
+    connection_indicators = ["connection refused", "connection reset", "no route"]
+
+    if any(ind in error_str for ind in dns_indicators):
+        print("[TIER3] !!! DNS ERROR - FAIL FAST")
+        return {
+            "success": False,
+            "error": "DNS Error: Host not found",
+            "error_type": "dns_error",
+            "should_escalate": False,
+        }
+
+    if any(ind in error_str for ind in connection_indicators):
+        print("[TIER3] !!! CONNECTION REFUSED - FAIL FAST")
+        return {
+            "success": False,
+            "error": "Connection Refused: Service down",
+            "error_type": "connection_refused",
+            "should_escalate": False,
+        }
+
+    return None
+
+
+# Cloudflare challenge indicators for initial bypass wait
+_CF_CHALLENGE_INDICATORS = [
+    "checking your browser",
+    "cf-browser-verification",
+    "turnstile",
+    "just a moment",
+    "cf_chl_opt",
+    "ray id:",
+]
+
+
+def _is_cloudflare_challenge_page(page_html: str) -> bool:
+    """Check if the page content indicates a Cloudflare challenge."""
+    page_lower = page_html.lower()
+    return any(ind in page_lower for ind in _CF_CHALLENGE_INDICATORS)
+
+
+def _detect_http_error_in_page(content: str) -> str | None:
+    """Detect HTTP error patterns in page content.
+
+    Returns:
+        '429' if rate limited, '400' if bad request, None otherwise
+    """
+    page_lower = content.lower()
+    if "429" in content and ("rate" in page_lower or "limit" in page_lower):
+        return "429"
+    if "400" in content and "bad request" in page_lower:
+        return "400"
+    return None
+
+
+def _sync_full_browser_fetch(
     url: str,
     headless: bool,
     block_images: bool,
@@ -81,8 +218,7 @@ def _sync_full_browser_fetch(  # noqa: C901
     enable_human_mode: bool = True,
     max_retries: int = 2,
 ) -> dict[str, Any]:
-    """
-    Synchronous Tier 3 fetch with full browser rendering and best practices.
+    """Synchronous Tier 3 fetch with full browser rendering and best practices.
 
     Key techniques:
     - driver.google_get(bypass_cloudflare=True): Navigate through Google
@@ -148,9 +284,7 @@ def _sync_full_browser_fetch(  # noqa: C901
             proxy=proxy,
         )
         def full_browser_fetch(driver: Driver, data: dict[str, Any]) -> dict[str, Any]:
-            """
-            Full browser rendering with google_get bypass and human mode.
-            """
+            """Full browser rendering with google_get bypass and human mode."""
             target_url = data["url"]
             selector = data.get("wait_selector")
             selector_timeout = data.get("wait_timeout", 10)
@@ -198,22 +332,10 @@ def _sync_full_browser_fetch(  # noqa: C901
                         # by waiting for a success indicator element
                         print("[TIER3] Waiting for Cloudflare bypass to complete...")
                         try:
-                            # Wait for body that is NOT a Cloudflare challenge page
-                            # Cloudflare pages typically have cf-* classes or specific content
                             driver.sleep(3)  # Initial wait for challenge resolution
 
                             # Check if we're still on a challenge page
-                            challenge_check_content = driver.page_html.lower()
-                            challenge_indicators = [
-                                "checking your browser",
-                                "cf-browser-verification",
-                                "turnstile",
-                                "just a moment",
-                                "cf_chl_opt",
-                                "ray id:",
-                            ]
-
-                            still_challenged = any(ind in challenge_check_content for ind in challenge_indicators)
+                            still_challenged = _is_cloudflare_challenge_page(driver.page_html)
 
                             if still_challenged:
                                 print("[TIER3] !!! Still on challenge page, waiting longer...")
@@ -221,10 +343,7 @@ def _sync_full_browser_fetch(  # noqa: C901
                                 # Wait longer for Turnstile to resolve (up to 15s more)
                                 for wait_round in range(5):
                                     driver.sleep(3)
-                                    challenge_check_content = driver.page_html.lower()
-                                    still_challenged = any(
-                                        ind in challenge_check_content for ind in challenge_indicators
-                                    )
+                                    still_challenged = _is_cloudflare_challenge_page(driver.page_html)
                                     if not still_challenged:
                                         print(f"[TIER3] Challenge resolved after {(wait_round+1)*3}s additional wait")
                                         break
@@ -281,94 +400,35 @@ def _sync_full_browser_fetch(  # noqa: C901
 
                     # === Check for HTTP-like errors in page ===
                     # Some sites return error pages with 200 status
-                    page_lower = content.lower()
-
-                    # HTTP 429 pattern (rate limited)
-                    if "429" in content and ("rate" in page_lower or "limit" in page_lower):
+                    http_error = _detect_http_error_in_page(content)
+                    if http_error == "429" and attempt < retries - 1:
                         print("[TIER3] !!! Detected 429 Rate Limit in page")
-                        if attempt < retries - 1:
-                            print("[TIER3] Sleeping 1.13s before retry...")
-                            logger.warning(f"Tier3 rate limited, sleeping 1.13s (attempt {attempt + 1})")
-                            driver.sleep(1.13)  # Botasaurus recommended
-                            continue
-
-                    # HTTP 400 pattern (bad request)
-                    if "400" in content and "bad request" in page_lower:
+                        print("[TIER3] Sleeping 1.13s before retry...")
+                        logger.warning(f"Tier3 rate limited, sleeping 1.13s (attempt {attempt + 1})")
+                        driver.sleep(1.13)  # Botasaurus recommended
+                        continue
+                    if http_error == "400" and attempt < retries - 1:
                         print("[TIER3] !!! Detected 400 Bad Request in page")
-                        if attempt < retries - 1:
-                            print("[TIER3] Clearing cookies and retrying...")
-                            logger.warning(f"Tier3 bad request, clearing cookies (attempt {attempt + 1})")
-                            driver.delete_cookies()
-                            driver.short_random_sleep()
-                            continue
+                        print("[TIER3] Clearing cookies and retrying...")
+                        logger.warning(f"Tier3 bad request, clearing cookies (attempt {attempt + 1})")
+                        driver.delete_cookies()
+                        driver.short_random_sleep()
+                        continue
 
                     execution_inner = (time.time() - start_inner) * 1000
 
                     # === SECONDARY VALIDATION: Detect false success ===
-                    # Even if we got here, the content might still be:
-                    # 1. A challenge page that didn't get detected
-                    # 2. An error page disguised as success
-                    # 3. A "subscribe/paywall" block
-
-                    secondary_challenge_indicators = [
-                        # Cloudflare patterns
-                        "checking your browser",
-                        "cf-browser-verification",
-                        "cf_chl_opt",
-                        "turnstile",
-                        "just a moment",
-                        "ray id:",
-                        "cloudflare",
-                        "challenge-form",
-                        "challenge-running",
-                        # Bot detection patterns (less aggressive)
-                        "please verify you are human",
-                        "access denied",
-                        "blocked",
-                        "bot detected",
-                        "automated access",
-                        "unusual traffic",
-                        # Error patterns
-                        "page not found",
-                        "404 error",
-                        "server error",
-                        "something went wrong",
-                    ]
-
-                    # Only flag as false success if MULTIPLE indicators are present
-                    # or if strong indicators are present
-                    challenge_count = sum(1 for ind in secondary_challenge_indicators if ind in page_lower)
-                    strong_indicators = [
-                        "checking your browser",
-                        "turnstile",
-                        "challenge-form",
-                        "challenge-running",
-                        "cf-browser-verification",
-                    ]
-                    has_strong_indicator = any(ind in page_lower for ind in strong_indicators)
-
-                    if has_strong_indicator:
-                        print("[TIER3] !!! SECONDARY VALIDATION FAILED: Strong challenge indicator detected")
-                        return {
-                            "success": False,
-                            "error": "Cloudflare challenge still active - may require manual CAPTCHA",
-                            "error_type": "captcha_required",
-                            "content": content,  # Include content for debugging
-                            "execution_time_ms": execution_inner,
-                        }
-                    elif challenge_count >= 3:
-                        print(f"[TIER3] !!! SECONDARY VALIDATION WARNING: {challenge_count} weak indicators")
-                        # Return as success but flag it
-                        return {
-                            "success": True,
-                            "content": content,
-                            "url": current_url,
-                            "execution_time_ms": execution_inner,
-                            "method": "google_get" if bypass_cf else "standard",
-                            "profile_id": effective_profile_id,
-                            "human_mode": human_mode,
-                            "warning": f"Possible false success ({challenge_count} challenge indicators detected)",
-                        }
+                    # Use helper function to reduce cyclomatic complexity
+                    challenge_result = _validate_content_for_challenges(
+                        content=content,
+                        current_url=current_url,
+                        execution_time_ms=execution_inner,
+                        effective_profile_id=effective_profile_id,
+                        bypass_cf=bypass_cf,
+                        human_mode=human_mode,
+                    )
+                    if challenge_result is not None:
+                        return challenge_result
 
                     print("[TIER3] SUCCESS! Secondary validation passed. Returning content")
                     return {
@@ -386,35 +446,9 @@ def _sync_full_browser_fetch(  # noqa: C901
                     print(f"[TIER3] !!! Navigation error: {nav_error}")
 
                     # === FAIL-FAST: Detect DNS/Connection errors ===
-                    dns_indicators = [
-                        "no such host",
-                        "name not resolved",
-                        "dns",
-                        "nxdomain",
-                    ]
-                    connection_indicators = [
-                        "connection refused",
-                        "connection reset",
-                        "no route",
-                    ]
-
-                    if any(ind in error_str for ind in dns_indicators):
-                        print("[TIER3] !!! DNS ERROR - FAIL FAST")
-                        return {
-                            "success": False,
-                            "error": f"DNS Error: Host not found ({nav_error})",
-                            "error_type": "dns_error",
-                            "should_escalate": False,
-                        }
-
-                    if any(ind in error_str for ind in connection_indicators):
-                        print("[TIER3] !!! CONNECTION REFUSED - FAIL FAST")
-                        return {
-                            "success": False,
-                            "error": f"Connection Refused: Service down ({nav_error})",
-                            "error_type": "connection_refused",
-                            "should_escalate": False,
-                        }
+                    fail_fast_result = _check_navigation_error_type(error_str)
+                    if fail_fast_result is not None:
+                        return fail_fast_result
 
                     if attempt < retries - 1:
                         logger.warning(f"Tier3 navigation error (attempt {attempt + 1}): {nav_error}")
@@ -532,8 +566,7 @@ class Tier3FullBrowserExecutor(TierExecutor):
         url: str,
         options: "ScrapeOptions | None" = None,
     ) -> TierResult:
-        """
-        Execute full browser rendering with Cloudflare bypass.
+        """Execute full browser rendering with Cloudflare bypass.
 
         Uses UserAgent.HASHED, WindowSize.HASHED, human_mode,
         and google_get for maximum stealth.

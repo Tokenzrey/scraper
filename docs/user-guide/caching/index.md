@@ -7,13 +7,14 @@ The boilerplate includes a comprehensive caching system built on Redis that impr
 The caching system provides multiple layers of optimization:
 
 - **Server-Side Caching**: Redis-based caching with automatic invalidation
-- **Client-Side Caching**: HTTP cache headers for browser optimization  
+- **Client-Side Caching**: HTTP cache headers for browser optimization
 - **Cache Invalidation**: Smart invalidation strategies for data consistency
 
 ## Quick Example
 
 ```python
 from app.core.utils.cache import cache
+
 
 @router.get("/posts/{post_id}")
 @cache(key_prefix="post_cache", expiration=3600)
@@ -25,12 +26,14 @@ async def get_post(request: Request, post_id: int):
 ## Architecture
 
 ### Server-Side Caching
+
 - **Redis Integration**: Connection pooling and async operations
 - **Decorator-Based**: Simple `@cache` decorator for endpoints
 - **Smart Invalidation**: Automatic cache clearing on data changes
 - **Pattern Matching**: Bulk invalidation using Redis patterns
 
-### Client-Side Caching  
+### Client-Side Caching
+
 - **HTTP Headers**: Cache-Control headers for browser caching
 - **Middleware**: Automatic header injection
 - **Configurable TTL**: Customizable cache duration
@@ -38,16 +41,19 @@ async def get_post(request: Request, post_id: int):
 ## Key Features
 
 **Automatic Cache Management**
+
 - Caches GET requests automatically
 - Invalidates cache on PUT/POST/DELETE operations
 - Supports complex invalidation patterns
 
 **Flexible Configuration**
+
 - Per-endpoint expiration times
 - Custom cache key generation
 - Environment-specific Redis settings
 
 **Performance Optimization**
+
 - Connection pooling for Redis
 - Efficient key pattern matching
 - Minimal overhead for cache operations
@@ -55,8 +61,8 @@ async def get_post(request: Request, post_id: int):
 ## Getting Started
 
 1. **[Redis Cache](redis-cache.md)** - Server-side caching with Redis
-2. **[Client Cache](client-cache.md)** - Browser caching with HTTP headers  
-3. **[Cache Strategies](cache-strategies.md)** - Invalidation patterns and best practices
+1. **[Client Cache](client-cache.md)** - Browser caching with HTTP headers
+1. **[Cache Strategies](cache-strategies.md)** - Invalidation patterns and best practices
 
 Each section provides detailed implementation examples and configuration options for building a robust caching layer.
 
@@ -74,4 +80,4 @@ The caching system automatically handles connection pooling and provides efficie
 
 ## Next Steps
 
-Start with **[Redis Cache](redis-cache.md)** to understand the core server-side caching implementation, then explore client-side caching and advanced invalidation strategies. 
+Start with **[Redis Cache](redis-cache.md)** to understand the core server-side caching implementation, then explore client-side caching and advanced invalidation strategies.

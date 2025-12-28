@@ -15,15 +15,15 @@ The admin interface is configured in `src/app/admin/views.py`:
 ```python
 def register_admin_views(admin: CRUDAdmin) -> None:
     """Register all models and their schemas with the admin interface."""
-    
+
     # User model with password handling
     password_transformer = PasswordTransformer(
         password_field="password",
-        hashed_field="hashed_password", 
+        hashed_field="hashed_password",
         hash_function=get_password_hash,
         required_fields=["name", "username", "email"],
     )
-    
+
     admin.add_view(
         model=User,
         create_schema=UserCreate,
@@ -36,14 +36,14 @@ def register_admin_views(admin: CRUDAdmin) -> None:
         model=Tier,
         create_schema=TierCreate,
         update_schema=TierUpdate,
-        allowed_actions={"view", "create", "update", "delete"}
+        allowed_actions={"view", "create", "update", "delete"},
     )
 
     admin.add_view(
         model=Post,
         create_schema=PostCreateAdmin,  # Special admin-only schema
         update_schema=PostUpdate,
-        allowed_actions={"view", "create", "update", "delete"}
+        allowed_actions={"view", "create", "update", "delete"},
     )
 ```
 
@@ -67,16 +67,17 @@ from datetime import datetime
 
 from ..core.db.database import Base
 
+
 class Product(Base):
     __tablename__ = "products"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    
+
     # Foreign key relationship (similar to Post.created_by_user_id)
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
 ```
@@ -91,12 +92,14 @@ from decimal import Decimal
 from pydantic import BaseModel, Field
 from typing import Annotated
 
+
 class ProductCreate(BaseModel):
     name: Annotated[str, Field(min_length=2, max_length=100)]
     description: Annotated[str | None, Field(max_length=1000, default=None)]
     price: Annotated[Decimal, Field(gt=0, le=999999.99)]
     is_active: Annotated[bool, Field(default=True)]
     category_id: Annotated[int, Field(gt=0)]
+
 
 class ProductUpdate(BaseModel):
     name: Annotated[str | None, Field(min_length=2, max_length=100, default=None)]
@@ -115,17 +118,18 @@ Add your model to `src/app/admin/views.py`:
 from ..models.product import Product
 from ..schemas.product import ProductCreate, ProductUpdate
 
+
 def register_admin_views(admin: CRUDAdmin) -> None:
     """Register all models and their schemas with the admin interface."""
-    
+
     # ... existing model registrations ...
-    
+
     # Add your new model
     admin.add_view(
         model=Product,
         create_schema=ProductCreate,
         update_schema=ProductUpdate,
-        allowed_actions={"view", "create", "update", "delete"}
+        allowed_actions={"view", "create", "update", "delete"},
     )
 ```
 
@@ -165,9 +169,9 @@ The User model shows how to handle sensitive fields like passwords:
 ```python
 # Password transformer for secure password handling
 password_transformer = PasswordTransformer(
-    password_field="password",         # Field in the schema
-    hashed_field="hashed_password",    # Field in the database model  
-    hash_function=get_password_hash,   # Your app's hash function
+    password_field="password",  # Field in the schema
+    hashed_field="hashed_password",  # Field in the database model
+    hash_function=get_password_hash,  # Your app's hash function
     required_fields=["name", "username", "email"],  # Fields required for user creation
 )
 
@@ -195,7 +199,7 @@ admin.add_view(
     model=Tier,
     create_schema=TierCreate,
     update_schema=TierUpdate,
-    allowed_actions={"view", "create", "update", "delete"}  # Full CRUD
+    allowed_actions={"view", "create", "update", "delete"},  # Full CRUD
 )
 ```
 
@@ -217,11 +221,12 @@ class PostCreateAdmin(BaseModel):
     created_by_user_id: int  # Required in admin, but not in API
     media_url: Annotated[str | None, Field(pattern=r"^(https?|ftp)://[^\s/$.?#].[^\s]*$", default=None)]
 
+
 admin.add_view(
     model=Post,
     create_schema=PostCreateAdmin,  # Admin-specific schema
-    update_schema=PostUpdate,       # Regular update schema works fine
-    allowed_actions={"view", "create", "update", "delete"}
+    update_schema=PostUpdate,  # Regular update schema works fine
+    allowed_actions={"view", "create", "update", "delete"},
 )
 ```
 
@@ -239,24 +244,12 @@ You can control how fields appear in the admin interface by modifying your schem
 
 ```python
 class ProductCreateAdmin(BaseModel):
-    name: Annotated[str, Field(
-        min_length=2, 
-        max_length=100,
-        description="Product name as shown to customers"
-    )]
-    description: Annotated[str | None, Field(
-        max_length=1000,
-        description="Detailed product description (supports HTML)"
-    )]
-    price: Annotated[Decimal, Field(
-        gt=0, 
-        le=999999.99,
-        description="Price in USD (up to 2 decimal places)"
-    )]
-    category_id: Annotated[int, Field(
-        gt=0,
-        description="Product category (creates dropdown automatically)"
-    )]
+    name: Annotated[str, Field(min_length=2, max_length=100, description="Product name as shown to customers")]
+    description: Annotated[
+        str | None, Field(max_length=1000, description="Detailed product description (supports HTML)")
+    ]
+    price: Annotated[Decimal, Field(gt=0, le=999999.99, description="Price in USD (up to 2 decimal places)")]
+    category_id: Annotated[int, Field(gt=0, description="Product category (creates dropdown automatically)")]
 ```
 
 ### Restricting Actions
@@ -269,7 +262,7 @@ admin.add_view(
     model=AuditLog,
     create_schema=None,  # No creation allowed
     update_schema=None,  # No updates allowed
-    allowed_actions={"view"}  # Only viewing
+    allowed_actions={"view"},  # Only viewing
 )
 
 # No deletion allowed (users, critical data)
@@ -277,7 +270,7 @@ admin.add_view(
     model=User,
     create_schema=UserCreate,
     update_schema=UserUpdate,
-    allowed_actions={"view", "create", "update"}  # No delete
+    allowed_actions={"view", "create", "update"},  # No delete
 )
 ```
 
@@ -296,12 +289,13 @@ class ProductAdminView(BaseModel):
     is_active: bool
     # Exclude complex fields like large text or binary data
 
+
 admin.add_view(
     model=Product,
     create_schema=ProductCreate,
     update_schema=ProductUpdate,
     select_schema=ProductAdminView,  # Controls what's shown in lists
-    allowed_actions={"view", "create", "update", "delete"}
+    allowed_actions={"view", "create", "update", "delete"},
 )
 ```
 
@@ -319,17 +313,19 @@ class Category(Base):
     name: Mapped[str] = mapped_column(String(50), unique=True)
     description: Mapped[str | None] = mapped_column(Text)
 
+
 # Simple schemas
 class CategoryCreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=50)
     description: str | None = None
+
 
 # Registration
 admin.add_view(
     model=Category,
     create_schema=CategoryCreate,
     update_schema=CategoryCreate,  # Same schema for create and update
-    allowed_actions={"view", "create", "update", "delete"}
+    allowed_actions={"view", "create", "update", "delete"},
 )
 ```
 
@@ -346,6 +342,7 @@ class BlogPost(Base):
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     published_at: Mapped[datetime | None] = mapped_column(DateTime)
 
+
 # Admin schema with required author
 class BlogPostCreateAdmin(BaseModel):
     title: str = Field(..., min_length=5, max_length=200)
@@ -353,11 +350,12 @@ class BlogPostCreateAdmin(BaseModel):
     author_id: int = Field(..., gt=0)  # Admin must specify author
     published_at: datetime | None = None
 
+
 admin.add_view(
     model=BlogPost,
     create_schema=BlogPostCreateAdmin,
     update_schema=BlogPostUpdate,
-    allowed_actions={"view", "create", "update", "delete"}
+    allowed_actions={"view", "create", "update", "delete"},
 )
 ```
 
@@ -373,12 +371,13 @@ class SystemSetting(Base):
     value: Mapped[str] = mapped_column(Text)
     description: Mapped[str | None] = mapped_column(Text)
 
+
 # Restricted actions - settings shouldn't be deleted
 admin.add_view(
     model=SystemSetting,
     create_schema=SystemSettingCreate,
     update_schema=SystemSettingUpdate,
-    allowed_actions={"view", "create", "update"}  # No delete
+    allowed_actions={"view", "create", "update"},  # No delete
 )
 ```
 
@@ -389,10 +388,10 @@ After adding models to the admin interface, test them thoroughly:
 ### Manual Testing
 
 1. **Access**: Navigate to `/admin` and log in
-2. **Create**: Try creating new records with valid and invalid data
-3. **Edit**: Test updating existing records
-4. **Validation**: Verify that your schema validation works correctly
-5. **Relationships**: Test foreign key relationships (dropdowns should populate)
+1. **Create**: Try creating new records with valid and invalid data
+1. **Edit**: Test updating existing records
+1. **Validation**: Verify that your schema validation works correctly
+1. **Relationships**: Test foreign key relationships (dropdowns should populate)
 
 ### Development Testing
 
@@ -400,6 +399,7 @@ After adding models to the admin interface, test them thoroughly:
 # Test your admin configuration
 # src/scripts/test_admin.py
 from app.admin.initialize import create_admin_interface
+
 
 def test_admin_setup():
     admin = create_admin_interface()
@@ -410,6 +410,7 @@ def test_admin_setup():
             print(f"  - {model_name}")
     else:
         print("Admin interface disabled")
+
 
 if __name__ == "__main__":
     test_admin_setup()
@@ -432,7 +433,7 @@ admin.add_view(
     model=Product,
     create_schema=ProductCreate,
     update_schema=ProductUpdate,
-    allowed_actions={"view", "create", "update", "delete"}  # Added delete
+    allowed_actions={"view", "create", "update", "delete"},  # Added delete
 )
 ```
 
@@ -442,8 +443,8 @@ admin.add_view(
 # Switch to admin-specific schemas
 admin.add_view(
     model=User,
-    create_schema=UserCreateAdmin,    # New admin schema
-    update_schema=UserUpdateAdmin,    # New admin schema  
+    create_schema=UserCreateAdmin,  # New admin schema
+    update_schema=UserUpdateAdmin,  # New admin schema
     allowed_actions={"view", "create", "update"},
     password_transformer=password_transformer,
 )
@@ -461,6 +462,7 @@ class UserListView(BaseModel):
     email: str
     is_active: bool
 
+
 admin.add_view(
     model=User,
     create_schema=UserCreate,
@@ -477,4 +479,4 @@ With your models successfully added to the admin interface, you're ready to:
 
 1. **[User Management](user-management.md)** - Learn how to manage admin users and implement security best practices
 
-Your models are now fully integrated into the admin interface and ready for production use. The admin panel will automatically handle form generation, validation, and database operations based on your model and schema definitions. 
+Your models are now fully integrated into the admin interface and ready for production use. The admin panel will automatically handle form generation, validation, and database operations based on your model and schema definitions.

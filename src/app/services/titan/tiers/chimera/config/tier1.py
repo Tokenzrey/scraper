@@ -40,11 +40,9 @@ class TLSPermutationsConfig(BaseModel):
 
 
 class FingerprintProfileConfig(BaseModel):
-    """
-    Browser fingerprint impersonation configuration.
+    """Browser fingerprint impersonation configuration.
 
-    Controls TLS fingerprinting (JA3/JA4) and HTTP/2 behavior
-    specific to Tier 1 curl_cffi operations.
+    Controls TLS fingerprinting (JA3/JA4) and HTTP/2 behavior specific to Tier 1 curl_cffi operations.
     """
 
     impersonate: str = "chrome120"
@@ -59,9 +57,7 @@ class FingerprintProfileConfig(BaseModel):
     )
     os_platform: Literal["windows", "macos", "linux", "random"] = "random"
     os_pool: list[str] = Field(default_factory=lambda: ["windows", "macos", "linux"])
-    tls_permutations: TLSPermutationsConfig = Field(
-        default_factory=TLSPermutationsConfig
-    )
+    tls_permutations: TLSPermutationsConfig = Field(default_factory=TLSPermutationsConfig)
 
     @field_validator("impersonate")
     @classmethod
@@ -69,9 +65,7 @@ class FingerprintProfileConfig(BaseModel):
         if v not in VALID_IMPERSONATE_PROFILES:
             import logging
 
-            logging.getLogger(__name__).warning(
-                f"Unknown impersonate profile '{v}', may not be supported"
-            )
+            logging.getLogger(__name__).warning(f"Unknown impersonate profile '{v}', may not be supported")
         return v
 
     def get_random_impersonate(self) -> str:
@@ -99,9 +93,7 @@ class RetryConfig(BaseModel):
     max_retries: int = 3
     backoff_factor: float = 1.5
     backoff_max: float = 30.0
-    codes_to_retry: list[int] = Field(
-        default_factory=lambda: [429, 500, 502, 503, 504]
-    )
+    codes_to_retry: list[int] = Field(default_factory=lambda: [429, 500, 502, 503, 504])
 
     def calculate_backoff(self, attempt: int) -> float:
         """Calculate backoff delay for a given attempt number."""
@@ -149,8 +141,7 @@ class HeadersConfig(BaseModel):
     static: dict[str, str] = Field(
         default_factory=lambda: {
             "Accept": (
-                "text/html,application/xhtml+xml,application/xml;q=0.9,"
-                "image/avif,image/webp,image/apng,*/*;q=0.8"
+                "text/html,application/xhtml+xml,application/xml;q=0.9," "image/avif,image/webp,image/apng,*/*;q=0.8"
             ),
             "Accept-Language": "en-US,en;q=0.9",
             "Accept-Encoding": "gzip, deflate, br",
@@ -178,9 +169,7 @@ class ChallengeDetectionConfig(BaseModel):
             "turnstile",
         ]
     )
-    captcha_signatures: list[str] = Field(
-        default_factory=lambda: ["captcha", "recaptcha", "hcaptcha"]
-    )
+    captcha_signatures: list[str] = Field(default_factory=lambda: ["captcha", "recaptcha", "hcaptcha"])
     bot_detection_signatures: list[str] = Field(
         default_factory=lambda: [
             "bot detected",
@@ -191,19 +180,13 @@ class ChallengeDetectionConfig(BaseModel):
 
 
 class Tier1Config(BaseModel):
-    """
-    Tier 1 specific configuration.
+    """Tier 1 specific configuration.
 
-    Configuration specific to curl_cffi based data acquisition.
-    Includes fingerprint profiles, network settings, headers, and
-    challenge detection patterns.
+    Configuration specific to curl_cffi based data acquisition. Includes fingerprint profiles, network settings,
+    headers, and challenge detection patterns.
     """
 
-    fingerprint_profile: FingerprintProfileConfig = Field(
-        default_factory=FingerprintProfileConfig
-    )
+    fingerprint_profile: FingerprintProfileConfig = Field(default_factory=FingerprintProfileConfig)
     network: NetworkConfig = Field(default_factory=NetworkConfig)
     headers: HeadersConfig = Field(default_factory=HeadersConfig)
-    challenge_detection: ChallengeDetectionConfig = Field(
-        default_factory=ChallengeDetectionConfig
-    )
+    challenge_detection: ChallengeDetectionConfig = Field(default_factory=ChallengeDetectionConfig)

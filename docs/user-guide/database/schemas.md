@@ -7,8 +7,8 @@ This section explains how Pydantic schemas handle data validation, serialization
 Schemas serve three main purposes:
 
 1. **Input Validation** - Validate incoming API request data
-2. **Output Serialization** - Format database data for API responses  
-3. **API Contracts** - Define clear interfaces between frontend and backend
+1. **Output Serialization** - Format database data for API responses
+1. **API Contracts** - Define clear interfaces between frontend and backend
 
 ### Schema File Organization
 
@@ -40,7 +40,7 @@ from ..core.schemas import PersistentDeletion, TimestampSchema, UUIDSchema
 # Base schema with common fields
 class UserBase(BaseModel):
     name: Annotated[
-        str, 
+        str,
         Field(
             min_length=2,
             max_length=30,
@@ -77,17 +77,17 @@ class UserRead(BaseModel):
     name: Annotated[
         str,
         Field(
-            min_length=2, 
-            max_length=30, 
+            min_length=2,
+            max_length=30,
             examples=["User Userson"]
         )
     ]
     username: Annotated[
-        str, 
+        str,
         Field(
-            min_length=2, 
-            max_length=20, 
-            pattern=r"^[a-z0-9]+$", 
+            min_length=2,
+            max_length=20,
+            pattern=r"^[a-z0-9]+$",
             examples=["userson"]
         )
     ]
@@ -121,24 +121,24 @@ class UserUpdate(BaseModel):
     name: Annotated[
         str | None,
         Field(
-            min_length=2, 
-            max_length=30, 
+            min_length=2,
+            max_length=30,
             examples=["User Userberg"],
             default=None
         )
     ]
     username: Annotated[
-        str | None, 
+        str | None,
         Field(
             min_length=2,
-            max_length=20, 
-            pattern=r"^[a-z0-9]+$", 
-            examples=["userberg"], 
+            max_length=20,
+            pattern=r"^[a-z0-9]+$",
+            examples=["userberg"],
             default=None
         )
     ]
     email: Annotated[
-        EmailStr | None, 
+        EmailStr | None,
         Field(
             examples=["user.userberg@example.com"],
             default=None
@@ -182,7 +182,7 @@ class UserRestoreDeleted(BaseModel):
 **Field Validation**: Uses `Annotated[type, Field(...)]` for validation rules. `Field` parameters include:
 
 - `min_length/max_length` - String length constraints
-- `gt/ge/lt/le` - Numeric constraints  
+- `gt/ge/lt/le` - Numeric constraints
 - `pattern` - Pattern matching (regex)
 - `default` - Default values
 
@@ -200,16 +200,16 @@ class UserRestoreDeleted(BaseModel):
 # Common fields shared across operations
 class PostBase(BaseModel):
     title: Annotated[
-        str, 
+        str,
         Field(
-            min_length=1, 
+            min_length=1,
             max_length=100
         )
     ]
     content: Annotated[
-        str, 
+        str,
         Field(
-            min_length=1, 
+            min_length=1,
             max_length=10000
         )
     ]
@@ -220,7 +220,7 @@ class PostCreate(PostBase):
 
 class PostRead(PostBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     created_at: datetime
     created_by_user_id: int
@@ -234,17 +234,17 @@ class PostRead(PostBase):
 ```python
 class PostUpdate(BaseModel):
     title: Annotated[
-        str | None, 
+        str | None,
         Field(
-            min_length=1, 
+            min_length=1,
             max_length=100,
             default=None
         )
     ]
     content: Annotated[
-        str | None, 
+        str | None,
         Field(
-            min_length=1, 
+            min_length=1,
             max_length=10000,
             default=None
         )
@@ -263,7 +263,7 @@ class PostWithUser(PostRead):
 # Alternative: Custom nested schema
 class PostAuthor(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     username: str
     # Only include fields needed for this context
@@ -284,14 +284,14 @@ from pydantic import field_validator, model_validator
 class UserCreateWithConfirm(UserBase):
     password: str
     confirm_password: str
-    
+
     @field_validator('username')
     @classmethod
     def validate_username(cls, v):
         if v.lower() in ['admin', 'root', 'system']:
             raise ValueError('Username not allowed')
         return v.lower()  # Normalize to lowercase
-    
+
     @model_validator(mode='after')
     def validate_passwords_match(self):
         if self.password != self.confirm_password:
@@ -310,14 +310,14 @@ from pydantic import computed_field
 
 class UserReadWithComputed(UserRead):
     created_at: datetime  # Would need to be added to actual UserRead
-    
+
     @computed_field
     @property
     def age_days(self) -> int:
         return (datetime.utcnow() - self.created_at).days
-    
+
     @computed_field
-    @property  
+    @property
     def display_name(self) -> str:
         return f"@{self.username}"
 ```
@@ -332,7 +332,7 @@ class PostCreate(BaseModel):
     content: str
     category: Optional[str] = None
     is_premium: bool = False
-    
+
     @model_validator(mode='after')
     def validate_premium_content(self):
         if self.is_premium and not self.category:
@@ -360,15 +360,15 @@ class UserRead(BaseModel):
 ```python
 class UserResponse(BaseModel):
     user_id: Annotated[
-        int, 
+        int,
         Field(alias="id")
     ]
     username: str
     email_address: Annotated[
-        str, 
+        str,
         Field(alias="email")
     ]
-    
+
     model_config = ConfigDict(populate_by_name=True)
 ```
 
@@ -412,7 +412,7 @@ async def get_users(page: int = 1, items_per_page: int = 10):
     #   "data": [UserRead, ...],
     #   "total_count": 150,
     #   "has_more": true,
-    #   "page": 1, 
+    #   "page": 1,
     #   "items_per_page": 10
     # }
 
@@ -422,7 +422,7 @@ async def get_user(user_id: int):
     # Returns single UserRead object:
     # {
     #   "id": 1,
-    #   "name": "User Userson", 
+    #   "name": "User Userson",
     #   "username": "userson",
     #   "email": "user.userson@example.com",
     #   "profile_image_url": "https://...",
@@ -436,7 +436,7 @@ async def get_user(user_id: int):
 class ErrorResponse(BaseModel):
     detail: str
     error_code: Optional[str] = None
-    
+
 class ValidationErrorResponse(BaseModel):
     detail: str
     errors: list[dict]  # Pydantic validation errors
@@ -466,10 +466,10 @@ async def create_user(user_data: UserCreate):
 ### Step-by-Step Process
 
 1. **Create schema file** in `src/app/schemas/your_model.py`
-2. **Define base schema** with common fields
-3. **Create operation-specific schemas** (Create, Read, Update, Delete)
-4. **Add validation rules** as needed
-5. **Import in __init__.py** for easy access
+1. **Define base schema** with common fields
+1. **Create operation-specific schemas** (Create, Read, Update, Delete)
+1. **Add validation rules** as needed
+1. **Import in __init__.py** for easy access
 
 ### Example: Category Schemas
 
@@ -481,14 +481,14 @@ from pydantic import BaseModel, Field, ConfigDict
 
 class CategoryBase(BaseModel):
     name: Annotated[
-        str, 
+        str,
         Field(
-            min_length=1, 
+            min_length=1,
             max_length=50
         )
     ]
     description: Annotated[
-        str | None, 
+        str | None,
         Field(
             max_length=255,
             default=None
@@ -500,21 +500,21 @@ class CategoryCreate(CategoryBase):
 
 class CategoryRead(CategoryBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     created_at: datetime
 
 class CategoryUpdate(BaseModel):
     name: Annotated[
-        str | None, 
+        str | None,
         Field(
-            min_length=1, 
+            min_length=1,
             max_length=50,
             default=None
         )
     ]
     description: Annotated[
-        str | None, 
+        str | None,
         Field(
             max_length=255,
             default=None
@@ -563,7 +563,7 @@ def test_user_create_invalid_email():
             email="invalid-email",
             password="Str1ngst!"
         )
-    
+
     errors = exc_info.value.errors()
     assert any(error['type'] == 'value_error' for error in errors)
 
@@ -571,7 +571,7 @@ def test_password_validation():
     with pytest.raises(ValidationError) as exc_info:
         UserCreate(
             name="Test User",
-            username="test", 
+            username="test",
             email="test@example.com",
             password="123"  # Doesn't match pattern
         )
@@ -596,7 +596,7 @@ def test_user_read_from_model():
         tier_id=None,
         created_at=datetime.utcnow()
     )
-    
+
     # Convert to schema
     user_schema = UserRead.model_validate(user_model)
     assert user_schema.username == "testuser"
@@ -614,7 +614,7 @@ def test_user_read_from_model():
 class UserRead(BaseModel):
     hashed_password: str  # Never expose password hashes
 
-# DO - Only expose safe fields  
+# DO - Only expose safe fields
 class UserRead(BaseModel):
     id: int
     name: str
@@ -629,7 +629,7 @@ class UserRead(BaseModel):
 ```python
 # DON'T - Complex validation in every request
 @field_validator('email')
-@classmethod  
+@classmethod
 def validate_email_unique(cls, v):
     # Database query in validator - slow!
     if crud_users.exists(email=v):
@@ -644,7 +644,7 @@ def validate_email_unique(cls, v):
 Now that you understand schema implementation:
 
 1. **[CRUD Operations](crud.md)** - Learn how schemas integrate with database operations
-2. **[Migrations](migrations.md)** - Manage database schema changes
-3. **[API Endpoints](../api/endpoints.md)** - Use schemas in FastAPI endpoints
+1. **[Migrations](migrations.md)** - Manage database schema changes
+1. **[API Endpoints](../api/endpoints.md)** - Use schemas in FastAPI endpoints
 
 The next section covers CRUD operations and how they use these schemas for data validation and transformation.

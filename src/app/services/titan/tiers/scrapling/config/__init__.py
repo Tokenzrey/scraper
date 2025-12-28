@@ -40,8 +40,7 @@ logger = logging.getLogger(__name__)
 
 
 class ScraplingConfig(BaseModel):
-    """
-    Complete Scrapling configuration model.
+    """Complete Scrapling configuration model.
 
     Contains version info and Tier 4 configuration.
     """
@@ -51,8 +50,7 @@ class ScraplingConfig(BaseModel):
 
 
 class ConfigLoader:
-    """
-    Configuration loader for Scrapling Data Bank.
+    """Configuration loader for Scrapling Data Bank.
 
     Provides static methods to load configuration from files or dicts,
     with validation and sensible defaults.
@@ -72,8 +70,7 @@ class ConfigLoader:
 
     @classmethod
     def from_file(cls, path: str | Path) -> ScraplingConfig:
-        """
-        Load configuration from a JSON file.
+        """Load configuration from a JSON file.
 
         Args:
             path: Path to the JSON configuration file
@@ -91,7 +88,7 @@ class ConfigLoader:
             raise FileNotFoundError(f"Configuration file not found: {path}")
 
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 data = json.load(f)
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON in configuration file: {e}") from e
@@ -101,8 +98,7 @@ class ConfigLoader:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> ScraplingConfig:
-        """
-        Load configuration from a dictionary.
+        """Load configuration from a dictionary.
 
         Args:
             data: Configuration dictionary
@@ -122,8 +118,7 @@ class ConfigLoader:
 
     @classmethod
     def default(cls) -> ScraplingConfig:
-        """
-        Get default configuration.
+        """Get default configuration.
 
         Returns:
             ScraplingConfig with default values
@@ -132,8 +127,7 @@ class ConfigLoader:
 
     @classmethod
     def from_default_file(cls) -> ScraplingConfig:
-        """
-        Load configuration from the default databank.json file.
+        """Load configuration from the default databank.json file.
 
         Returns:
             ScraplingConfig instance
@@ -158,8 +152,7 @@ class ConfigLoader:
         base: ScraplingConfig,
         overrides: dict[str, Any],
     ) -> ScraplingConfig:
-        """
-        Merge override values into a base configuration.
+        """Merge override values into a base configuration.
 
         Args:
             base: Base configuration

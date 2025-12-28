@@ -60,9 +60,7 @@ async def close_redis_cache_pool() -> None:
 # -------------- queue --------------
 async def create_redis_queue_pool() -> None:
     try:
-        queue.pool = await create_pool(
-            RedisSettings(host=settings.REDIS_QUEUE_HOST, port=settings.REDIS_QUEUE_PORT)
-        )
+        queue.pool = await create_pool(RedisSettings(host=settings.REDIS_QUEUE_HOST, port=settings.REDIS_QUEUE_PORT))
     except Exception as e:  # pragma: no cover - defensive in tests/dev
         import logging
 

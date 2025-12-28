@@ -27,15 +27,18 @@ docker compose ps
 Visit these URLs to confirm your API is working:
 
 **API Documentation:**
+
 - **Swagger UI**: [http://localhost:8000/docs](http://localhost:8000/docs)
 - **ReDoc**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 **Health Check:**
+
 ```bash
 curl http://localhost:8000/api/v1/health
 ```
 
 Expected response:
+
 ```json
 {
   "status":"healthy",
@@ -46,11 +49,13 @@ Expected response:
 ```
 
 **Ready Check:**
+
 ```bash
 curl http://localhost:8000/api/v1/ready
 ```
 
 Expected response:
+
 ```json
 {
   "status":"healthy",
@@ -96,7 +101,7 @@ Before testing features, you need to create the first superuser and tier.
 ### Creating the First Superuser
 
 !!! warning "Prerequisites"
-    Make sure the database and tables are created before running create_superuser. The database should be running and the API should have started at least once.
+Make sure the database and tables are created before running create_superuser. The database should be running and the API should have started at least once.
 
 #### Using Docker Compose
 
@@ -142,7 +147,7 @@ uv run python -m src.scripts.create_first_superuser
 ### Creating the First Tier
 
 !!! warning "Prerequisites"
-    Make sure the database and tables are created before running create_tier.
+Make sure the database and tables are created before running create_tier.
 
 #### Using Docker Compose
 
@@ -176,6 +181,7 @@ curl -X POST "http://localhost:8000/api/v1/login" \
 ```
 
 You should receive a response like:
+
 ```json
 {
   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
@@ -191,7 +197,7 @@ curl -X POST "http://localhost:8000/api/v1/users" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "John Doe",
-    "username": "johndoe", 
+    "username": "johndoe",
     "email": "john@example.com",
     "password": "securepassword123"
   }'
@@ -246,6 +252,7 @@ curl -X POST "http://localhost:8000/api/v1/tasks/task?message=hello" \
 ```
 
 Response:
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000"
@@ -375,7 +382,7 @@ router = APIRouter(tags=["items"])
 async def create_item(
     item: ItemCreate,
     db: Annotated[AsyncSession, Depends(async_get_db)],
-    current_user: Annotated[UserRead, Depends(get_current_user)]
+    current_user: Annotated[UserRead, Depends(get_current_user)],
 ):
     """Create a new item."""
     db_item = await crud_items.create(db=db, object=item)
@@ -383,10 +390,7 @@ async def create_item(
 
 
 @router.get("/{item_id}", response_model=ItemRead)
-async def get_item(
-    item_id: int,
-    db: Annotated[AsyncSession, Depends(async_get_db)]
-):
+async def get_item(item_id: int, db: Annotated[AsyncSession, Depends(async_get_db)]):
     """Get an item by ID."""
     db_item = await crud_items.get(db=db, id=item_id)
     if not db_item:
@@ -395,11 +399,7 @@ async def get_item(
 
 
 @router.get("/", response_model=list[ItemRead])
-async def get_items(
-    db: Annotated[AsyncSession, Depends(async_get_db)],
-    skip: int = 0,
-    limit: int = 100
-):
+async def get_items(db: Annotated[AsyncSession, Depends(async_get_db)], skip: int = 0, limit: int = 100):
     """Get all items."""
     items = await crud_items.get_multi(db=db, offset=skip, limit=limit)
     return items["data"]
@@ -410,13 +410,13 @@ async def update_item(
     item_id: int,
     item_update: ItemUpdate,
     db: Annotated[AsyncSession, Depends(async_get_db)],
-    current_user: Annotated[UserRead, Depends(get_current_user)]
+    current_user: Annotated[UserRead, Depends(get_current_user)],
 ):
     """Update an item."""
     db_item = await crud_items.get(db=db, id=item_id)
     if not db_item:
         raise HTTPException(status_code=404, detail="Item not found")
-    
+
     updated_item = await crud_items.update(db=db, object=item_update, id=item_id)
     return updated_item
 
@@ -425,13 +425,13 @@ async def update_item(
 async def delete_item(
     item_id: int,
     db: Annotated[AsyncSession, Depends(async_get_db)],
-    current_user: Annotated[UserRead, Depends(get_current_user)]
+    current_user: Annotated[UserRead, Depends(get_current_user)],
 ):
     """Delete an item."""
     db_item = await crud_items.get(db=db, id=item_id)
     if not db_item:
         raise HTTPException(status_code=404, detail="Item not found")
-    
+
     await crud_items.delete(db=db, id=item_id)
     return {"message": "Item deleted successfully"}
 ```
@@ -454,7 +454,7 @@ from app.api.v1.items import router as items_router  # Add this line
 
 router = APIRouter(prefix="/v1")
 router.include_router(login_router, prefix="/login")
-router.include_router(logout_router, prefix="/logout") 
+router.include_router(logout_router, prefix="/logout")
 router.include_router(users_router, prefix="/users")
 router.include_router(posts_router, prefix="/posts")
 router.include_router(tasks_router, prefix="/tasks")
@@ -576,30 +576,30 @@ Now that you've verified everything works and created your first custom endpoint
 ### Essential Learning
 
 1. **[Project Structure](../user-guide/project-structure.md)** - Understand how the code is organized
-2. **[Database Guide](../user-guide/database/index.md)** - Learn about models, schemas, and CRUD operations
-3. **[Authentication](../user-guide/authentication/index.md)** - Deep dive into JWT and user management
+1. **[Database Guide](../user-guide/database/index.md)** - Learn about models, schemas, and CRUD operations
+1. **[Authentication](../user-guide/authentication/index.md)** - Deep dive into JWT and user management
 
 ### Advanced Features
 
 1. **[Caching](../user-guide/caching/index.md)** - Speed up your API with Redis caching
-2. **[Background Tasks](../user-guide/background-tasks/index.md)** - Process long-running tasks asynchronously
-3. **[Rate Limiting](../user-guide/rate-limiting/index.md)** - Protect your API from abuse
+1. **[Background Tasks](../user-guide/background-tasks/index.md)** - Process long-running tasks asynchronously
+1. **[Rate Limiting](../user-guide/rate-limiting/index.md)** - Protect your API from abuse
 
 ### Development Workflow
 
 1. **[Development Guide](../user-guide/development.md)** - Best practices for extending the boilerplate
-2. **[Testing](../user-guide/testing.md)** - Write tests for your new features
-3. **[Production](../user-guide/production.md)** - Deploy your API to production
+1. **[Testing](../user-guide/testing.md)** - Write tests for your new features
+1. **[Production](../user-guide/production.md)** - Deploy your API to production
 
 ## Getting Help
 
 If you encounter any issues:
 
 1. **Check the logs** for error messages
-2. **Verify your configuration** in the `.env` file
-3. **Review the [GitHub Issues](https://github.com/benavlabs/fastapi-boilerplate/issues)** for common solutions
-4. **Search [existing issues](https://github.com/benavlabs/fastapi-boilerplate/issues)** on GitHub
-5. **Create a [new issue](https://github.com/benavlabs/fastapi-boilerplate/issues/new)** with detailed information
+1. **Verify your configuration** in the `.env` file
+1. **Review the [GitHub Issues](https://github.com/benavlabs/fastapi-boilerplate/issues)** for common solutions
+1. **Search [existing issues](https://github.com/benavlabs/fastapi-boilerplate/issues)** on GitHub
+1. **Create a [new issue](https://github.com/benavlabs/fastapi-boilerplate/issues/new)** with detailed information
 
 ## Congratulations!
 
@@ -611,4 +611,4 @@ You've successfully:
 - Run database migrations
 - Tested authentication and CRUD operations
 
-You're now ready to build amazing APIs with FastAPI! 
+You're now ready to build amazing APIs with FastAPI!

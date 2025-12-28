@@ -1,4 +1,4 @@
-"""Titan Worker Utility Functions
+"""Titan Worker Utility Functions.
 
 Provides:
 - User-Agent rotation
@@ -78,8 +78,7 @@ BOT_DETECTION_REGEX = re.compile("|".join(BOT_DETECTION_PATTERNS), re.IGNORECASE
 
 
 def generate_profile_id(url: str, seed: str = "") -> str:
-    """
-    Generate consistent profile ID for URL domain.
+    """Generate consistent profile ID for URL domain.
 
     Uses HASHED approach - same domain always gets same profile,
     enabling session persistence and consistent fingerprinting.
@@ -98,8 +97,7 @@ def generate_profile_id(url: str, seed: str = "") -> str:
 
 
 def get_rate_limit_backoff() -> float:
-    """
-    Get the recommended backoff duration for HTTP 429 (rate limit).
+    """Get the recommended backoff duration for HTTP 429 (rate limit).
 
     Botasaurus documentation recommends 1.13 seconds for rate limit backoff.
 
@@ -110,8 +108,7 @@ def get_rate_limit_backoff() -> float:
 
 
 def get_bad_request_sleep() -> float:
-    """
-    Get a random sleep duration for HTTP 400 (bad request) retry.
+    """Get a random sleep duration for HTTP 400 (bad request) retry.
 
     Returns:
         Random duration between 0.5 and 1.5 seconds
@@ -120,8 +117,7 @@ def get_bad_request_sleep() -> float:
 
 
 def is_rate_limit_response(status_code: int, content: str) -> bool:
-    """
-    Check if response indicates rate limiting (HTTP 429).
+    """Check if response indicates rate limiting (HTTP 429).
 
     Args:
         status_code: HTTP status code
@@ -151,8 +147,7 @@ def is_rate_limit_response(status_code: int, content: str) -> bool:
 
 
 def is_bad_request_response(status_code: int, content: str) -> bool:
-    """
-    Check if response indicates bad request (HTTP 400).
+    """Check if response indicates bad request (HTTP 400).
 
     Args:
         status_code: HTTP status code
@@ -174,8 +169,7 @@ def is_bad_request_response(status_code: int, content: str) -> bool:
 
 
 def get_random_user_agent(settings: "Settings") -> str:
-    """
-    Get a random User-Agent from the configured pool.
+    """Get a random User-Agent from the configured pool.
 
     Args:
         settings: Application settings containing TITAN_USER_AGENTS list
@@ -194,8 +188,7 @@ def get_random_user_agent(settings: "Settings") -> str:
 
 
 def is_blocked_status_code(status_code: int, settings: "Settings") -> bool:
-    """
-    Check if the HTTP status code indicates a block.
+    """Check if the HTTP status code indicates a block.
 
     Args:
         status_code: HTTP response status code
@@ -208,8 +201,7 @@ def is_blocked_status_code(status_code: int, settings: "Settings") -> bool:
 
 
 def detect_cloudflare_challenge(content: str) -> bool:
-    """
-    Detect if the response content contains Cloudflare challenge indicators.
+    """Detect if the response content contains Cloudflare challenge indicators.
 
     Args:
         content: HTML content to analyze
@@ -223,8 +215,7 @@ def detect_cloudflare_challenge(content: str) -> bool:
 
 
 def detect_bot_protection(content: str) -> bool:
-    """
-    Detect generic bot protection or CAPTCHA pages.
+    """Detect generic bot protection or CAPTCHA pages.
 
     Args:
         content: HTML content to analyze
@@ -238,8 +229,7 @@ def detect_bot_protection(content: str) -> bool:
 
 
 def is_challenge_response(status_code: int, content: str, settings: "Settings") -> tuple[bool, str | None]:
-    """
-    Comprehensive check for blocked/challenged responses.
+    """Comprehensive check for blocked/challenged responses.
 
     Args:
         status_code: HTTP response status code
@@ -266,8 +256,7 @@ def is_challenge_response(status_code: int, content: str, settings: "Settings") 
 
 
 def extract_content_type(headers: dict[str, str]) -> str | None:
-    """
-    Extract and normalize Content-Type from response headers.
+    """Extract and normalize Content-Type from response headers.
 
     Args:
         headers: Response headers dictionary
@@ -283,8 +272,7 @@ def extract_content_type(headers: dict[str, str]) -> str | None:
 
 
 def is_html_content(content_type: str | None) -> bool:
-    """
-    Check if the content type indicates HTML.
+    """Check if the content type indicates HTML.
 
     Args:
         content_type: Content-Type header value
@@ -298,8 +286,7 @@ def is_html_content(content_type: str | None) -> bool:
 
 
 def is_json_content(content_type: str | None) -> bool:
-    """
-    Check if the content type indicates JSON.
+    """Check if the content type indicates JSON.
 
     Args:
         content_type: Content-Type header value
@@ -314,8 +301,7 @@ def is_json_content(content_type: str | None) -> bool:
 
 
 def sanitize_url(url: str) -> str:
-    """
-    Sanitize URL for logging (remove sensitive query params).
+    """Sanitize URL for logging (remove sensitive query params).
 
     Args:
         url: Original URL
@@ -346,8 +332,7 @@ def sanitize_url(url: str) -> str:
 
 
 def build_default_headers(user_agent: str) -> dict[str, str]:
-    """
-    Build a set of default headers that mimic a real browser.
+    """Build a set of default headers that mimic a real browser.
 
     Args:
         user_agent: User-Agent string to use
@@ -372,8 +357,7 @@ def build_default_headers(user_agent: str) -> dict[str, str]:
 
 
 def merge_headers(default: dict[str, str], custom: dict[str, str] | None) -> dict[str, str]:
-    """
-    Merge custom headers with defaults, custom takes precedence.
+    """Merge custom headers with defaults, custom takes precedence.
 
     Args:
         default: Default headers dictionary

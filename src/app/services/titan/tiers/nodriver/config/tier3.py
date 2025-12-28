@@ -16,8 +16,7 @@ class BrowserStartupConfig(BaseModel):
 
 
 class BrowserConfig(BaseModel):
-    """
-    Nodriver browser configuration.
+    """Nodriver browser configuration.
 
     Maps to nodriver.start() options:
     - headless: Run without visible window
@@ -120,11 +119,10 @@ class ChallengeDetectionConfig(BaseModel):
 
 
 class Tier3Config(BaseModel):
-    """
-    Complete Tier 3 Nodriver configuration.
+    """Complete Tier 3 Nodriver configuration.
 
-    Provides structured configuration for nodriver browser automation
-    with Cloudflare bypass support via tab.cf_verify().
+    Provides structured configuration for nodriver browser automation with Cloudflare bypass support via
+    tab.cf_verify().
     """
 
     browser: BrowserConfig = Field(default_factory=BrowserConfig)

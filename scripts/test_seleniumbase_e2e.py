@@ -1,5 +1,4 @@
-"""
-End-to-end test script for Tier 5 SeleniumBase Executor.
+"""End-to-end test script for Tier 5 SeleniumBase Executor.
 
 Tests:
 1. Basic fetch with UC Mode + CDP Mode
@@ -22,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 async def test_tier5_seleniumbase():
     """Test Tier 5 SeleniumBase executor."""
     from app.core.config import Settings
-    from app.services.titan.tiers import Tier5SeleniumBaseExecutor, TierLevel
+    from app.services.titan.tiers import Tier5SeleniumBaseExecutor
 
     print("=" * 60)
     print("TIER 5 SELENIUMBASE E2E TEST")
@@ -96,9 +95,7 @@ async def test_tier5_seleniumbase():
         print("TEST 4: Error handling (invalid domain)")
         print("-" * 40)
 
-        error_result = await executor.execute(
-            "https://this-domain-does-not-exist-12345.com/"
-        )
+        error_result = await executor.execute("https://this-domain-does-not-exist-12345.com/")
 
         print(f"Success: {error_result.success}")
         print(f"Error Type: {error_result.error_type}")
@@ -136,9 +133,7 @@ async def test_cdp_client_directly():
 
         # Test with CAPTCHA solving
         print("\nTesting CAPTCHA solve capability...")
-        captcha_result = await client.fetch_with_captcha_solve(
-            "https://httpbin.org/html"
-        )
+        captcha_result = await client.fetch_with_captcha_solve("https://httpbin.org/html")
         print(f"CAPTCHA Solved: {captcha_result.captcha_solved}")
 
 

@@ -1,7 +1,7 @@
 # ============================================
 # TITAN WORKER DOCKERFILE
 # ============================================
-# This Dockerfile creates a production-ready worker 
+# This Dockerfile creates a production-ready worker
 # with XVFB for headful Chrome operation.
 #
 # Why Headful Chrome (via XVFB):
@@ -142,7 +142,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Botasaurus downloads hrequests-cgo binary on first use.
 # Pre-downloading here avoids 5-10s delay on first request.
 # Must run as root and BEFORE changing ownership to app user.
-# 
+#
 # The library is downloaded to:
 #   /app/.venv/lib/python3.11/site-packages/botasaurus_requests/bin/
 #

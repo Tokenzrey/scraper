@@ -13,6 +13,7 @@ All models inherit from `Base` defined in `src/app/core/db/database.py`:
 ```python
 from sqlalchemy.orm import DeclarativeBase
 
+
 class Base(DeclarativeBase):
     pass
 ```
@@ -61,25 +62,30 @@ The boilerplate deliberately avoids using SQLAlchemy's `relationship()` feature.
 ### What This Means in Practice
 
 Instead of this (traditional SQLAlchemy):
+
 ```python
 # Not used in the boilerplate
 class User(Base):
     posts: Mapped[List["Post"]] = relationship("Post", back_populates="created_by_user")
+
 
 class Post(Base):
     created_by_user: Mapped["User"] = relationship("User", back_populates="posts")
 ```
 
 The boilerplate uses this approach:
+
 ```python
 # DO - Explicit and controlled
 class User(Base):
     # Only foreign key, no relationship
     tier_id: Mapped[int | None] = mapped_column(ForeignKey("tier.id"), index=True, default=None)
 
+
 class Post(Base):
-    # Only foreign key, no relationship  
+    # Only foreign key, no relationship
     created_by_user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), index=True)
+
 
 # Explicit queries - you control exactly what's loaded
 user = await crud_users.get(db=db, id=1)
@@ -87,10 +93,7 @@ posts = await crud_posts.get_multi(db=db, created_by_user_id=user.id)
 
 # Or use joins when needed
 posts_with_users = await crud_posts.get_multi_joined(
-    db=db,
-    join_model=User,
-    schema_to_select=PostRead,
-    join_schema_to_select=UserRead
+    db=db, join_model=User, schema_to_select=PostRead, join_schema_to_select=UserRead
 )
 ```
 
@@ -126,20 +129,11 @@ Use FastCRUD's join capabilities:
 ```python
 # Single record with related data
 post_with_author = await crud_posts.get_joined(
-    db=db,
-    join_model=User,
-    schema_to_select=PostRead,
-    join_schema_to_select=UserRead,
-    id=post_id
+    db=db, join_model=User, schema_to_select=PostRead, join_schema_to_select=UserRead, id=post_id
 )
 
 # Multiple records with joins
-posts_with_authors = await crud_posts.get_multi_joined(
-    db=db,
-    join_model=User,
-    offset=0,
-    limit=10
-)
+posts_with_authors = await crud_posts.get_multi_joined(db=db, join_model=User, offset=0, limit=10)
 ```
 
 ### Alternative Approaches
@@ -150,9 +144,11 @@ If you need relationships in your project, you can add them:
 # Add relationships if needed for your use case
 from sqlalchemy.orm import relationship
 
+
 class User(Base):
     # ... existing fields ...
     posts: Mapped[List["Post"]] = relationship("Post", back_populates="created_by_user")
+
 
 class Post(Base):
     # ... existing fields ...
@@ -172,32 +168,33 @@ from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 from ..core.db.database import Base
 
+
 class User(Base):
     __tablename__ = "user"
 
     id: Mapped[int] = mapped_column("id", autoincrement=True, nullable=False, unique=True, primary_key=True, init=False)
-    
+
     # User data
     name: Mapped[str] = mapped_column(String(30))
     username: Mapped[str] = mapped_column(String(20), unique=True, index=True)
     email: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     hashed_password: Mapped[str] = mapped_column(String)
-    
+
     # Profile
     profile_image_url: Mapped[str] = mapped_column(String, default="https://profileimageurl.com")
-    
+
     # UUID for external references
     uuid: Mapped[uuid_pkg.UUID] = mapped_column(default_factory=uuid_pkg.uuid4, primary_key=True, unique=True)
-    
+
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default_factory=lambda: datetime.now(UTC))
     updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=None)
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=None)
-    
+
     # Status flags
     is_deleted: Mapped[bool] = mapped_column(default=False, index=True)
     is_superuser: Mapped[bool] = mapped_column(default=False)
-    
+
     # Foreign key to tier system (no relationship defined)
     tier_id: Mapped[int | None] = mapped_column(ForeignKey("tier.id"), index=True, default=None, init=False)
 ```
@@ -223,22 +220,23 @@ from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 from ..core.db.database import Base
 
+
 class Post(Base):
     __tablename__ = "post"
 
     id: Mapped[int] = mapped_column("id", autoincrement=True, nullable=False, unique=True, primary_key=True, init=False)
-    
+
     # Content
     title: Mapped[str] = mapped_column(String(30))
     text: Mapped[str] = mapped_column(String(63206))  # Large text field
     media_url: Mapped[str | None] = mapped_column(String, default=None)
-    
+
     # UUID for external references
     uuid: Mapped[uuid_pkg.UUID] = mapped_column(default_factory=uuid_pkg.uuid4, primary_key=True, unique=True)
-    
+
     # Foreign key (no relationship defined)
     created_by_user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), index=True)
-    
+
     # Timestamps (built-in soft delete pattern)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default_factory=lambda: datetime.now(UTC))
     updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=None)
@@ -254,7 +252,7 @@ Soft deletion is built directly into models:
 # Built into each model that needs soft deletes
 class Post(Base):
     # ... other fields ...
-    
+
     # Soft delete fields
     is_deleted: Mapped[bool] = mapped_column(default=False, index=True)
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=None)
@@ -270,7 +268,7 @@ class Post(Base):
 # src/app/models/tier.py
 class Tier(Base):
     __tablename__ = "tier"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, init=False)
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
@@ -282,7 +280,7 @@ class Tier(Base):
 # src/app/models/rate_limit.py
 class RateLimit(Base):
     __tablename__ = "rate_limit"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, init=False)
     tier_id: Mapped[int] = mapped_column(ForeignKey("tier.id"), nullable=False)
     path: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -298,10 +296,10 @@ class RateLimit(Base):
 ### Step-by-Step Process
 
 1. **Create model file** in `src/app/models/your_model.py`
-2. **Define model class** inheriting from `Base`
-3. **Add to imports** in `src/app/models/__init__.py`
-4. **Generate migration** with `alembic revision --autogenerate`
-5. **Apply migration** with `alembic upgrade head`
+1. **Define model class** inheriting from `Base`
+1. **Add to imports** in `src/app/models/__init__.py`
+1. **Generate migration** with `alembic revision --autogenerate`
+1. **Apply migration** with `alembic upgrade head`
 
 ### Example: Creating a Category Model
 
@@ -313,9 +311,10 @@ from sqlalchemy import String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db.database import Base
 
+
 class Category(Base):
     __tablename__ = "category"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, init=False)
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=True)
@@ -328,7 +327,7 @@ If you want to relate Category to Post, just add the id reference in the model:
 class Post(Base):
     __tablename__ = "post"
     ...
-    
+
     # Foreign key (no relationship defined)
     category_id: Mapped[int] = mapped_column(ForeignKey("category.id"), index=True)
 ```
@@ -353,17 +352,18 @@ from .category import Category  # Add new model
 ```python
 from sqlalchemy import CheckConstraint, Index
 
+
 class Product(Base):
     __tablename__ = "product"
-    
+
     price: Mapped[float] = mapped_column(nullable=False)
     quantity: Mapped[int] = mapped_column(nullable=False)
-    
+
     # Table-level constraints
     __table_args__ = (
-        CheckConstraint('price > 0', name='positive_price'),
-        CheckConstraint('quantity >= 0', name='non_negative_quantity'),
-        Index('idx_product_price', 'price'),
+        CheckConstraint("price > 0", name="positive_price"),
+        CheckConstraint("quantity >= 0", name="non_negative_quantity"),
+        Index("idx_product_price", "price"),
     )
 ```
 
@@ -374,9 +374,7 @@ class Product(Base):
 email: Mapped[str] = mapped_column(String(100), unique=True)
 
 # Multi-column unique constraint
-__table_args__ = (
-    UniqueConstraint('user_id', 'category_id', name='unique_user_category'),
-)
+__table_args__ = (UniqueConstraint("user_id", "category_id", name="unique_user_category"),)
 ```
 
 ## Common Model Patterns
@@ -387,11 +385,9 @@ __table_args__ = (
 class TimestampedModel:
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, 
-        default=datetime.utcnow, 
-        onupdate=datetime.utcnow, 
-        nullable=False
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
     )
+
 
 # Use as mixin
 class Post(Base, TimestampedModel, SoftDeleteMixin):
@@ -406,10 +402,12 @@ class Post(Base, TimestampedModel, SoftDeleteMixin):
 from enum import Enum
 from sqlalchemy import Enum as SQLEnum
 
+
 class UserStatus(Enum):
     ACTIVE = "active"
-    INACTIVE = "inactive" 
+    INACTIVE = "inactive"
     SUSPENDED = "suspended"
+
 
 class User(Base):
     status: Mapped[UserStatus] = mapped_column(SQLEnum(UserStatus), default=UserStatus.ACTIVE)
@@ -419,6 +417,7 @@ class User(Base):
 
 ```python
 from sqlalchemy.dialects.postgresql import JSONB
+
 
 class UserProfile(Base):
     preferences: Mapped[dict] = mapped_column(JSONB, nullable=True)
@@ -437,14 +436,12 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 from app.models.user import User
 
+
 def test_user_creation():
-    user = User(
-        username="testuser",
-        email="test@example.com", 
-        hashed_password="hashed123"
-    )
+    user = User(username="testuser", email="test@example.com", hashed_password="hashed123")
     assert user.username == "testuser"
     assert user.is_active is True  # Default value
+
 
 def test_user_unique_constraint():
     # Test that duplicate emails raise IntegrityError
@@ -478,7 +475,7 @@ Changes requiring careful migration:
 Now that you understand model implementation:
 
 1. **[Schemas](schemas.md)** - Learn Pydantic validation and serialization
-2. **[CRUD Operations](crud.md)** - Implement database operations with FastCRUD  
-3. **[Migrations](migrations.md)** - Manage schema changes with Alembic
+1. **[CRUD Operations](crud.md)** - Implement database operations with FastCRUD
+1. **[Migrations](migrations.md)** - Manage schema changes with Alembic
 
-The next section covers how Pydantic schemas provide validation and API contracts separate from database models. 
+The next section covers how Pydantic schemas provide validation and API contracts separate from database models.

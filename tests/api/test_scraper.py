@@ -1,5 +1,4 @@
-"""
-Integration tests for Scraper API endpoints.
+"""Integration tests for Scraper API endpoints.
 
 These tests verify the API layer behavior with mocked queue.
 """

@@ -56,19 +56,19 @@ cleanup() {
     echo "[Titan Worker] ============================================"
     echo "[Titan Worker] Shutting down gracefully..."
     echo "[Titan Worker] ============================================"
-    
+
     # Kill all Chrome instances (memory safety)
     echo "[Titan Worker] Killing Chrome instances..."
     pkill -f chromium 2>/dev/null || true
     pkill -f chrome 2>/dev/null || true
     pkill -f chromedriver 2>/dev/null || true
-    
+
     # Stop XVFB
     if [ -n "$XVFB_PID" ]; then
         echo "[Titan Worker] Stopping XVFB (PID: $XVFB_PID)..."
         kill $XVFB_PID 2>/dev/null || true
     fi
-    
+
     echo "[Titan Worker] Cleanup complete"
     exit 0
 }

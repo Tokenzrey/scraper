@@ -51,6 +51,8 @@ Note:
 """
 
 # Config
+# Client
+from .browser_client import NodriverClient, NodriverResponse
 from .config import (
     BrowserConfig,
     BrowserStartupConfig,
@@ -78,9 +80,6 @@ from .exceptions import (
     NodriverNetworkError,
     NodriverTimeoutError,
 )
-
-# Client
-from .browser_client import NodriverClient, NodriverResponse
 
 # Executor
 from .executor import Tier3NodriverExecutor

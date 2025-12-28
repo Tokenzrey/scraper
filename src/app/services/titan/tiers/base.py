@@ -17,11 +17,9 @@ if TYPE_CHECKING:
 
 
 class TierLevel(IntEnum):
-    """
-    Tier levels in order of escalation.
+    """Tier levels in order of escalation.
 
-    Lower number = lighter weight, faster, less stealth
-    Higher number = heavier, slower, more stealth
+    Lower number = lighter weight, faster, less stealth Higher number = heavier, slower, more stealth
     """
 
     TIER_1_REQUEST = 1  # curl_cffi
@@ -35,11 +33,9 @@ class TierLevel(IntEnum):
 
 @dataclass
 class TierResult:
-    """
-    Standardized result from any tier execution.
+    """Standardized result from any tier execution.
 
-    All tiers return this structure so the orchestrator
-    can handle results uniformly.
+    All tiers return this structure so the orchestrator can handle results uniformly.
     """
 
     success: bool
@@ -71,8 +67,7 @@ class TierResult:
 
 
 class TierExecutor(ABC):
-    """
-    Abstract base class for all tier executors.
+    """Abstract base class for all tier executors.
 
     Each tier implements this interface, allowing the orchestrator
     to treat them uniformly while each tier handles its own
@@ -93,8 +88,7 @@ class TierExecutor(ABC):
     TYPICAL_TIME_MS: int = 2000
 
     def __init__(self, settings: "Settings") -> None:
-        """
-        Initialize executor with application settings.
+        """Initialize executor with application settings.
 
         Args:
             settings: Application settings containing Titan configuration
@@ -107,8 +101,7 @@ class TierExecutor(ABC):
         url: str,
         options: "ScrapeOptions | None" = None,
     ) -> TierResult:
-        """
-        Execute a fetch operation for the given URL.
+        """Execute a fetch operation for the given URL.
 
         This is the main entry point for each tier. Implementations
         should handle their specific fetching logic and return a
@@ -130,18 +123,15 @@ class TierExecutor(ABC):
 
     @abstractmethod
     async def cleanup(self) -> None:
-        """
-        Release any resources held by this executor.
+        """Release any resources held by this executor.
 
-        Called by orchestrator during shutdown or tier rotation.
-        For Tier 1 (request), this may be a no-op.
-        For Tier 2/3 (browser), this should close browser instances.
+        Called by orchestrator during shutdown or tier rotation. For Tier 1 (request), this may be a no-op. For Tier 2/3
+        (browser), this should close browser instances.
         """
         raise NotImplementedError
 
     def _detect_challenge(self, content: str, status_code: int | None) -> str | None:
-        """
-        Detect if response contains a challenge or block.
+        """Detect if response contains a challenge or block.
 
         Common challenges:
         - Cloudflare 5-second challenge
@@ -236,8 +226,7 @@ class TierExecutor(ABC):
         status_code: int | None,
         challenge: str | None,
     ) -> bool:
-        """
-        Determine if this result should trigger escalation to next tier.
+        """Determine if this result should trigger escalation to next tier.
 
         Args:
             status_code: HTTP status code

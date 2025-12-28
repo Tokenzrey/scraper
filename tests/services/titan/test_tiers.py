@@ -1,5 +1,4 @@
-"""
-Unit tests for Titan Tier Executors.
+"""Unit tests for Titan Tier Executors.
 
 Comprehensive tests covering:
 - Tier 1: curl_cffi HTTP request executor

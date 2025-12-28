@@ -30,12 +30,10 @@ from ..base import TierExecutor, TierLevel, TierResult
 from .browser_client import NodriverClient, NodriverResponse
 from .config import ConfigLoader, NodriverConfig
 from .exceptions import (
-    NodriverBlockError,
     NodriverBrowserError,
     NodriverCloudflareError,
     NodriverException,
     NodriverNetworkError,
-    NodriverTimeoutError,
 )
 
 if TYPE_CHECKING:
@@ -46,8 +44,7 @@ logger = logging.getLogger(__name__)
 
 
 class Tier3NodriverExecutor(TierExecutor):
-    """
-    Tier 3 Executor using nodriver.
+    """Tier 3 Executor using nodriver.
 
     Alternative to Tier3FullBrowserExecutor with nodriver advantages:
     - Fully async (no thread pool overhead)
@@ -73,8 +70,7 @@ class Tier3NodriverExecutor(TierExecutor):
         config: NodriverConfig | None = None,
         proxy: str | None = None,
     ) -> None:
-        """
-        Initialize Tier 3 Nodriver Executor.
+        """Initialize Tier 3 Nodriver Executor.
 
         Args:
             settings: Application settings (Titan configuration)
@@ -128,8 +124,7 @@ class Tier3NodriverExecutor(TierExecutor):
         url: str,
         options: "ScrapeOptions | None" = None,
     ) -> TierResult:
-        """
-        Execute full browser fetch using nodriver.
+        """Execute full browser fetch using nodriver.
 
         Uses tab.cf_verify() for Cloudflare bypass when detected.
 
@@ -172,10 +167,7 @@ class Tier3NodriverExecutor(TierExecutor):
             if response.success:
                 response_size = len(response.content.encode("utf-8")) if response.content else 0
 
-                logger.info(
-                    f"[NODRIVER] Success: {url} "
-                    f"(size={response_size}B, time={execution_time_ms:.0f}ms)"
-                )
+                logger.info(f"[NODRIVER] Success: {url} " f"(size={response_size}B, time={execution_time_ms:.0f}ms)")
 
                 return TierResult(
                     success=True,
@@ -191,8 +183,7 @@ class Tier3NodriverExecutor(TierExecutor):
 
             # Failed
             logger.warning(
-                f"[NODRIVER] Failed: {url} "
-                f"(error={response.error_type}, challenge={response.detected_challenge})"
+                f"[NODRIVER] Failed: {url} " f"(error={response.error_type}, challenge={response.detected_challenge})"
             )
 
             # Escalate to Tier 4 on challenge detection (cloudflare, captcha, etc.)

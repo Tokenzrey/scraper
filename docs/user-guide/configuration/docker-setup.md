@@ -13,7 +13,7 @@ The fastest way to get started is with the setup script:
 This script helps you choose between three deployment configurations:
 
 - **Local development** (`./setup.py local`) - Uvicorn with auto-reload
-- **Staging** (`./setup.py staging`) - Gunicorn with workers  
+- **Staging** (`./setup.py staging`) - Gunicorn with workers
 - **Production** (`./setup.py production`) - NGINX + Gunicorn
 
 Each option copies the appropriate `Dockerfile`, `docker-compose.yml`, and `.env.example` files from the `scripts/` folder.
@@ -25,7 +25,7 @@ The boilerplate includes these core services:
 ```yaml
 services:
   web:          # FastAPI application (uvicorn or gunicorn)
-  worker:       # ARQ background task worker  
+  worker:       # ARQ background task worker
   db:           # PostgreSQL 13 database
   redis:        # Redis Alpine for caching/queues
   # Optional services (commented out by default):
@@ -166,6 +166,7 @@ worker:
 ```
 
 **Features:**
+
 - Runs ARQ worker for background job processing
 - Shares the same codebase and environment as web service
 - Automatically connects to Redis for job queues
@@ -185,6 +186,7 @@ db:
 ```
 
 **Configuration:**
+
 - Uses environment variables: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
 - Data persisted in named volume `postgres-data`
 - Only exposed to internal Docker network (no external port)
@@ -202,6 +204,7 @@ redis:
 ```
 
 **Features:**
+
 - Lightweight Alpine Linux image
 - Data persistence with named volume
 - Used for caching, job queues, and rate limiting
@@ -229,6 +232,7 @@ pgadmin:
 ```
 
 **Usage:**
+
 - Access at `http://localhost:5050`
 - Requires `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD` in `.env`
 - Connect to database using service name `db` and port `5432`
@@ -254,7 +258,7 @@ The included `default.conf` provides:
 ```nginx
 server {
     listen 80;
-    
+
     location / {
         proxy_pass http://web:8000;
         proxy_set_header Host $host;
@@ -268,8 +272,8 @@ server {
 **When using nginx:**
 
 1. Uncomment the nginx service
-2. Comment out the `ports` section in the web service
-3. Uncomment `expose: ["8000"]` in the web service
+1. Comment out the `ports` section in the web service
+1. Uncomment `expose: ["8000"]` in the web service
 
 ### Initialization Services
 
@@ -413,6 +417,7 @@ docker compose ps
 To switch to production mode:
 
 1. **Enable Gunicorn:**
+
    ```yaml
    # Comment out uvicorn line
    # command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
@@ -420,14 +425,15 @@ To switch to production mode:
    command: gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
    ```
 
-2. **Enable Nginx** (optional):
+1. **Enable Nginx** (optional):
+
    ```yaml
    # Uncomment nginx service
    nginx:
      image: nginx:latest
      ports:
        - "80:80"
-   
+
    # In web service, comment out ports and uncomment expose
    # ports:
    #   - "8000:8000"
@@ -435,7 +441,8 @@ To switch to production mode:
      - "8000"
    ```
 
-3. **Remove development volumes:**
+1. **Remove development volumes:**
+
    ```yaml
    # Remove or comment out for production
    # volumes:
@@ -460,12 +467,14 @@ REDIS_RATE_LIMIT_HOST=redis
 ### Port Management
 
 **Development (default):**
+
 - Web: `localhost:8000` (direct access)
 - Database: `localhost:5432` (uncomment ports to enable)
 - Redis: `localhost:6379` (uncomment ports to enable)
 - pgAdmin: `localhost:5050` (if enabled)
 
 **Production with Nginx:**
+
 - Web: `localhost:80` (through nginx)
 - Database: Internal only
 - Redis: Internal only
@@ -475,6 +484,7 @@ REDIS_RATE_LIMIT_HOST=redis
 ### Common Issues
 
 **Container won't start:**
+
 ```bash
 # Check logs
 docker compose logs web
@@ -487,6 +497,7 @@ docker compose exec web env | grep POSTGRES
 ```
 
 **Database connection issues:**
+
 ```bash
 # Check if db service is running
 docker compose ps db
@@ -499,6 +510,7 @@ docker compose logs db
 ```
 
 **Port conflicts:**
+
 ```bash
 # Check what's using the port
 lsof -i :8000
@@ -528,12 +540,14 @@ ports:
 ## Best Practices
 
 ### Development
+
 - Use volume mounts for live code reloading
 - Enable direct port access for debugging
 - Use uvicorn with reload for fast development
 - Enable optional services (pgAdmin) as needed
 
 ### Production
+
 - Switch to gunicorn with multiple workers
 - Use nginx for reverse proxy and load balancing
 - Remove volume mounts and bake code into images
@@ -541,15 +555,17 @@ ports:
 - Set resource limits and health checks
 
 ### Security
+
 - Containers run as non-root user
 - Use internal networking for service communication
 - Don't expose database/redis ports externally
 - Use Docker secrets for sensitive data in production
 
 ### Monitoring
+
 - Use `docker compose logs` to monitor services
 - Set up health checks for all services
 - Monitor resource usage with `docker stats`
 - Use structured logging for better observability
 
-The Docker setup provides everything you need for both development and production. Start with the default configuration and customize as your needs grow! 
+The Docker setup provides everything you need for both development and production. Start with the default configuration and customize as your needs grow!

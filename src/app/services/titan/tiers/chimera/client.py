@@ -24,7 +24,6 @@ from curl_cffi.requests import AsyncSession, BrowserType, Response
 
 from .config import ChimeraConfig, ConfigLoader
 from .exceptions import (
-    ChimeraBlockError,
     ChimeraNetworkError,
     ChimeraTimeoutError,
 )
@@ -91,12 +90,12 @@ class ChimeraResponse:
     def json(self) -> Any:
         """Parse response as JSON."""
         import json
+
         return json.loads(self.content)
 
 
 class ChimeraClient:
-    """
-    High-performance async HTTP client with browser impersonation.
+    """High-performance async HTTP client with browser impersonation.
 
     Built on curl_cffi for TLS fingerprint spoofing.
     """
@@ -249,15 +248,11 @@ class ChimeraClient:
         if ch_config.sec_ch_ua:
             if "chrome" in impersonate:
                 hints["Sec-Ch-Ua"] = (
-                    f'"Chromium";v="{version}", '
-                    f'"Google Chrome";v="{version}", '
-                    '"Not(A:Brand";v="24"'
+                    f'"Chromium";v="{version}", ' f'"Google Chrome";v="{version}", ' '"Not(A:Brand";v="24"'
                 )
             elif "edge" in impersonate:
                 hints["Sec-Ch-Ua"] = (
-                    f'"Chromium";v="{version}", '
-                    f'"Microsoft Edge";v="{version}", '
-                    '"Not(A:Brand";v="24"'
+                    f'"Chromium";v="{version}", ' f'"Microsoft Edge";v="{version}", ' '"Not(A:Brand";v="24"'
                 )
 
         if ch_config.sec_ch_ua_mobile:

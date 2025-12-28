@@ -38,8 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 class TitanOrchestrator:
-    """
-    Main orchestrator for the Titan multi-tier scraping system.
+    """Main orchestrator for the Titan multi-tier scraping system.
 
     The orchestrator manages the three tiers and implements automatic
     escalation when detection is encountered. It provides a unified
@@ -58,8 +57,7 @@ class TitanOrchestrator:
     """
 
     def __init__(self, settings: "Settings") -> None:
-        """
-        Initialize TitanOrchestrator with all tier executors.
+        """Initialize TitanOrchestrator with all tier executors.
 
         Args:
             settings: Application settings containing Titan configuration
@@ -93,8 +91,7 @@ class TitanOrchestrator:
         start_tier: TierLevel = TierLevel.TIER_1_REQUEST,
         max_tier: TierLevel = TierLevel.TIER_3_FULL_BROWSER,
     ) -> TierResult:
-        """
-        Execute a scrape operation with automatic tier escalation.
+        """Execute a scrape operation with automatic tier escalation.
 
         Args:
             url: Target URL to scrape
@@ -325,11 +322,9 @@ class TitanOrchestrator:
         return self._metrics.copy()
 
     async def cleanup(self) -> None:
-        """
-        Release all resources held by tier executors.
+        """Release all resources held by tier executors.
 
-        Call this during application shutdown to clean up
-        thread pools and browser instances.
+        Call this during application shutdown to clean up thread pools and browser instances.
         """
         logger.info("TitanOrchestrator cleanup starting...")
 
@@ -352,8 +347,7 @@ async def titan_fetch(
     settings: "Settings",
     options: "ScrapeOptions | None" = None,
 ) -> TierResult:
-    """
-    Convenience function for one-off scraping.
+    """Convenience function for one-off scraping.
 
     Creates an orchestrator, executes the request, and cleans up.
     For repeated use, create an orchestrator instance instead.

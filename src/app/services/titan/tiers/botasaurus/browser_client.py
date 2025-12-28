@@ -22,8 +22,9 @@ import hashlib
 import logging
 import random
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
 
 if TYPE_CHECKING:
@@ -51,8 +52,7 @@ class BrowserResponse:
 
 
 def generate_profile_id(url: str, seed: str = "") -> str:
-    """
-    Generate consistent profile ID for URL domain.
+    """Generate consistent profile ID for URL domain.
 
     Uses HASHED approach - same domain always gets same profile,
     enabling session persistence and consistent fingerprinting.
@@ -63,8 +63,7 @@ def generate_profile_id(url: str, seed: str = "") -> str:
 
 
 def _detect_challenge(content: str, status_code: int | None = None) -> str | None:
-    """
-    Detect if response contains a challenge or block.
+    """Detect if response contains a challenge or block.
 
     Args:
         content: Response HTML content
@@ -114,8 +113,7 @@ def create_browser_fetch_function(
     proxy: str | None = None,
     profile_id: str | None = None,
 ) -> Callable:
-    """
-    Create a Botasaurus @browser decorated function with configuration.
+    """Create a Botasaurus @browser decorated function with configuration.
 
     Args:
         config: Botasaurus configuration
@@ -162,8 +160,7 @@ def create_browser_fetch_function(
         proxy=proxy,
     )
     def fetch_with_browser(driver: Driver, data: dict[str, Any]) -> dict[str, Any]:
-        """
-        Browser fetch function with driver.requests.get() optimization.
+        """Browser fetch function with driver.requests.get() optimization.
 
         Flow:
         1. Navigate with google_get (optional bypass_cloudflare)
@@ -263,13 +260,13 @@ def create_browser_fetch_function(
 
                     # HTTP 429: Rate Limited - Botasaurus recommends 1.13s sleep
                     if status_code == 429 and attempt < max_retries - 1:
-                        logger.warning(f"[BROWSER] Rate limited (429), sleeping 1.13s")
+                        logger.warning("[BROWSER] Rate limited (429), sleeping 1.13s")
                         driver.sleep(1.13)
                         continue
 
                     # HTTP 400: Bad Request - delete cookies and retry
                     if status_code == 400 and attempt < max_retries - 1:
-                        logger.warning(f"[BROWSER] Bad request (400), clearing cookies")
+                        logger.warning("[BROWSER] Bad request (400), clearing cookies")
                         driver.delete_cookies()
                         driver.short_random_sleep()
                         continue
@@ -328,8 +325,7 @@ def create_browser_fetch_function(
 
 
 class BrowserClient:
-    """
-    High-level browser client for Tier 2 operations.
+    """High-level browser client for Tier 2 operations.
 
     Wraps Botasaurus @browser functionality with:
     - Automatic profile generation (HASHED)
@@ -344,8 +340,7 @@ class BrowserClient:
         proxies: list[str] | None = None,
         profile_seed: str = "",
     ) -> None:
-        """
-        Initialize browser client.
+        """Initialize browser client.
 
         Args:
             config: Botasaurus configuration
@@ -386,8 +381,7 @@ class BrowserClient:
         bypass_cloudflare: bool = False,
         profile_id: str | None = None,
     ) -> BrowserResponse:
-        """
-        Synchronous browser fetch.
+        """Synchronous browser fetch.
 
         Args:
             url: Target URL
@@ -476,9 +470,7 @@ class BrowserClient:
             **self._stats,
             "proxy_count": len(self.proxies),
             "success_rate": (
-                self._stats["successes"] / self._stats["requests"]
-                if self._stats["requests"] > 0
-                else 0.0
+                self._stats["successes"] / self._stats["requests"] if self._stats["requests"] > 0 else 0.0
             ),
         }
 

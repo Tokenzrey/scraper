@@ -33,8 +33,8 @@ from curl_cffi.requests import AsyncSession, BrowserType
 # Botasaurus imports for @request decorator
 try:
     from botasaurus.request import (
-        Request,  # noqa: F401
-        request,  # noqa: F401
+        Request,
+        request,
     )
 
     BOTASAURUS_REQUEST_AVAILABLE = True
@@ -76,8 +76,7 @@ def _sync_botasaurus_request_fetch(
     timeout: int = 30,
     max_retries: int = 2,
 ) -> dict[str, Any]:
-    """
-    Synchronous fetch using Botasaurus @request decorator.
+    """Synchronous fetch using Botasaurus @request decorator.
 
     Best Practices:
     - Uses Botasaurus Request for consistent TLS fingerprinting
@@ -119,8 +118,7 @@ def _sync_botasaurus_request_fetch(
             output=None,
         )
         def fetch_with_request(req: Request, data: dict[str, Any]) -> dict[str, Any]:
-            """
-            Botasaurus @request decorated function.
+            """Botasaurus @request decorated function.
 
             The Request object provides:
             - TLS fingerprint matching real browsers
@@ -455,8 +453,7 @@ class Tier1RequestExecutor(TierExecutor):
         headers: dict[str, str],
         proxy: str | None,
     ) -> TierResult:
-        """
-        Execute request using Botasaurus @request decorator.
+        """Execute request using Botasaurus @request decorator.
 
         This is the preferred method with best practices:
         - Consistent TLS fingerprinting
@@ -604,11 +601,9 @@ class Tier1RequestExecutor(TierExecutor):
         headers: dict[str, str],
         proxy: str | None,
     ) -> TierResult:
-        """
-        Execute request using curl_cffi (fallback method).
+        """Execute request using curl_cffi (fallback method).
 
-        Used when Botasaurus is not available.
-        Includes HTTP 429/400 retry logic.
+        Used when Botasaurus is not available. Includes HTTP 429/400 retry logic.
         """
         start_time = time.time()
         impersonate = self._get_impersonate_browser()
@@ -723,8 +718,7 @@ class Tier1RequestExecutor(TierExecutor):
         url: str,
         options: "ScrapeOptions | None" = None,
     ) -> TierResult:
-        """
-        Execute HTTP request with TLS fingerprint impersonation.
+        """Execute HTTP request with TLS fingerprint impersonation.
 
         Uses Botasaurus @request decorator if available, otherwise
         falls back to curl_cffi with similar best practices.
@@ -778,11 +772,10 @@ class Tier1RequestExecutor(TierExecutor):
             return await self._execute_with_curl_cffi(url, headers, proxy)
 
     async def _pre_check_dns(self, url: str) -> TierResult | None:
-        """
-        Quick DNS pre-check using curl_cffi with short timeout.
+        """Quick DNS pre-check using curl_cffi with short timeout.
 
-        This prevents Botasaurus's 20s internal retry loop on invalid domains.
-        Returns TierResult if DNS fails (should not proceed), None if OK.
+        This prevents Botasaurus's 20s internal retry loop on invalid domains. Returns TierResult if DNS fails (should
+        not proceed), None if OK.
         """
         start_time = time.time()
         print(f"[TIER1] DNS pre-check for: {url}")

@@ -43,8 +43,7 @@ class BrowserRetryConfig(BaseModel):
 
 
 class BrowserConfig(BaseModel):
-    """
-    Botasaurus @browser decorator configuration.
+    """Botasaurus @browser decorator configuration.
 
     Maps to Botasaurus browser options:
     - headless: Run without visible window
@@ -75,8 +74,7 @@ class RequestTimeoutsConfig(BaseModel):
 
 
 class RequestConfig(BaseModel):
-    """
-    Botasaurus @request decorator configuration.
+    """Botasaurus @request decorator configuration.
 
     Maps to Botasaurus request options:
     - max_retry: Automatic retry count
@@ -170,11 +168,10 @@ class EscalationConfig(BaseModel):
 
 
 class Tier2Config(BaseModel):
-    """
-    Complete Tier 2 Botasaurus configuration.
+    """Complete Tier 2 Botasaurus configuration.
 
-    Provides structured configuration for both @browser and @request
-    decorators with full Botasaurus best practices applied.
+    Provides structured configuration for both @browser and @request decorators with full Botasaurus best practices
+    applied.
     """
 
     browser: BrowserConfig = Field(default_factory=BrowserConfig)

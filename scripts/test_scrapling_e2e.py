@@ -1,5 +1,4 @@
-"""
-End-to-end test script for Tier 4 Scrapling Executor.
+"""End-to-end test script for Tier 4 Scrapling Executor.
 
 Tests:
 1. Basic fetch with StealthyFetcher
@@ -21,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 async def test_tier4_scrapling():
     """Test Tier 4 Scrapling executor."""
     from app.core.config import Settings
-    from app.services.titan.tiers import Tier4ScraplingExecutor, TierLevel
+    from app.services.titan.tiers import Tier4ScraplingExecutor
 
     print("=" * 60)
     print("TIER 4 SCRAPLING E2E TEST")

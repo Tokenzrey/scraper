@@ -21,39 +21,39 @@ Our community is built on respect and collaboration. We maintain:
 - Direct feedback channels to the Benav Labs team
 - A safe space for sharing projects and asking questions
 
----
+______________________________________________________________________
 
 ### 📚 Channel Overview
 
 - **🤝 Networking**
 
-    Connect with fellow developers, share your background, and explore collaboration opportunities. Perfect for introductions and finding project partners.
+  Connect with fellow developers, share your background, and explore collaboration opportunities. Perfect for introductions and finding project partners.
 
 - **📚 Products**
 
-    Learn about the Benav Labs ecosystem, including FastroAI and other tools. Get updates on new features and product roadmaps.
+  Learn about the Benav Labs ecosystem, including FastroAI and other tools. Get updates on new features and product roadmaps.
 
 - **📸 Showcase**
 
-    Share what you've built using our tools! From quick prototypes to full production applications, the community loves seeing your creations. Projects may be featured in our blog or community highlights.
+  Share what you've built using our tools! From quick prototypes to full production applications, the community loves seeing your creations. Projects may be featured in our blog or community highlights.
 
 - **🗒️ Blog**
 
-    Stay updated with our latest technical blog posts, tutorials, and insights about FastAPI, AI development, and best practices.
+  Stay updated with our latest technical blog posts, tutorials, and insights about FastAPI, AI development, and best practices.
 
 - **📣 Announcements**
 
-    Official updates from the Benav Labs team about new releases, important changes, and community events.
+  Official updates from the Benav Labs team about new releases, important changes, and community events.
 
 - **💬 General**
 
-    Open discussions about development, troubleshooting, and general chat. Great for quick questions and casual conversations.
+  Open discussions about development, troubleshooting, and general chat. Great for quick questions and casual conversations.
 
 - **🎤 Community Voice**
 
-    Join live voice conversations, community calls, and interactive discussions with other members and the team.
+  Join live voice conversations, community calls, and interactive discussions with other members and the team.
 
----
+______________________________________________________________________
 
 ## 🌟 Community Benefits
 
@@ -68,10 +68,10 @@ By joining our Discord community, you get:
 ## 🎯 Getting Started
 
 1. **Join the server** using the invite link above
-2. **Read the welcome message** and community guidelines
-3. **Introduce yourself** in the networking channel
-4. **Explore the channels** to see ongoing discussions
-5. **Ask questions** - the community is here to help!
+1. **Read the welcome message** and community guidelines
+1. **Introduce yourself** in the networking channel
+1. **Explore the channels** to see ongoing discussions
+1. **Ask questions** - the community is here to help!
 
 ## 💬 Feedback & Support
 
@@ -82,7 +82,7 @@ We actively encourage feedback and suggestions! The community provides multiple 
 - Bug reports and technical issues
 - General suggestions for the community and products
 
----
+______________________________________________________________________
 
 ## 🔗 Quick Links
 
@@ -91,6 +91,6 @@ We actively encourage feedback and suggestions! The community provides multiple 
 - **Blog:** [fastro.ai/blog](https://fastro.ai/blog)
 - **Benav Labs:** [benav.io](https://benav.io)
 
----
+______________________________________________________________________
 
 We're excited to have you as part of our community! 🚀

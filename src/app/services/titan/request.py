@@ -50,8 +50,7 @@ class RequestResult:
 
 
 class RequestFetcher:
-    """
-    HTTP fetcher using curl_cffi with TLS fingerprint impersonation.
+    """HTTP fetcher using curl_cffi with TLS fingerprint impersonation.
 
     Features:
     - TLS fingerprint spoofing (impersonates Chrome/Firefox)
@@ -79,8 +78,7 @@ class RequestFetcher:
     MAX_RETRIES = 3
 
     def __init__(self, settings: "Settings") -> None:
-        """
-        Initialize RequestFetcher with application settings.
+        """Initialize RequestFetcher with application settings.
 
         Args:
             settings: Application settings containing Titan configuration
@@ -99,8 +97,7 @@ class RequestFetcher:
         url: str,
         options: "ScrapeOptions | None" = None,
     ) -> RequestResult:
-        """
-        Fetch URL content using curl_cffi with TLS fingerprint spoofing.
+        """Fetch URL content using curl_cffi with TLS fingerprint spoofing.
 
         Includes HTTP 429/400 retry logic with proper backoff.
 

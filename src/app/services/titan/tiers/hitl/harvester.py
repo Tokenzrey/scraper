@@ -36,7 +36,6 @@ import time
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
-from urllib.parse import urlparse
 
 from .config import Tier7Config
 from .exceptions import (
@@ -76,7 +75,7 @@ class Cookie:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "Cookie":
+    def from_dict(cls, data: dict[str, Any]) -> Cookie:
         return cls(
             name=data.get("name", ""),
             value=data.get("value", ""),
@@ -168,7 +167,7 @@ class GoldenTicket:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "GoldenTicket":
+    def from_dict(cls, data: dict[str, Any]) -> GoldenTicket:
         """Deserialize from dictionary."""
         cookies = [Cookie.from_dict(c) for c in data.get("cookies", [])]
         return cls(
@@ -206,10 +205,9 @@ class SessionHarvester:
     def __init__(
         self,
         config: Tier7Config,
-        redis_client: "Redis | None" = None,
+        redis_client: Redis | None = None,
     ) -> None:
-        """
-        Initialize session harvester.
+        """Initialize session harvester.
 
         Args:
             config: Tier 7 HITL configuration
@@ -227,8 +225,7 @@ class SessionHarvester:
         solve_time: float | None = None,
         proxy: str | None = None,
     ) -> GoldenTicket:
-        """
-        Harvest session credentials from browser.
+        """Harvest session credentials from browser.
 
         Args:
             page: Browser page object (DrissionPage)
@@ -479,8 +476,7 @@ class SessionHarvester:
             return {}
 
     def _validate_ticket(self, ticket: GoldenTicket) -> bool:
-        """
-        Validate that ticket is usable.
+        """Validate that ticket is usable.
 
         Returns True if ticket has minimum viable credentials.
         """
@@ -497,8 +493,7 @@ class SessionHarvester:
         return True
 
     async def store(self, ticket: GoldenTicket) -> bool:
-        """
-        Store Golden Ticket in Redis.
+        """Store Golden Ticket in Redis.
 
         Args:
             ticket: Golden Ticket to store
@@ -543,8 +538,7 @@ class SessionHarvester:
             )
 
     async def get(self, domain: str) -> GoldenTicket | None:
-        """
-        Retrieve Golden Ticket from Redis.
+        """Retrieve Golden Ticket from Redis.
 
         Args:
             domain: Target domain
@@ -569,10 +563,7 @@ class SessionHarvester:
                 await self.delete(domain)
                 return None
 
-            logger.debug(
-                f"Golden Ticket retrieved: {domain}, "
-                f"remaining TTL: {ticket.remaining_ttl:.0f}s"
-            )
+            logger.debug(f"Golden Ticket retrieved: {domain}, " f"remaining TTL: {ticket.remaining_ttl:.0f}s")
 
             return ticket
 
@@ -581,8 +572,7 @@ class SessionHarvester:
             return None
 
     async def delete(self, domain: str) -> bool:
-        """
-        Delete Golden Ticket from Redis.
+        """Delete Golden Ticket from Redis.
 
         Args:
             domain: Target domain
@@ -605,8 +595,7 @@ class SessionHarvester:
             return False
 
     async def exists(self, domain: str) -> bool:
-        """
-        Check if Golden Ticket exists for domain.
+        """Check if Golden Ticket exists for domain.
 
         Args:
             domain: Target domain
@@ -618,8 +607,7 @@ class SessionHarvester:
         return ticket is not None and not ticket.is_expired
 
     async def get_all_domains(self) -> list[str]:
-        """
-        Get all domains with stored tickets.
+        """Get all domains with stored tickets.
 
         Returns:
             List of domain names

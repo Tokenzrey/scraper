@@ -293,18 +293,18 @@ http {
 
         location / {
             limit_req zone=api burst=20 nodelay;
-            
+
             proxy_pass http://fastapi_backend;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
-            
+
             # Timeouts
             proxy_connect_timeout 60s;
             proxy_send_timeout 60s;
             proxy_read_timeout 60s;
-            
+
             # Buffer settings
             proxy_buffering on;
             proxy_buffer_size 8k;
@@ -354,7 +354,7 @@ server {
 }
 ```
 
-### Load Balancing Multiple Servers  
+### Load Balancing Multiple Servers
 
 For horizontal scaling with multiple FastAPI instances:
 
@@ -389,7 +389,7 @@ upstream fastapi_backend {
     server web1:8000 weight=3;
     server web2:8000 weight=2;
     server web3:8000 weight=1;
-    
+
     # Health checks
     keepalive 32;
 }
@@ -404,7 +404,7 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
+
         # Connection settings for load balancing
         proxy_http_version 1.1;
         proxy_set_header Connection "";
@@ -492,17 +492,16 @@ save 60 10000
 import logging
 from pythonjsonlogger import jsonlogger
 
+
 def setup_production_logging():
     logHandler = logging.StreamHandler()
-    formatter = jsonlogger.JsonFormatter(
-        "%(asctime)s %(name)s %(levelname)s %(message)s"
-    )
+    formatter = jsonlogger.JsonFormatter("%(asctime)s %(name)s %(levelname)s %(message)s")
     logHandler.setFormatter(formatter)
-    
+
     logger = logging.getLogger()
     logger.addHandler(logHandler)
     logger.setLevel(logging.INFO)
-    
+
     # Reduce noise from third-party libraries
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
@@ -516,19 +515,20 @@ import time
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
+
 class MonitoringMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         start_time = time.time()
-        
+
         response = await call_next(request)
-        
+
         process_time = time.time() - start_time
         response.headers["X-Process-Time"] = str(process_time)
-        
+
         # Log slow requests
         if process_time > 1.0:
             logger.warning(f"Slow request: {request.method} {request.url} - {process_time:.2f}s")
-        
+
         return response
 ```
 
@@ -541,14 +541,14 @@ class MonitoringMiddleware(BaseHTTPMiddleware):
 class ProductionSettings(Settings):
     # Hide docs in production
     ENVIRONMENT: str = "production"
-    
+
     # Security settings
     SECRET_KEY: str = Field(..., min_length=32)
     ALLOWED_HOSTS: list[str] = ["your-domain.com", "api.your-domain.com"]
-    
+
     # Database security
     POSTGRES_PASSWORD: str = Field(..., min_length=16)
-    
+
     class Config:
         case_sensitive = True
 ```
@@ -578,14 +578,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Build and push Docker image
         env:
           DOCKER_REGISTRY: your-registry.com
         run: |
           docker build -t $DOCKER_REGISTRY/fastapi-app:latest .
           docker push $DOCKER_REGISTRY/fastapi-app:latest
-      
+
       - name: Deploy to production
         run: |
           # Your deployment commands
@@ -625,12 +625,13 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
+
 @router.get("/metrics")
 async def get_metrics():
     return {
         "cpu_percent": psutil.cpu_percent(),
         "memory_percent": psutil.virtual_memory().percent,
-        "disk_usage": psutil.disk_usage('/').percent
+        "disk_usage": psutil.disk_usage("/").percent,
     }
 ```
 
@@ -670,4 +671,4 @@ find $BACKUP_DIR -name "backup_*.sql.gz" -mtime +7 -delete
 - Optimize Docker image layers
 - Configure proper resource limits
 
-This production guide provides a solid foundation for deploying the FastAPI boilerplate to production environments with proper performance, security, and reliability configurations. 
+This production guide provides a solid foundation for deploying the FastAPI boilerplate to production environments with proper performance, security, and reliability configurations.

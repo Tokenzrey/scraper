@@ -22,7 +22,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from app.services.titan.tiers.botasaurus import (
-    BotasaurusConfig,
     BrowserClient,
     ConfigLoader,
     RequestClient,

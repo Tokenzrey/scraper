@@ -24,7 +24,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 from app.services.titan.tiers.nodriver import (
     ConfigLoader,
     NodriverClient,
-    NodriverConfig,
     Tier3NodriverExecutor,
 )
 
@@ -149,9 +148,7 @@ async def test_error_handling():
     async with Tier3NodriverExecutor(settings=MockSettings()) as executor:
         # Test DNS error
         logger.info("Testing DNS error handling...")
-        result = await executor.execute(
-            "https://this-domain-definitely-does-not-exist-12345.com"
-        )
+        result = await executor.execute("https://this-domain-definitely-does-not-exist-12345.com")
 
         logger.info(f"Success: {result.success}")
         logger.info(f"Error Type: {result.error_type}")
@@ -231,6 +228,7 @@ async def run_all_tests():
 if __name__ == "__main__":
     try:
         import nodriver
+
         logger.info(f"nodriver version: {nodriver.__version__ if hasattr(nodriver, '__version__') else 'unknown'}")
     except ImportError:
         logger.error("nodriver not installed. Install with: pip install nodriver")

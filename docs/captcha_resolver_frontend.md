@@ -7,7 +7,7 @@ Dokumen ini menjelaskan desain lengkap frontend untuk fitur Manual Captcha Resol
 **Tanggal:** 2025-12-15
 **Backend Status:** ✅ IMPLEMENTED (see `captcha_resolver_backend.md`)
 
----
+______________________________________________________________________
 
 **Ringkasan Singkat**
 
@@ -16,31 +16,31 @@ Dokumen ini menjelaskan desain lengkap frontend untuk fitur Manual Captcha Resol
 - Klik kartu membuka `Solver Workspace` — area kerja penuh (iframe atau overlay) di mana operator melihat halaman target dan menyelesaikan challenge.
 - Setelah solusi ditemukan (token, cookie, atau session), frontend mengirimkan payload ke API backend untuk disimpan dan dipakai worker untuk bypass.
 
----
+______________________________________________________________________
 
 ## Backend API Reference (Implemented)
 
 ### REST Endpoints
 
-| Method | Endpoint | Description | Request | Response |
-|--------|----------|-------------|---------|----------|
-| POST | `/api/v1/captcha/tasks` | Create task | `CaptchaTaskCreate` | `CaptchaTaskResponse` |
-| GET | `/api/v1/captcha/tasks` | List tasks | Query params | `CaptchaTaskListResponse` |
-| GET | `/api/v1/captcha/tasks/pending` | Pending tasks | Query params | `CaptchaTaskListResponse` |
-| GET | `/api/v1/captcha/tasks/{uuid}` | Get task | - | `CaptchaTaskResponse` |
-| POST | `/api/v1/captcha/tasks/{uuid}/assign` | Assign task | `CaptchaTaskAssign` | `AssignResponse` |
-| POST | `/api/v1/captcha/tasks/{uuid}/solve` | Submit solution | `CaptchaSolutionSubmit` | `SolveResponse` |
-| POST | `/api/v1/captcha/tasks/{uuid}/mark-unsolvable` | Mark unsolvable | `CaptchaMarkUnsolvable` | Response |
-| GET | `/api/v1/captcha/sessions/{domain}` | Get cached session | - | `SessionResponse` |
-| GET | `/api/v1/captcha/proxy/render/{uuid}` | Proxy render | - | HTML |
-| DELETE | `/api/v1/captcha/expired` | Cleanup expired | - | `CleanupResponse` |
+| Method | Endpoint                                       | Description        | Request                 | Response                  |
+| ------ | ---------------------------------------------- | ------------------ | ----------------------- | ------------------------- |
+| POST   | `/api/v1/captcha/tasks`                        | Create task        | `CaptchaTaskCreate`     | `CaptchaTaskResponse`     |
+| GET    | `/api/v1/captcha/tasks`                        | List tasks         | Query params            | `CaptchaTaskListResponse` |
+| GET    | `/api/v1/captcha/tasks/pending`                | Pending tasks      | Query params            | `CaptchaTaskListResponse` |
+| GET    | `/api/v1/captcha/tasks/{uuid}`                 | Get task           | -                       | `CaptchaTaskResponse`     |
+| POST   | `/api/v1/captcha/tasks/{uuid}/assign`          | Assign task        | `CaptchaTaskAssign`     | `AssignResponse`          |
+| POST   | `/api/v1/captcha/tasks/{uuid}/solve`           | Submit solution    | `CaptchaSolutionSubmit` | `SolveResponse`           |
+| POST   | `/api/v1/captcha/tasks/{uuid}/mark-unsolvable` | Mark unsolvable    | `CaptchaMarkUnsolvable` | Response                  |
+| GET    | `/api/v1/captcha/sessions/{domain}`            | Get cached session | -                       | `SessionResponse`         |
+| GET    | `/api/v1/captcha/proxy/render/{uuid}`          | Proxy render       | -                       | HTML                      |
+| DELETE | `/api/v1/captcha/expired`                      | Cleanup expired    | -                       | `CleanupResponse`         |
 
 ### WebSocket Endpoints
 
-| Endpoint | Description |
-|----------|-------------|
-| `/ws/captcha` | All CAPTCHA events (real-time) |
-| `/ws/captcha/{domain}` | Domain-specific events |
+| Endpoint               | Description                    |
+| ---------------------- | ------------------------------ |
+| `/ws/captcha`          | All CAPTCHA events (real-time) |
+| `/ws/captcha/{domain}` | Domain-specific events         |
 
 ### Event Types
 
@@ -56,7 +56,7 @@ type CaptchaEventType =
   | "session_expired";
 ```
 
----
+______________________________________________________________________
 
 **Arsitektur Halaman & Komponen**
 
@@ -69,6 +69,7 @@ type CaptchaEventType =
   - Layout: header (search + filter), main grid, sidebar (detail selected item / logs), footer (bulk actions).
 
 - `CaptchaSolverPage` (modal/route: `/captchas/:id/solve`)
+
   - Fungsi: workspace penuh untuk menyelesaikan CAPTCHA.
   - Behavior: buka sebagai modal atau route penuh; menyediakan toolbar Solve/Skip/Mark-Fail, keyboard shortcuts.
 
@@ -115,6 +116,7 @@ type CaptchaEventType =
   - Shortcuts: `Ctrl+Enter` untuk submit, `Esc` untuk close.
 
 - `AuditTrail` / `TaskLogs`
+
   - Show chronological events: created_at, assigned_to, opened_at, solved_at, solver_user, last_attempt.
 
 3. Hooks (React) / Data Layer
@@ -313,7 +315,7 @@ interface SessionResponse {
 - If frame cannot load target due to X-Frame-Options, backend should attempt to fetch and render sanitized HTML preview with interactive elements replaced by screenshots plus form inputs for operator to replicate actions.
 - If operator marks `unsolvable`, the system should provide reason codes and optionally requeue to fallback solver (paid service) or escalate.
 
----
+______________________________________________________________________
 
 ## API Integration Examples
 
@@ -419,7 +421,7 @@ export async function getCachedSession(domain: string): Promise<SessionResponse>
 }
 ```
 
----
+______________________________________________________________________
 
 ## Implementation Notes & Recommendations
 
@@ -428,7 +430,7 @@ export async function getCachedSession(domain: string): Promise<SessionResponse>
 - Use WebSocket `/ws/captcha` for real-time updates instead of polling.
 - Keep the solver UI minimal and focused — operator efficiency is key.
 
----
+______________________________________________________________________
 
 **Appendix — Wireframe (textual)**
 
@@ -488,10 +490,11 @@ export async function getCachedSession(domain: string): Promise<SessionResponse>
 └────────────────────────────────────┴─────────────────────────────┘
 ```
 
----
+______________________________________________________________________
 
 **Status:** Backend API fully implemented. Ready for frontend development.
 
 See also:
+
 - `captcha_resolver_backend.md` - Full backend implementation details
 - `scraper_frontend_integration.md` - Scraper UI integration

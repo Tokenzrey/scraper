@@ -1,4 +1,4 @@
-"""Update captcha_task for manual resolver system
+"""Update captcha_task for manual resolver system.
 
 Revision ID: a1b2c3d4e5f6
 Revises: 8f3a2b4c5d6e
@@ -18,15 +18,14 @@ This migration adds new fields to support the full Manual CAPTCHA Resolver:
 """
 
 from collections.abc import Sequence
-from typing import Union
 
 from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "a1b2c3d4e5f6"
-down_revision: Union[str, None] = "8f3a2b4c5d6e"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "8f3a2b4c5d6e"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

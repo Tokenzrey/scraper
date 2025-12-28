@@ -156,18 +156,18 @@ The admin panel automatically adapts its security settings based on your deploym
 ```bash
 # Environment setting affects security behavior
 ENVIRONMENT="local"                         # Development mode
-ENVIRONMENT="staging"                       # Staging mode  
+ENVIRONMENT="staging"                       # Staging mode
 ENVIRONMENT="production"                    # Production mode with enhanced security
 ```
 
 **Security changes by environment:**
 
-| Setting | Local | Staging | Production |
-|---------|-------|---------|------------|
-| **HTTPS Enforcement** | Disabled | Optional | Enabled |
-| **Secure Cookies** | Optional | Recommended | Required |
-| **Session Tracking** | Optional | Recommended | Enabled |
-| **Event Logging** | Optional | Recommended | Enabled |
+| Setting               | Local    | Staging     | Production |
+| --------------------- | -------- | ----------- | ---------- |
+| **HTTPS Enforcement** | Disabled | Optional    | Enabled    |
+| **Secure Cookies**    | Optional | Recommended | Required   |
+| **Session Tracking**  | Optional | Recommended | Enabled    |
+| **Event Logging**     | Optional | Recommended | Enabled    |
 
 ### Audit and Tracking
 
@@ -192,7 +192,7 @@ The boilerplate supports IP and network-based access restrictions (configured in
 # In src/app/admin/initialize.py - customize as needed
 admin = CRUDAdmin(
     # ... other settings ...
-    allowed_ips=settings.CRUD_ADMIN_ALLOWED_IPS_LIST,      # Specific IP addresses
+    allowed_ips=settings.CRUD_ADMIN_ALLOWED_IPS_LIST,  # Specific IP addresses
     allowed_networks=settings.CRUD_ADMIN_ALLOWED_NETWORKS_LIST,  # CIDR network ranges
 )
 ```
@@ -223,7 +223,7 @@ The admin panel automatically inherits settings from your application:
 ```python
 # In src/app/admin/initialize.py
 admin = CRUDAdmin(
-    session=async_get_db,                   # Your app's database session
+    session=async_get_db,  # Your app's database session
     SECRET_KEY=settings.SECRET_KEY.get_secret_value(),  # Your app's secret key
     enforce_https=settings.ENVIRONMENT == EnvironmentOption.PRODUCTION,
     # ... other settings from your app configuration
@@ -314,13 +314,13 @@ services:
       - ENVIRONMENT=production
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      
+
       # Redis connection
       - CRUD_ADMIN_REDIS_ENABLED=true
       - CRUD_ADMIN_REDIS_HOST=redis
       - CRUD_ADMIN_REDIS_PORT=6379
       - CRUD_ADMIN_REDIS_PASSWORD=${REDIS_PASSWORD}
-      
+
     depends_on:
       - redis
       - postgres
@@ -346,6 +346,7 @@ The boilerplate automatically validates your configuration at startup and provid
 ### Common Configuration Issues
 
 **Missing Required Variables:**
+
 ```bash
 # Error: Admin credentials not provided
 # Solution: Add to .env
@@ -354,6 +355,7 @@ ADMIN_PASSWORD="your-password"
 ```
 
 **Invalid Redis Configuration:**
+
 ```bash
 # Error: Redis connection failed
 # Check Redis server and credentials
@@ -362,6 +364,7 @@ CRUD_ADMIN_REDIS_PASSWORD="correct-password"
 ```
 
 **Security Warnings:**
+
 ```bash
 # Warning: Weak admin password
 # Use stronger password with mixed case, numbers, symbols
@@ -373,6 +376,6 @@ ADMIN_PASSWORD="StrongerPassword123!"
 With your admin panel configured, you're ready to:
 
 1. **[Adding Models](adding-models.md)** - Register your application models with the admin interface
-2. **[User Management](user-management.md)** - Manage admin users and implement security best practices
+1. **[User Management](user-management.md)** - Manage admin users and implement security best practices
 
-The configuration system provides flexibility for any deployment scenario while maintaining consistency across environments. 
+The configuration system provides flexibility for any deployment scenario while maintaining consistency across environments.

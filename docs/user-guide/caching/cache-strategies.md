@@ -98,13 +98,14 @@ async def update_user_profile(request: Request, user_id: int, profile_data: Prof
 ```
 
 **Pattern Examples:**
+
 ```python
 # User-specific patterns
 "user_{user_id}_posts_*"        # All paginated post lists for user
 "user_{user_id}_*_cache"        # All cached data for user
 "*_following_{user_id}"          # All caches tracking this user's followers
 
-# Content patterns  
+# Content patterns
 "posts_category_{category_id}_*" # All posts in category
 "comments_post_{post_id}_*"      # All comments for post
 "search_*_{query}"               # All search results for query
@@ -125,57 +126,57 @@ Cache warming proactively loads data into cache to avoid cache misses during pea
 # core/startup.py
 async def warm_critical_caches():
     """Warm up critical caches during application startup."""
-    
+
     logger.info("Starting cache warming...")
-    
+
     # Warm up reference data
     await warm_reference_data()
-    
+
     # Warm up popular content
     await warm_popular_content()
-    
+
     # Warm up user session data for active users
     await warm_active_user_data()
-    
+
     logger.info("Cache warming completed")
 
 async def warm_reference_data():
     """Warm up reference data that rarely changes."""
-    
+
     # Countries, currencies, timezones, etc.
     reference_data = await crud_reference.get_all_countries()
     for country in reference_data:
         cache_key = f"country:{country['code']}"
         await cache.client.set(cache_key, json.dumps(country), ex=86400)  # 24 hours
-    
+
     # Categories
     categories = await crud_categories.get_all()
     await cache.client.set("all_categories", json.dumps(categories), ex=3600)
 
 async def warm_popular_content():
     """Warm up frequently accessed content."""
-    
+
     # Most viewed posts
     popular_posts = await crud_posts.get_popular(limit=100)
     for post in popular_posts:
         cache_key = f"post_cache:{post['id']}"
         await cache.client.set(cache_key, json.dumps(post), ex=1800)
-    
+
     # Trending topics
     trending = await crud_posts.get_trending_topics(limit=50)
     await cache.client.set("trending_topics", json.dumps(trending), ex=600)
 
 async def warm_active_user_data():
     """Warm up data for recently active users."""
-    
+
     # Get users active in last 24 hours
     active_users = await crud_users.get_recently_active(hours=24)
-    
+
     for user in active_users:
         # Warm user profile
         profile_key = f"user_profile:{user['id']}"
         await cache.client.set(profile_key, json.dumps(user), ex=3600)
-        
+
         # Warm user's recent posts
         user_posts = await crud_posts.get_user_posts(user['id'], limit=10)
         posts_key = f"user_{user['id']}_posts:page_1"
@@ -188,4 +189,4 @@ async def startup_event():
     await warm_critical_caches()
 ```
 
-These cache strategies provide a comprehensive approach to building performant, consistent caching systems that scale with your application's needs while maintaining data integrity. 
+These cache strategies provide a comprehensive approach to building performant, consistent caching systems that scale with your application's needs while maintaining data integrity.

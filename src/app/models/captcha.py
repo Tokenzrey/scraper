@@ -1,5 +1,4 @@
-"""
-CAPTCHA Task Model for Manual CAPTCHA Solving System
+"""CAPTCHA Task Model for Manual CAPTCHA Solving System.
 
 This model stores CAPTCHA challenges that need manual solving.
 Cloudflare Turnstile can't be automatically bypassed, so we queue
@@ -55,8 +54,7 @@ class CaptchaSolutionType(str, Enum):
 
 
 class CaptchaTask(Base):
-    """
-    CAPTCHA challenge queue for manual solving.
+    """CAPTCHA challenge queue for manual solving.
 
     When Tier 3 encounters a Cloudflare Turnstile or similar CAPTCHA
     that can't be bypassed automatically, it creates a CaptchaTask.

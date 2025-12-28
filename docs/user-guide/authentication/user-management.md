@@ -22,39 +22,39 @@ The registration endpoint performs several validation steps before creating a us
 # User registration endpoint
 @router.post("/user", response_model=UserRead, status_code=201)
 async def write_user(
-    user: UserCreate, 
+    user: UserCreate,
     db: AsyncSession
 ) -> UserRead:
     # 1. Check if email exists
     email_row = await crud_users.exists(db=db, email=user.email)
     if email_row:
         raise DuplicateValueException("Email is already registered")
-    
+
     # 2. Check if username exists
     username_row = await crud_users.exists(db=db, username=user.username)
     if username_row:
         raise DuplicateValueException("Username not available")
-    
+
     # 3. Hash password
     user_internal_dict = user.model_dump()
     user_internal_dict["hashed_password"] = get_password_hash(
         password=user_internal_dict["password"]
     )
     del user_internal_dict["password"]
-    
+
     # 4. Create user
     user_internal = UserCreateInternal(**user_internal_dict)
     created_user = await crud_users.create(db=db, object=user_internal)
-    
+
     return created_user
 ```
 
 **Security Steps Explained:**
 
 1. **Email Uniqueness**: Prevents multiple accounts with the same email, which could cause confusion and security issues
-2. **Username Uniqueness**: Ensures usernames are unique identifiers within your system
-3. **Password Hashing**: Converts plain text passwords into secure hashes before database storage
-4. **Data Separation**: Plain text passwords are immediately removed from memory after hashing
+1. **Username Uniqueness**: Ensures usernames are unique identifiers within your system
+1. **Password Hashing**: Converts plain text passwords into secure hashes before database storage
+1. **Data Separation**: Plain text passwords are immediately removed from memory after hashing
 
 ### Registration Schema
 
@@ -64,7 +64,7 @@ The registration schema defines what data is required and how it's validated. Th
 # User registration input
 class UserCreate(UserBase):
     model_config = ConfigDict(extra="forbid")
-    
+
     password: Annotated[
         str,
         Field(
@@ -97,14 +97,14 @@ async def authenticate_user(username_or_email: str, password: str, db: AsyncSess
         db_user = await crud_users.get(db=db, email=username_or_email, is_deleted=False)
     else:
         db_user = await crud_users.get(db=db, username=username_or_email, is_deleted=False)
-    
+
     if not db_user:
         return False
-    
+
     # 2. Verify password
     if not await verify_password(password, db_user["hashed_password"]):
         return False
-    
+
     return db_user
 ```
 
@@ -124,7 +124,7 @@ import bcrypt
 async def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against its hash."""
     correct_password: bool = bcrypt.checkpw(
-        plain_password.encode(), 
+        plain_password.encode(),
         hashed_password.encode()
     )
     return correct_password
@@ -132,7 +132,7 @@ async def verify_password(plain_password: str, hashed_password: str) -> bool:
 def get_password_hash(password: str) -> str:
     """Generate password hash with salt."""
     hashed_password: str = bcrypt.hashpw(
-        password.encode(), 
+        password.encode(),
         bcrypt.gensalt()
     ).decode()
     return hashed_password
@@ -159,7 +159,7 @@ function validatePassword(password) {
     const hasUpper = /[A-Z]/.test(password);
     const hasLower = /[a-z]/.test(password);
     const hasSpecial = /[^a-zA-Z0-9]/.test(password);
-    
+
     return minLength && hasNumber && hasUpper && hasLower && hasSpecial;
 }
 ```
@@ -191,7 +191,7 @@ async function getCurrentUser() {
             'Authorization': `Bearer ${token}`
         }
     });
-    
+
     if (response.ok) {
         return await response.json();
     }
@@ -221,22 +221,22 @@ async def patch_user(
     db_user = await crud_users.get(db=db, username=username, schema_to_select=UserRead)
     if db_user is None:
         raise NotFoundException("User not found")
-    
+
     # 2. Check ownership (users can only update their own profile)
     if db_user["username"] != current_user["username"]:
         raise ForbiddenException("Cannot update other users")
-    
+
     # 3. Validate unique constraints
     if values.username and values.username != db_user["username"]:
         existing_username = await crud_users.exists(db=db, username=values.username)
         if existing_username:
             raise DuplicateValueException("Username not available")
-    
+
     if values.email and values.email != db_user["email"]:
         existing_email = await crud_users.exists(db=db, email=values.email)
         if existing_email:
             raise DuplicateValueException("Email is already registered")
-    
+
     # 4. Update user
     await crud_users.update(db=db, object=values, username=username)
     return {"message": "User updated"}
@@ -245,9 +245,9 @@ async def patch_user(
 **Security Measures:**
 
 1. **Ownership Verification**: Users can only update their own profiles
-2. **Uniqueness Checks**: Prevents conflicts when changing username/email
-3. **Partial Updates**: Only provided fields are updated
-4. **Input Validation**: Pydantic schemas validate all input data
+1. **Uniqueness Checks**: Prevents conflicts when changing username/email
+1. **Partial Updates**: Only provided fields are updated
+1. **Input Validation**: Pydantic schemas validate all input data
 
 ## User Deletion
 
@@ -269,17 +269,17 @@ async def erase_user(
     db_user = await crud_users.get(db=db, username=username, schema_to_select=UserRead)
     if not db_user:
         raise NotFoundException("User not found")
-    
+
     # 2. Check ownership
     if username != current_user["username"]:
         raise ForbiddenException()
-    
+
     # 3. Soft delete user
     await crud_users.delete(db=db, username=username)
-    
+
     # 4. Blacklist current token
     await blacklist_token(token=token, db=db)
-    
+
     return {"message": "User deleted"}
 ```
 
@@ -305,13 +305,13 @@ async def erase_db_user(
     db_user = await crud_users.exists(db=db, username=username)
     if not db_user:
         raise NotFoundException("User not found")
-    
+
     # 2. Hard delete from database
     await crud_users.db_delete(db=db, username=username)
-    
+
     # 3. Blacklist current token
     await blacklist_token(token=token, db=db)
-    
+
     return {"message": "User deleted from the database"}
 ```
 
@@ -328,8 +328,8 @@ async def erase_db_user(
 ```python
 @router.get("/users", response_model=PaginatedListResponse[UserRead])
 async def read_users(
-    db: AsyncSession = Depends(async_get_db), 
-    page: int = 1, 
+    db: AsyncSession = Depends(async_get_db),
+    page: int = 1,
     items_per_page: int = 10
 ) -> dict:
     users_data = await crud_users.get_multi(
@@ -338,10 +338,10 @@ async def read_users(
         limit=items_per_page,
         is_deleted=False,
     )
-    
+
     response: dict[str, Any] = paginated_response(
-        crud_data=users_data, 
-        page=page, 
+        crud_data=users_data,
+        page=page,
         items_per_page=items_per_page
     )
     return response
@@ -352,18 +352,18 @@ async def read_users(
 ```python
 @router.get("/user/{username}", response_model=UserRead)
 async def read_user(
-    username: str, 
+    username: str,
     db: AsyncSession = Depends(async_get_db)
 ) -> UserRead:
     db_user = await crud_users.get(
-        db=db, 
-        username=username, 
-        is_deleted=False, 
+        db=db,
+        username=username,
+        is_deleted=False,
         schema_to_select=UserRead
     )
     if db_user is None:
         raise NotFoundException("User not found")
-    
+
     return db_user
 ```
 
@@ -372,30 +372,30 @@ async def read_user(
 ```python
 @router.get("/user/{username}/tier")
 async def read_user_tier(
-    username: str, 
+    username: str,
     db: AsyncSession = Depends(async_get_db)
 ) -> dict | None:
     # 1. Get user
     db_user = await crud_users.get(db=db, username=username, schema_to_select=UserRead)
     if db_user is None:
         raise NotFoundException("User not found")
-    
+
     # 2. Return None if no tier assigned
     if db_user["tier_id"] is None:
         return None
-    
+
     # 3. Get tier information
     db_tier = await crud_tiers.get(db=db, id=db_user["tier_id"], schema_to_select=TierRead)
     if not db_tier:
         raise NotFoundException("Tier not found")
-    
+
     # 4. Combine user and tier data
     user_dict = dict(db_user)  # Convert to dict if needed
     tier_dict = dict(db_tier)  # Convert to dict if needed
-    
+
     for key, value in tier_dict.items():
         user_dict[f"tier_{key}"] = value
-    
+
     return user_dict
 ```
 
@@ -406,20 +406,20 @@ async def read_user_tier(
 ```python
 @router.patch("/user/{username}/tier", dependencies=[Depends(get_current_superuser)])
 async def patch_user_tier(
-    username: str, 
-    values: UserTierUpdate, 
+    username: str,
+    values: UserTierUpdate,
     db: AsyncSession = Depends(async_get_db)
 ) -> dict[str, str]:
     # 1. Verify user exists
     db_user = await crud_users.get(db=db, username=username, schema_to_select=UserRead)
     if db_user is None:
         raise NotFoundException("User not found")
-    
+
     # 2. Verify tier exists
     tier_exists = await crud_tiers.exists(db=db, id=values.tier_id)
     if not tier_exists:
         raise NotFoundException("Tier not found")
-    
+
     # 3. Update user tier
     await crud_users.update(db=db, object=values, username=username)
     return {"message": "User tier updated"}
@@ -434,29 +434,29 @@ class UserTierUpdate(BaseModel):
 ```python
 @router.get("/user/{username}/rate_limits", dependencies=[Depends(get_current_superuser)])
 async def read_user_rate_limits(
-    username: str, 
+    username: str,
     db: AsyncSession = Depends(async_get_db)
 ) -> dict[str, Any]:
     # 1. Get user
     db_user = await crud_users.get(db=db, username=username, schema_to_select=UserRead)
     if db_user is None:
         raise NotFoundException("User not found")
-    
+
     user_dict = dict(db_user)  # Convert to dict if needed
-    
+
     # 2. No tier assigned
     if db_user["tier_id"] is None:
         user_dict["tier_rate_limits"] = []
         return user_dict
-    
+
     # 3. Get tier and rate limits
     db_tier = await crud_tiers.get(db=db, id=db_user["tier_id"], schema_to_select=TierRead)
     if db_tier is None:
         raise NotFoundException("Tier not found")
-    
+
     db_rate_limits = await crud_rate_limits.get_multi(db=db, tier_id=db_tier["id"])
     user_dict["tier_rate_limits"] = db_rate_limits["data"]
-    
+
     return user_dict
 ```
 
@@ -467,7 +467,7 @@ async def read_user_rate_limits(
 ```python
 class User(Base):
     __tablename__ = "user"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
     username: Mapped[str] = mapped_column(String(20), unique=True, index=True)
@@ -476,15 +476,15 @@ class User(Base):
     profile_image_url: Mapped[str] = mapped_column(default="https://www.profileimageurl.com")
     is_superuser: Mapped[bool] = mapped_column(default=False)
     tier_id: Mapped[int | None] = mapped_column(ForeignKey("tier.id"), default=None)
-    
+
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
     updated_at: Mapped[datetime | None] = mapped_column(default=None)
-    
+
     # Soft delete
     is_deleted: Mapped[bool] = mapped_column(default=False)
     deleted_at: Mapped[datetime | None] = mapped_column(default=None)
-    
+
     # Relationships
     tier: Mapped["Tier"] = relationship(back_populates="users")
     posts: Mapped[list["Post"]] = relationship(back_populates="created_by_user")
@@ -536,7 +536,7 @@ user_exists = await crud_users.exists(db=db, id=123)
 ```python
 # Get active users only
 active_users = await crud_users.get_multi(
-    db=db, 
+    db=db,
     is_deleted=False,
     limit=10
 )
@@ -562,17 +562,17 @@ superusers = await crud_users.get_multi(
 async def get_user_stats(db: AsyncSession) -> dict:
     # Total users
     total_users = await crud_users.count(db=db, is_deleted=False)
-    
+
     # Active users (logged in recently)
     # This would require tracking last_login_at
-    
+
     # Users by tier
     tier_stats = {}
     tiers = await crud_tiers.get_multi(db=db)
     for tier in tiers["data"]:
         count = await crud_users.count(db=db, tier_id=tier["id"], is_deleted=False)
         tier_stats[tier["name"]] = count
-    
+
     return {
         "total_users": total_users,
         "tier_distribution": tier_stats
@@ -589,7 +589,7 @@ class UserManager {
         this.baseUrl = baseUrl;
         this.token = localStorage.getItem('access_token');
     }
-    
+
     async register(userData) {
         const response = await fetch(`${this.baseUrl}/user`, {
             method: 'POST',
@@ -598,15 +598,15 @@ class UserManager {
             },
             body: JSON.stringify(userData)
         });
-        
+
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.detail);
         }
-        
+
         return await response.json();
     }
-    
+
     async login(username, password) {
         const response = await fetch(`${this.baseUrl}/login`, {
             method: 'POST',
@@ -618,33 +618,33 @@ class UserManager {
                 password: password
             })
         });
-        
+
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.detail);
         }
-        
+
         const tokens = await response.json();
         localStorage.setItem('access_token', tokens.access_token);
         this.token = tokens.access_token;
-        
+
         return tokens;
     }
-    
+
     async getProfile() {
         const response = await fetch(`${this.baseUrl}/user/me/`, {
             headers: {
                 'Authorization': `Bearer ${this.token}`
             }
         });
-        
+
         if (!response.ok) {
             throw new Error('Failed to get profile');
         }
-        
+
         return await response.json();
     }
-    
+
     async updateProfile(username, updates) {
         const response = await fetch(`${this.baseUrl}/user/${username}`, {
             method: 'PATCH',
@@ -654,15 +654,15 @@ class UserManager {
             },
             body: JSON.stringify(updates)
         });
-        
+
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.detail);
         }
-        
+
         return await response.json();
     }
-    
+
     async deleteAccount(username) {
         const response = await fetch(`${this.baseUrl}/user/${username}`, {
             method: 'DELETE',
@@ -670,19 +670,19 @@ class UserManager {
                 'Authorization': `Bearer ${this.token}`
             }
         });
-        
+
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.detail);
         }
-        
+
         // Clear local storage
         localStorage.removeItem('access_token');
         this.token = null;
-        
+
         return await response.json();
     }
-    
+
     async logout() {
         const response = await fetch(`${this.baseUrl}/logout`, {
             method: 'POST',
@@ -690,11 +690,11 @@ class UserManager {
                 'Authorization': `Bearer ${this.token}`
             }
         });
-        
+
         // Clear local storage regardless of response
         localStorage.removeItem('access_token');
         this.token = null;
-        
+
         if (response.ok) {
             return await response.json();
         }
@@ -721,7 +721,7 @@ try {
 try {
     const tokens = await userManager.login('johndoe', 'SecurePass123!');
     console.log('Login successful');
-    
+
     // Get profile
     const profile = await userManager.getProfile();
     console.log('User profile:', profile);
@@ -769,7 +769,7 @@ async def login_for_access_token():
 def sanitize_user_input(user_data: dict) -> dict:
     """Sanitize user input to prevent XSS and injection."""
     import html
-    
+
     sanitized = {}
     for key, value in user_data.items():
         if isinstance(value, str):
@@ -777,7 +777,7 @@ def sanitize_user_input(user_data: dict) -> dict:
             sanitized[key] = html.escape(value.strip())
         else:
             sanitized[key] = value
-    
+
     return sanitized
 ```
 
@@ -786,8 +786,8 @@ def sanitize_user_input(user_data: dict) -> dict:
 Now that you understand user management:
 
 1. **[Permissions](permissions.md)** - Learn about role-based access control and authorization
-2. **[Production Guide](../production.md)** - Implement production-grade security measures
-3. **[JWT Tokens](jwt-tokens.md)** - Review token management if needed
+1. **[Production Guide](../production.md)** - Implement production-grade security measures
+1. **[JWT Tokens](jwt-tokens.md)** - Review token management if needed
 
 User management provides the core functionality for authentication systems. Master these patterns before implementing advanced permission systems.
 
@@ -803,7 +803,7 @@ async def my_endpoint(current_user: dict = Depends(get_current_user)):
     return {"user_specific_data": f"Hello {current_user['username']}"}
 
 # Optional authentication for public endpoints
-@router.get("/public-endpoint") 
+@router.get("/public-endpoint")
 async def public_endpoint(user: dict | None = Depends(get_optional_user)):
     if user:
         return {"message": f"Hello {user['username']}", "premium_features": True}
@@ -816,7 +816,7 @@ async def public_endpoint(user: dict | None = Depends(get_optional_user)):
 # 1. User registration
 user_data = UserCreate(
     name="John Doe",
-    username="johndoe", 
+    username="johndoe",
     email="john@example.com",
     password="SecurePassword123!"
 )
@@ -838,7 +838,7 @@ response = requests.get("/api/v1/users/me", headers=headers)
 response = requests.post("/api/v1/refresh")  # Uses refresh token cookie
 new_access_token = response.json()["access_token"]
 
-# 6. Secure logout (blacklists both tokens)  
+# 6. Secure logout (blacklists both tokens)
 await logout_user(access_token=access_token, refresh_token=refresh_token, db=db)
 ```
 
@@ -849,7 +849,7 @@ def check_user_permission(user: dict, required_tier: str = None):
     """Check if user has required permissions."""
     if not user.get("is_active", True):
         raise UnauthorizedException("User account is disabled")
-    
+
     if required_tier and user.get("tier", {}).get("name") != required_tier:
         raise ForbiddenException(f"Requires {required_tier} tier")
 
@@ -876,4 +876,4 @@ async def get_dashboard(user_with_posts: dict = Depends(get_user_with_posts)):
         "user": user_with_posts,
         "post_count": len(user_with_posts["posts"])
     }
-``` 
+```

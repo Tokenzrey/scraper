@@ -18,8 +18,8 @@ Make sure you have installed:
 Start by using this template for your new project:
 
 1. Click **"Use this template"** on the [GitHub repository](https://github.com/benavlabs/fastapi-boilerplate)
-2. Create a new repository with your project name
-3. Clone your new repository:
+1. Create a new repository with your project name
+1. Clone your new repository:
 
 ```bash
 git clone https://github.com/yourusername/your-project-name
@@ -73,7 +73,7 @@ ENVIRONMENT="local"
 ```
 
 !!! warning "Security Note"
-    Generate a secure secret key using: `openssl rand -hex 32`
+Generate a secure secret key using: `openssl rand -hex 32`
 
 ### 3. Start the Application
 
@@ -84,8 +84,9 @@ docker compose up
 ```
 
 This will start:
+
 - **FastAPI server** on port 8000
-- **PostgreSQL database** 
+- **PostgreSQL database**
 - **Redis** for caching and job queues
 - **Worker** for background tasks
 
@@ -123,16 +124,19 @@ Congratulations! You now have a fully functional FastAPI application with:
 Try these quick tests to see your API in action:
 
 ### 1. Health Check
+
 ```bash
 curl http://localhost:8000/api/v1/health
 ```
 
 ### 2. Ready Check
+
 ```bash
 curl http://localhost:8000/api/v1/ready
 ```
 
 ### 3. Create a User
+
 ```bash
 curl -X POST "http://localhost:8000/api/v1/users" \
   -H "Content-Type: application/json" \
@@ -145,6 +149,7 @@ curl -X POST "http://localhost:8000/api/v1/users" \
 ```
 
 ### 4. Login
+
 ```bash
 curl -X POST "http://localhost:8000/api/v1/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
@@ -156,17 +161,20 @@ curl -X POST "http://localhost:8000/api/v1/login" \
 Now that you have the basics running, explore these guides to learn more:
 
 ### Essential Reading
+
 - **[Configuration Guide](configuration.md)** - Understand all configuration options
 - **[Project Structure](../user-guide/project-structure.md)** - Learn how the code is organized
 - **[Authentication](../user-guide/authentication/index.md)** - Set up user management
 
 ### Popular Features
+
 - **[Database Operations](../user-guide/database/index.md)** - Working with models and CRUD
 - **[Caching](../user-guide/caching/index.md)** - Speed up your API with Redis caching
 - **[Background Tasks](../user-guide/background-tasks/index.md)** - Process jobs asynchronously
 - **[Rate Limiting](../user-guide/rate-limiting/index.md)** - Protect your API from abuse
 
 ### Development & Deployment
+
 - **[Development Guide](../user-guide/development.md)** - Extend and customize the boilerplate
 - **[Testing](../user-guide/testing.md)** - Write tests for your API
 - **[Production Deployment](../user-guide/production.md)** - Deploy to production
@@ -182,6 +190,6 @@ Not using Docker? No problem!
 - Join our **[Discord Community](../community.md)** - Get help from other developers
 - Report issues on **[GitHub](https://github.com/benavlabs/fastapi-boilerplate/issues)**
 
----
+______________________________________________________________________
 
-**Ready to dive deeper?** Continue with the [detailed installation guide](installation.md) or explore the [user guide](../user-guide/index.md). 
+**Ready to dive deeper?** Continue with the [detailed installation guide](installation.md) or explore the [user guide](../user-guide/index.md).

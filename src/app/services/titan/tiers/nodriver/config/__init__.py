@@ -41,8 +41,7 @@ logger = logging.getLogger(__name__)
 
 
 class NodriverConfig(BaseModel):
-    """
-    Complete Nodriver configuration model.
+    """Complete Nodriver configuration model.
 
     Contains version info and Tier 3 configuration.
     """
@@ -52,8 +51,7 @@ class NodriverConfig(BaseModel):
 
 
 class ConfigLoader:
-    """
-    Configuration loader for Nodriver Data Bank.
+    """Configuration loader for Nodriver Data Bank.
 
     Provides static methods to load configuration from files or dicts,
     with validation and sensible defaults.
@@ -73,8 +71,7 @@ class ConfigLoader:
 
     @classmethod
     def from_file(cls, path: str | Path) -> NodriverConfig:
-        """
-        Load configuration from a JSON file.
+        """Load configuration from a JSON file.
 
         Args:
             path: Path to the JSON configuration file
@@ -92,7 +89,7 @@ class ConfigLoader:
             raise FileNotFoundError(f"Configuration file not found: {path}")
 
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 data = json.load(f)
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON in configuration file: {e}") from e
@@ -102,8 +99,7 @@ class ConfigLoader:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> NodriverConfig:
-        """
-        Load configuration from a dictionary.
+        """Load configuration from a dictionary.
 
         Args:
             data: Configuration dictionary
@@ -123,8 +119,7 @@ class ConfigLoader:
 
     @classmethod
     def default(cls) -> NodriverConfig:
-        """
-        Get default configuration.
+        """Get default configuration.
 
         Returns:
             NodriverConfig with default values
@@ -133,8 +128,7 @@ class ConfigLoader:
 
     @classmethod
     def from_default_file(cls) -> NodriverConfig:
-        """
-        Load configuration from the default databank.json file.
+        """Load configuration from the default databank.json file.
 
         Returns:
             NodriverConfig instance
@@ -159,8 +153,7 @@ class ConfigLoader:
         base: NodriverConfig,
         overrides: dict[str, Any],
     ) -> NodriverConfig:
-        """
-        Merge override values into a base configuration.
+        """Merge override values into a base configuration.
 
         Args:
             base: Base configuration

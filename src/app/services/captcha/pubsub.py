@@ -1,5 +1,4 @@
-"""
-CAPTCHA Pub/Sub Service
+"""CAPTCHA Pub/Sub Service.
 
 Provides Redis pub/sub functionality for real-time CAPTCHA events:
 - task_created: New task added to queue
@@ -39,8 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 class CaptchaPubSubService:
-    """
-    Redis Pub/Sub service for CAPTCHA events.
+    """Redis Pub/Sub service for CAPTCHA events.
 
     Handles publishing events when tasks change state and provides
     subscription for workers and WebSocket handlers.
@@ -56,8 +54,7 @@ class CaptchaPubSubService:
     """
 
     def __init__(self, redis_client):
-        """
-        Initialize pub/sub service.
+        """Initialize pub/sub service.
 
         Args:
             redis_client: Async Redis client.
@@ -89,8 +86,7 @@ class CaptchaPubSubService:
     # =========================================================================
 
     async def _publish(self, event_type: CaptchaEventType, payload: dict[str, Any]) -> int:
-        """
-        Publish an event to the captcha events channel.
+        """Publish an event to the captcha events channel.
 
         Args:
             event_type: Type of event.
@@ -274,8 +270,7 @@ class CaptchaPubSubService:
     # =========================================================================
 
     async def subscribe(self) -> AsyncGenerator[dict[str, Any], None]:
-        """
-        Subscribe to captcha events.
+        """Subscribe to captcha events.
 
         Yields events as they arrive. Automatically reconnects on errors.
 
@@ -311,8 +306,7 @@ class CaptchaPubSubService:
         event_types: list[CaptchaEventType] | None = None,
         timeout: float | None = None,
     ) -> AsyncGenerator[dict[str, Any], None]:
-        """
-        Subscribe to events for a specific domain.
+        """Subscribe to events for a specific domain.
 
         Filters events by domain and optionally by event type.
 
@@ -375,8 +369,7 @@ class CaptchaPubSubService:
         domain: str,
         timeout: float | None = None,
     ) -> dict[str, Any] | None:
-        """
-        Wait for a solution event for a specific domain.
+        """Wait for a solution event for a specific domain.
 
         Convenience method for workers waiting for CAPTCHA to be solved.
 
@@ -403,8 +396,7 @@ _pubsub_service: CaptchaPubSubService | None = None
 
 
 def get_pubsub_service(redis_client=None) -> CaptchaPubSubService | None:
-    """
-    Get or create the global pub/sub service.
+    """Get or create the global pub/sub service.
 
     Args:
         redis_client: Redis client for first initialization.

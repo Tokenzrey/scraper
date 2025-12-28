@@ -1,5 +1,4 @@
-"""
-CAPTCHA Proxy Engine Service
+"""CAPTCHA Proxy Engine Service.
 
 This service provides a reverse proxy that:
 1. Fetches target website using curl_cffi with browser impersonation
@@ -27,8 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 class CaptchaProxyService:
-    """
-    Reverse proxy service for CAPTCHA solver iframe.
+    """Reverse proxy service for CAPTCHA solver iframe.
 
     Uses curl_cffi to fetch target pages with browser impersonation,
     strips security headers that prevent iframe embedding, and captures
@@ -61,8 +59,7 @@ class CaptchaProxyService:
     CLEARANCE_COOKIES = {"cf_clearance", "__cf_bm", "cf_chl_rc_m"}
 
     def __init__(self, redis_client=None):
-        """
-        Initialize proxy service.
+        """Initialize proxy service.
 
         Args:
             redis_client: Redis client for session caching.
@@ -99,8 +96,7 @@ class CaptchaProxyService:
         user_agent: str | None = None,
         domain: str | None = None,
     ) -> Response:
-        """
-        Fetch target URL and stream response while capturing cookies.
+        """Fetch target URL and stream response while capturing cookies.
 
         Args:
             task_id: CAPTCHA task ID for logging/tracking.
@@ -182,8 +178,7 @@ class CaptchaProxyService:
             )
 
     def _process_response_headers(self, headers: dict[str, str]) -> dict[str, str]:
-        """
-        Process response headers for iframe embedding.
+        """Process response headers for iframe embedding.
 
         Removes security headers that prevent iframe embedding.
         """
@@ -201,8 +196,7 @@ class CaptchaProxyService:
         user_agent: str | None,
         proxy_url: str | None,
     ) -> dict[str, str]:
-        """
-        Check response cookies for clearance tokens and cache if found.
+        """Check response cookies for clearance tokens and cache if found.
 
         Args:
             cookies: Response cookies from curl_cffi.
@@ -245,8 +239,7 @@ class CaptchaProxyService:
         user_agent: str | None,
         proxy_url: str | None,
     ) -> None:
-        """
-        Cache session in Redis for reuse.
+        """Cache session in Redis for reuse.
 
         Args:
             domain: Target domain.
@@ -276,8 +269,7 @@ class CaptchaProxyService:
             logger.error(f"[PROXY] Error caching session: {e}")
 
     async def _broadcast_success(self, task_id: str, domain: str) -> None:
-        """
-        Publish success event to Redis pub/sub.
+        """Publish success event to Redis pub/sub.
 
         Args:
             task_id: CAPTCHA task ID.
@@ -310,8 +302,7 @@ class CaptchaProxyService:
         proxy_url: str | None = None,
         user_agent: str | None = None,
     ) -> str:
-        """
-        Fetch and sanitize HTML for solver iframe.
+        """Fetch and sanitize HTML for solver iframe.
 
         This is an alternative to streaming proxy - fetches full HTML,
         rewrites URLs, and returns sanitized content.
@@ -378,8 +369,7 @@ class CaptchaProxyService:
             """
 
     async def get_task_context(self, task_id: str) -> dict[str, Any] | None:
-        """
-        Get task context from Redis.
+        """Get task context from Redis.
 
         Args:
             task_id: CAPTCHA task ID.
@@ -408,8 +398,7 @@ class CaptchaProxyService:
         user_agent: str | None,
         domain: str,
     ) -> None:
-        """
-        Store task context in Redis for proxy rendering.
+        """Store task context in Redis for proxy rendering.
 
         Args:
             task_id: CAPTCHA task ID.

@@ -7,7 +7,7 @@ Dokumen ini menjelaskan desain frontend yang memungkinkan operator atau integrat
 **Tanggal:** 2025-12-15
 **Backend Status:** ✅ CAPTCHA Resolver Backend Implemented
 
----
+______________________________________________________________________
 
 **Ringkasan**
 
@@ -15,7 +15,7 @@ Dokumen ini menjelaskan desain frontend yang memungkinkan operator atau integrat
 - Target users: integrator (developer), operator (support), manual solvers (captcha operators).
 - Integrasi penuh dengan backend API (create job, watch job, fetch results), Redis pub/sub (live updates), dan Captcha Resolver UI/flow.
 
----
+______________________________________________________________________
 
 **1. Pages (High-level)**
 
@@ -47,9 +47,10 @@ Dokumen ini menjelaskan desain frontend yang memungkinkan operator atau integrat
   - Manage UA presets and TLS fingerprint mappings.
 
 - `CaptchaResolverLink` / `SolverRedirect`
+
   - For jobs that require manual solve: `JobDetailPage` shows `Open Solver` button that opens `Captcha Resolver` page for that task (integration with `docs/captcha_resolver_frontend.md`).
 
----
+______________________________________________________________________
 
 **2. Components & Responsibilities**
 
@@ -97,9 +98,10 @@ Dokumen ini menjelaskan desain frontend yang memungkinkan operator atau integrat
   - Live-updating event log showing escalation path and decisions (e.g., "Tier1 detected cloudflare -> Escalate to Tier3")
 
 - `ConfigQuickActions`
+
   - Clone job, generate a shareable job config (export to JSON), apply template
 
----
+______________________________________________________________________
 
 **3. Data Models (frontend)**
 
@@ -143,7 +145,7 @@ Dokumen ini menjelaskan desain frontend yang memungkinkan operator atau integrat
 }
 ```
 
----
+______________________________________________________________________
 
 **4. Hooks & Data Layer (React / TS)**
 
@@ -166,9 +168,10 @@ Dokumen ini menjelaskan desain frontend yang memungkinkan operator atau integrat
   - For `ScraperDashboardPage`, use web socket or SSE to receive `job.created` / `job.updated` events
 
 - `useProxyList()` and `useUserAgents()`
+
   - CRUD hooks for settings pages
 
----
+______________________________________________________________________
 
 **5. API Integration & Contracts**
 
@@ -194,43 +197,45 @@ Dokumen ini menjelaskan desain frontend yang memungkinkan operator atau integrat
   - `POST /api/v1/scrape/{job_id}/requeue` → creates a new job with same config
 
 - Get job output (download):
+
   - `GET /api/v1/scrape/{job_id}/output?format=json|csv|html|har`
 
 Notes: Use JWT auth, role-based permissions (create/run jobs for developers; view jobs for operator roles; admin pages restricted).
 
----
+______________________________________________________________________
 
 **6. Captcha Integration UX** ✅ Backend Ready
 
 - If job status `captcha_required` is returned, `JobDetailPage` shows prominent CTA `Open Solver` that opens the Captcha Resolver UI for that task.
+
 - Workflow:
 
   1. Worker creates `captcha_task` in backend and returns job status `captcha_required` with metadata `{ task_id }`.
-  2. Frontend shows `Open Solver` linking to `/captchas/{task_id}/solve` or opens modal.
-  3. Operator solves and submits solution; backend publishes `captcha:solved:{task_id}` and worker resumes.
-  4. Frontend subscribes to `captcha:events` to update job automatically when solved.
+  1. Frontend shows `Open Solver` linking to `/captchas/{task_id}/solve` or opens modal.
+  1. Operator solves and submits solution; backend publishes `captcha:solved:{task_id}` and worker resumes.
+  1. Frontend subscribes to `captcha:events` to update job automatically when solved.
 
 - Additional helpers: `InjectSolution` action in `JobDetailPage` allowing advanced users to paste cookies/header tokens manually for ad-hoc testing.
 
 ### Backend API Endpoints (Implemented)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/captcha/tasks` | Create CAPTCHA task |
-| GET | `/api/v1/captcha/tasks` | List tasks (paginated, filterable) |
-| GET | `/api/v1/captcha/tasks/pending` | List pending tasks |
-| GET | `/api/v1/captcha/tasks/{uuid}` | Get single task |
-| POST | `/api/v1/captcha/tasks/{uuid}/assign` | Assign to operator |
-| POST | `/api/v1/captcha/tasks/{uuid}/solve` | Submit solution |
-| POST | `/api/v1/captcha/tasks/{uuid}/mark-unsolvable` | Mark unsolvable |
-| GET | `/api/v1/captcha/sessions/{domain}` | Get cached session |
-| GET | `/api/v1/captcha/proxy/render/{uuid}` | Proxy render page |
+| Method | Endpoint                                       | Description                        |
+| ------ | ---------------------------------------------- | ---------------------------------- |
+| POST   | `/api/v1/captcha/tasks`                        | Create CAPTCHA task                |
+| GET    | `/api/v1/captcha/tasks`                        | List tasks (paginated, filterable) |
+| GET    | `/api/v1/captcha/tasks/pending`                | List pending tasks                 |
+| GET    | `/api/v1/captcha/tasks/{uuid}`                 | Get single task                    |
+| POST   | `/api/v1/captcha/tasks/{uuid}/assign`          | Assign to operator                 |
+| POST   | `/api/v1/captcha/tasks/{uuid}/solve`           | Submit solution                    |
+| POST   | `/api/v1/captcha/tasks/{uuid}/mark-unsolvable` | Mark unsolvable                    |
+| GET    | `/api/v1/captcha/sessions/{domain}`            | Get cached session                 |
+| GET    | `/api/v1/captcha/proxy/render/{uuid}`          | Proxy render page                  |
 
 ### WebSocket Endpoints (Implemented)
 
-| Endpoint | Description |
-|----------|-------------|
-| `/ws/captcha` | All CAPTCHA events |
+| Endpoint               | Description            |
+| ---------------------- | ---------------------- |
+| `/ws/captcha`          | All CAPTCHA events     |
 | `/ws/captcha/{domain}` | Domain-specific events |
 
 ### Event Types
@@ -289,7 +294,7 @@ export function useCaptchaEvents(domain?: string) {
 }
 ```
 
----
+______________________________________________________________________
 
 **7. Advanced Features & Customizations**
 
@@ -299,7 +304,7 @@ export function useCaptchaEvents(domain?: string) {
 - Schema extractor: allow user to define simple extraction rules (CSS selectors or JSONPath) and see extracted data in `ResultsExplorer`.
 - Webhook integration: configure per-template webhook to post results to third-party services when job completes.
 
----
+______________________________________________________________________
 
 **8. Error Handling & Observability**
 
@@ -307,7 +312,7 @@ export function useCaptchaEvents(domain?: string) {
 - Provide actionable tips per error: e.g., for `dns_error` suggest verifying domain or toggling `use_proxy`.
 - Integrate Prometheus metrics and UI counters: active_jobs, jobs_per_minute, avg_time_to_complete, captcha_tasks_pending.
 
----
+______________________________________________________________________
 
 **9. Security & Multi-tenant Considerations**
 
@@ -315,27 +320,28 @@ export function useCaptchaEvents(domain?: string) {
 - Sensitive data (cookies/tokens) must be encrypted at rest and access-controlled.
 - Audit logs for job creation, reruns, and solver submissions.
 
----
+______________________________________________________________________
 
 **10. Example Flows**
 
 - Quick scrape (developer):
 
   1. Open `ScraperDashboardPage` → New Scrape → paste URL → select `auto` strategy → Submit
-  2. UI redirects to `JobDetailPage`; live timeline shows Tier1 attempt and final result appears
-  3. Click `ResponseViewer` → export JSON
+  1. UI redirects to `JobDetailPage`; live timeline shows Tier1 attempt and final result appears
+  1. Click `ResponseViewer` → export JSON
 
 - Scheduled crawl (marketing):
 
   1. Create template with `proxy_pool=rotate-daytime` and cron `0 */4 * * *` → Save
-  2. Upload CSV of product pages → map template → Schedule
-  3. Monitor `ResultsExplorerPage` for exports
+  1. Upload CSV of product pages → map template → Schedule
+  1. Monitor `ResultsExplorerPage` for exports
 
 - Captcha solve flow (support):
-  1. Support sees job status `captcha_required` → opens solver → operator solves
-  2. Backend publishes solved event → Worker resumes and final result appears in detail page
 
----
+  1. Support sees job status `captcha_required` → opens solver → operator solves
+  1. Backend publishes solved event → Worker resumes and final result appears in detail page
+
+______________________________________________________________________
 
 **11. Implementation Recommendations**
 
@@ -344,7 +350,7 @@ export function useCaptchaEvents(domain?: string) {
 - For large outputs, store results in object storage (S3) and stream fetches; frontend shows first N KB and provides download link.
 - Build component library for common elements: `PreviewThumbnail`, `ResponseViewer`, `JobTimeline`.
 
----
+______________________________________________________________________
 
 **12. Next Steps (Suggested)**
 
@@ -352,6 +358,6 @@ export function useCaptchaEvents(domain?: string) {
 - Build minimal FastAPI endpoints for creating & retrieving jobs to integrate with UI.
 - Implement WebSocket server-side support for `/ws/scrape/{jobId}` or use Redis pub/sub bridge.
 
----
+______________________________________________________________________
 
 Dokumen ini dimaksudkan sebagai spesifikasi lengkap bagi tim frontend untuk mengimplementasikan UI yang mampu mengendalikan seluruh fitur Titan Scraper dan menerima hasil scraping. Jika Anda ingin, saya bisa langsung menghasilkan komponen React/TSX skeleton beserta example requests to the existing FastAPI endpoints.

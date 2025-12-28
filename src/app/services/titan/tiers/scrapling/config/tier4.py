@@ -11,8 +11,7 @@ from pydantic import BaseModel, Field
 
 
 class StealthyFetcherConfig(BaseModel):
-    """
-    StealthyFetcher configuration using Camoufox.
+    """StealthyFetcher configuration using Camoufox.
 
     StealthyFetcher uses a modified Firefox (Camoufox) that:
     - Bypasses most bot detection by default
@@ -32,8 +31,7 @@ class StealthyFetcherConfig(BaseModel):
 
 
 class DynamicFetcherConfig(BaseModel):
-    """
-    DynamicFetcher configuration using Playwright.
+    """DynamicFetcher configuration using Playwright.
 
     DynamicFetcher provides:
     - Vanilla Playwright (Chromium)
@@ -50,8 +48,7 @@ class DynamicFetcherConfig(BaseModel):
 
 
 class HttpFetcherConfig(BaseModel):
-    """
-    HTTP Fetcher configuration for lightweight requests.
+    """HTTP Fetcher configuration for lightweight requests.
 
     Uses curl_cffi-like TLS fingerprinting:
     - Browser impersonation
@@ -134,8 +131,7 @@ class ChallengeDetectionConfig(BaseModel):
 
 
 class Tier4Config(BaseModel):
-    """
-    Complete Tier 4 Scrapling configuration.
+    """Complete Tier 4 Scrapling configuration.
 
     Provides structured configuration for:
     - StealthyFetcher (Camoufox - most stealth)

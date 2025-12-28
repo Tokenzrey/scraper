@@ -36,7 +36,7 @@ Install these tools on your system:
    ```bash
    # Interactive setup - choose your deployment type
    ./setup.py
-   
+
    # Or specify directly: ./setup.py local, ./setup.py staging, ./setup.py production
    ```
 
@@ -55,7 +55,7 @@ If you prefer to set up manually:
 ```bash
 # Copy configuration files for local development
 cp scripts/local_with_uvicorn/Dockerfile Dockerfile
-cp scripts/local_with_uvicorn/docker-compose.yml docker-compose.yml  
+cp scripts/local_with_uvicorn/docker-compose.yml docker-compose.yml
 cp scripts/local_with_uvicorn/.env.example src/.env
 # Edit src/.env with your configuration if needed
 ```

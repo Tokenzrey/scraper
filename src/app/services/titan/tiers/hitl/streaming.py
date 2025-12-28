@@ -24,16 +24,15 @@ from __future__ import annotations
 
 import asyncio
 import base64
-import json
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from .config import Tier7Config
 from .exceptions import (
     HITLBrowserError,
-    HITLStreamingError,
     HITLWebSocketError,
 )
 
@@ -82,8 +81,7 @@ class StreamStats:
 
 
 class BrowserStreamer:
-    """
-    Real-time browser streaming using CDP.
+    """Real-time browser streaming using CDP.
 
     Uses Chrome DevTools Protocol Page.startScreencast to capture
     frames and stream them via WebSocket to admin dashboard.
@@ -101,8 +99,7 @@ class BrowserStreamer:
         page: Any,  # DrissionPage ChromiumPage or similar
         on_frame_callback: Callable[[StreamFrame], None] | None = None,
     ) -> None:
-        """
-        Initialize browser streamer.
+        """Initialize browser streamer.
 
         Args:
             config: Tier 7 HITL configuration
@@ -117,15 +114,12 @@ class BrowserStreamer:
         self._websocket: WebSocket | None = None
         self._frame_number = 0
         self._stats = StreamStats()
-        self._frame_queue: asyncio.Queue[StreamFrame] = asyncio.Queue(
-            maxsize=config.streaming.frame_buffer_size
-        )
+        self._frame_queue: asyncio.Queue[StreamFrame] = asyncio.Queue(maxsize=config.streaming.frame_buffer_size)
         self._stream_task: asyncio.Task | None = None
         self._capture_task: asyncio.Task | None = None
 
-    async def start_streaming(self, websocket: "WebSocket") -> None:
-        """
-        Start streaming browser to WebSocket.
+    async def start_streaming(self, websocket: WebSocket) -> None:
+        """Start streaming browser to WebSocket.
 
         Args:
             websocket: FastAPI WebSocket connection
@@ -149,8 +143,7 @@ class BrowserStreamer:
         self._stream_task = asyncio.create_task(self._send_loop())
 
     async def stop_streaming(self) -> StreamStats:
-        """
-        Stop streaming and return statistics.
+        """Stop streaming and return statistics.
 
         Returns:
             StreamStats with session statistics
@@ -172,10 +165,7 @@ class BrowserStreamer:
             except asyncio.CancelledError:
                 pass
 
-        logger.info(
-            f"Streaming stopped: {self._stats.frames_sent} frames sent, "
-            f"avg FPS: {self._stats.avg_fps:.1f}"
-        )
+        logger.info(f"Streaming stopped: {self._stats.frames_sent} frames sent, " f"avg FPS: {self._stats.avg_fps:.1f}")
 
         return self._stats
 
@@ -215,8 +205,7 @@ class BrowserStreamer:
                 await asyncio.sleep(frame_interval)
 
     async def _capture_frame(self) -> StreamFrame | None:
-        """
-        Capture a single frame from the browser.
+        """Capture a single frame from the browser.
 
         Returns:
             StreamFrame or None if capture failed
@@ -247,8 +236,7 @@ class BrowserStreamer:
             return None
 
     async def _get_screenshot(self) -> bytes | None:
-        """
-        Get screenshot from browser.
+        """Get screenshot from browser.
 
         Supports multiple browser backends.
         """
@@ -267,12 +255,10 @@ class BrowserStreamer:
                         )
                     except Exception:
                         # Fallback: capture to temp file and read
-                        import tempfile
                         import os
+                        import tempfile
 
-                        with tempfile.NamedTemporaryFile(
-                            suffix=".jpg", delete=False
-                        ) as f:
+                        with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as f:
                             temp_path = f.name
 
                         try:
@@ -344,8 +330,7 @@ class BrowserStreamer:
                 logger.error(f"Frame send error: {e}")
 
     async def _send_frame(self, frame: StreamFrame) -> None:
-        """
-        Send a frame to the WebSocket.
+        """Send a frame to the WebSocket.
 
         Args:
             frame: Frame to send
@@ -392,8 +377,7 @@ class BrowserStreamer:
 
 
 class RemoteController:
-    """
-    Remote control handler for admin input.
+    """Remote control handler for admin input.
 
     Receives mouse/keyboard events from admin WebSocket
     and translates them to browser actions via CDP.
@@ -412,8 +396,7 @@ class RemoteController:
         config: Tier7Config,
         page: Any,
     ) -> None:
-        """
-        Initialize remote controller.
+        """Initialize remote controller.
 
         Args:
             config: Tier 7 HITL configuration
@@ -425,21 +408,16 @@ class RemoteController:
         self._mouse_buttons_down: set[str] = set()
 
     async def handle_event(self, event: dict[str, Any]) -> None:
-        """
-        Handle an input event from admin.
+        """Handle an input event from admin.
 
         Args:
             event: Event dictionary with type and parameters
         """
         event_type = event.get("type")
 
-        if not self.config.remote_control.mouse_enabled and event_type.startswith(
-            "mouse"
-        ):
+        if not self.config.remote_control.mouse_enabled and event_type.startswith("mouse"):
             return
-        if not self.config.remote_control.keyboard_enabled and event_type.startswith(
-            "key"
-        ):
+        if not self.config.remote_control.keyboard_enabled and event_type.startswith("key"):
             return
 
         try:
@@ -500,9 +478,7 @@ class RemoteController:
         def _click() -> None:
             if hasattr(self.page, "run_cdp"):
                 # CDP mouse button mapping
-                cdp_button = {"left": "left", "right": "right", "middle": "middle"}.get(
-                    button, "left"
-                )
+                cdp_button = {"left": "left", "right": "right", "middle": "middle"}.get(button, "left")
 
                 # Mouse down
                 self.page.run_cdp(

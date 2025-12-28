@@ -19,8 +19,7 @@ from pydantic import BaseModel, Field
 
 
 class ChromiumPageConfig(BaseModel):
-    """
-    ChromiumPage configuration for browser automation.
+    """ChromiumPage configuration for browser automation.
 
     ChromiumPage features:
     - Full browser control without webdriver
@@ -61,8 +60,7 @@ class ChromiumPageConfig(BaseModel):
 
 
 class SessionPageConfig(BaseModel):
-    """
-    SessionPage configuration for HTTP requests.
+    """SessionPage configuration for HTTP requests.
 
     SessionPage features:
     - Fast HTTP requests with TLS fingerprinting
@@ -85,8 +83,7 @@ class SessionPageConfig(BaseModel):
 
 
 class WebPageConfig(BaseModel):
-    """
-    WebPage (hybrid) configuration.
+    """WebPage (hybrid) configuration.
 
     WebPage combines both modes:
     - Starts in session (HTTP) mode for speed
@@ -129,8 +126,7 @@ class RetryConfig(BaseModel):
 
 
 class LocatorConfig(BaseModel):
-    """
-    DrissionPage locator configuration.
+    """DrissionPage locator configuration.
 
     DrissionPage simplified locator syntax:
     - @id:xxx -> #xxx (ID)
@@ -146,8 +142,7 @@ class LocatorConfig(BaseModel):
 
 
 class ActionConfig(BaseModel):
-    """
-    Action configuration for interactions.
+    """Action configuration for interactions.
 
     DrissionPage human-like actions:
     - Realistic mouse movements
@@ -199,8 +194,7 @@ class ChallengeDetectionConfig(BaseModel):
 
 
 class Tier6Config(BaseModel):
-    """
-    Complete Tier 6 DrissionPage configuration.
+    """Complete Tier 6 DrissionPage configuration.
 
     Provides structured configuration for:
     - ChromiumPage (browser mode - no webdriver)
@@ -228,9 +222,7 @@ class Tier6Config(BaseModel):
     retry: RetryConfig = Field(default_factory=RetryConfig)
     locator: LocatorConfig = Field(default_factory=LocatorConfig)
     action: ActionConfig = Field(default_factory=ActionConfig)
-    challenge_detection: ChallengeDetectionConfig = Field(
-        default_factory=ChallengeDetectionConfig
-    )
+    challenge_detection: ChallengeDetectionConfig = Field(default_factory=ChallengeDetectionConfig)
 
 
 __all__ = [

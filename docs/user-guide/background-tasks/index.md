@@ -20,45 +20,51 @@ async def send_welcome_email(ctx: Worker, user_id: int, email: str) -> str:
     await send_email_service(email, "Welcome!")
     return f"Welcome email sent to {email}"
 
+
 # Enqueue the task from an API endpoint
 @router.post("/users/", response_model=UserRead)
 async def create_user(user_data: UserCreate):
     # Create user in database
     user = await crud_users.create(db=db, object=user_data)
-    
+
     # Queue welcome email in background
     await queue.pool.enqueue_job("send_welcome_email", user["id"], user["email"])
-    
+
     return user
 ```
 
 ## Architecture
 
 ### ARQ Worker System
+
 - **Redis-Based**: Uses Redis as the message broker for job queues
-- **Async Processing**: Fully asynchronous task execution  
+- **Async Processing**: Fully asynchronous task execution
 - **Worker Pool**: Multiple workers can process tasks concurrently
 - **Job Persistence**: Tasks survive application restarts
 
 ### Task Lifecycle
+
 1. **Enqueue**: Tasks are added to Redis queue from API endpoints
-2. **Processing**: ARQ workers pick up and execute tasks
-3. **Results**: Task results are stored and can be retrieved
-4. **Monitoring**: Track task status and execution history
+1. **Processing**: ARQ workers pick up and execute tasks
+1. **Results**: Task results are stored and can be retrieved
+1. **Monitoring**: Track task status and execution history
 
 ## Key Features
 
 **Scalable Processing**
+
 - Multiple worker instances for high throughput
 - Automatic load balancing across workers
 - Configurable concurrency per worker
 
 **Reliable Execution**
+
 - Task retry mechanisms for failed jobs
 - Dead letter queues for problematic tasks
 - Graceful shutdown and task cleanup
 
 **Database Integration**
+
 - Shared database sessions with main application
 - CRUD operations available in background tasks
 - Transaction management and error handling
@@ -80,7 +86,7 @@ The boilerplate provides everything needed to start using background tasks immed
 Basic Redis queue configuration:
 
 ```bash
-# Redis Queue Settings  
+# Redis Queue Settings
 REDIS_QUEUE_HOST=localhost
 REDIS_QUEUE_PORT=6379
 ```
@@ -89,4 +95,4 @@ The system automatically handles Redis connection pooling and worker lifecycle m
 
 ## Next Steps
 
-Check the [ARQ documentation](https://arq-docs.helpmanual.io/) for advanced usage patterns and refer to the boilerplate's example implementation in `src/app/core/worker/` and `src/app/api/v1/tasks.py`. 
+Check the [ARQ documentation](https://arq-docs.helpmanual.io/) for advanced usage patterns and refer to the boilerplate's example implementation in `src/app/core/worker/` and `src/app/api/v1/tasks.py`.

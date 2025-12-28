@@ -1,5 +1,4 @@
-"""
-Worker Integration for CAPTCHA Resolver
+"""Worker Integration for CAPTCHA Resolver.
 
 This module provides helper functions and examples for integrating the
 Manual CAPTCHA Resolver with Titan Worker.
@@ -47,8 +46,7 @@ async def check_cached_session(
     url_or_domain: str,
     redis_client=None,
 ) -> CaptchaSession | None:
-    """
-    Check if there's a cached session for a domain.
+    """Check if there's a cached session for a domain.
 
     Call this before making requests to check if a previous CAPTCHA
     solution can be reused.
@@ -111,8 +109,7 @@ async def create_captcha_task(
     priority: int = 5,
     api_base_url: str = "http://localhost:8000",
 ) -> dict[str, Any] | None:
-    """
-    Create a CAPTCHA task for manual solving.
+    """Create a CAPTCHA task for manual solving.
 
     Call this when the scraper encounters a CAPTCHA that cannot be
     automatically bypassed.
@@ -162,8 +159,7 @@ async def wait_for_solution(
     redis_client,
     timeout: float | None = None,
 ) -> CaptchaSession | None:
-    """
-    Wait for a CAPTCHA solution via Redis pub/sub.
+    """Wait for a CAPTCHA solution via Redis pub/sub.
 
     Subscribes to the captcha:events channel and waits for a "solved"
     event for the specified domain.
@@ -210,8 +206,7 @@ async def create_task_and_wait(
     timeout: float | None = None,
     api_base_url: str = "http://localhost:8000",
 ) -> CaptchaSession | None:
-    """
-    Create a CAPTCHA task and wait for solution.
+    """Create a CAPTCHA task and wait for solution.
 
     Convenience function that combines create_captcha_task and wait_for_solution.
 
@@ -259,8 +254,7 @@ def inject_session_cookies(
     headers: dict[str, str] | None,
     session: CaptchaSession,
 ) -> dict[str, str]:
-    """
-    Inject session cookies into request headers.
+    """Inject session cookies into request headers.
 
     Args:
         headers: Existing headers dict (or None).
@@ -306,8 +300,7 @@ async def execute_with_captcha_handling(
     max_retries: int = 2,
     **kwargs,
 ) -> Any:  # TierResult
-    """
-    Execute scraping with automatic CAPTCHA handling.
+    """Execute scraping with automatic CAPTCHA handling.
 
     This is an example of how to integrate CAPTCHA handling with
     the Titan Orchestrator.
@@ -377,8 +370,7 @@ async def poll_for_session(
     poll_interval: float = 5.0,
     api_base_url: str = "http://localhost:8000",
 ) -> CaptchaSession | None:
-    """
-    Poll the API for a cached session (alternative to pub/sub).
+    """Poll the API for a cached session (alternative to pub/sub).
 
     Use this when Redis pub/sub is not available.
 

@@ -39,14 +39,13 @@ from .exceptions import (
 )
 
 if TYPE_CHECKING:
-    from DrissionPage import ChromiumPage, SessionPage, WebPage
+    pass
 
 logger = logging.getLogger(__name__)
 
 
 class DPClient:
-    """
-    Async wrapper for DrissionPage.
+    """Async wrapper for DrissionPage.
 
     Supports three modes:
     - Chromium: Full browser control without webdriver
@@ -77,8 +76,7 @@ class DPClient:
         config: Tier6Config | None = None,
         thread_pool: ThreadPoolExecutor | None = None,
     ) -> None:
-        """
-        Initialize DPClient.
+        """Initialize DPClient.
 
         Args:
             config: Tier 6 configuration. If None, loads from databank.json
@@ -94,7 +92,7 @@ class DPClient:
         self._owns_pool = thread_pool is None
         self._current_mode = config.mode
 
-    async def __aenter__(self) -> "DPClient":
+    async def __aenter__(self) -> DPClient:
         """Async context manager entry."""
         await self._ensure_page()
         return self
@@ -174,10 +172,7 @@ class DPClient:
         # Create page
         self._page = ChromiumPage(options)
 
-        logger.info(
-            f"DrissionPage ChromiumPage initialized: headless={cfg.headless}, "
-            f"load_mode={cfg.load_mode}"
-        )
+        logger.info(f"DrissionPage ChromiumPage initialized: headless={cfg.headless}, " f"load_mode={cfg.load_mode}")
 
     def _init_session_page(self, SessionPage: type) -> None:
         """Initialize SessionPage (HTTP mode)."""
@@ -200,10 +195,7 @@ class DPClient:
         if cfg.proxy:
             self._page.set.proxies(cfg.proxy)
 
-        logger.info(
-            f"DrissionPage SessionPage initialized: timeout={cfg.timeout}, "
-            f"retry={cfg.retry}"
-        )
+        logger.info(f"DrissionPage SessionPage initialized: timeout={cfg.timeout}, " f"retry={cfg.retry}")
 
     def _init_web_page(self, WebPage: type, ChromiumOptions: type) -> None:
         """Initialize WebPage (hybrid mode)."""
@@ -232,8 +224,7 @@ class DPClient:
         self._page = WebPage(chromium_options=options, mode=cfg.default_mode)
 
         logger.info(
-            f"DrissionPage WebPage initialized: default_mode={cfg.default_mode}, "
-            f"auto_switch={cfg.auto_switch}"
+            f"DrissionPage WebPage initialized: default_mode={cfg.default_mode}, " f"auto_switch={cfg.auto_switch}"
         )
 
     async def fetch(
@@ -241,9 +232,8 @@ class DPClient:
         url: str,
         wait_selector: str | None = None,
         timeout: float | None = None,
-    ) -> "DPFetchResult":
-        """
-        Fetch a URL using DrissionPage.
+    ) -> DPFetchResult:
+        """Fetch a URL using DrissionPage.
 
         Args:
             url: Target URL to fetch
@@ -295,9 +285,8 @@ class DPClient:
         url: str,
         wait_selector: str | None,
         timeout: float | None,
-    ) -> "DPFetchResult":
-        """
-        Synchronous fetch implementation.
+    ) -> DPFetchResult:
+        """Synchronous fetch implementation.
 
         This runs in a thread pool to avoid blocking the event loop.
         """
@@ -394,9 +383,8 @@ class DPClient:
         url: str,
         actions: list[dict[str, Any]],
         timeout: float | None = None,
-    ) -> "DPFetchResult":
-        """
-        Fetch a URL and perform browser actions.
+    ) -> DPFetchResult:
+        """Fetch a URL and perform browser actions.
 
         DrissionPage simplified syntax for actions:
         - click: {"action": "click", "selector": "@text:Submit"}
@@ -476,11 +464,11 @@ class DPClient:
             page.get_screenshot(path=path)
         elif action_type == "wait_time":
             import time
+
             time.sleep(action.get("seconds", 1))
 
     async def switch_mode(self, mode: str) -> None:
-        """
-        Switch between modes (only for WebPage).
+        """Switch between modes (only for WebPage).
 
         Args:
             mode: "d" for browser (drission), "s" for session (HTTP)
@@ -510,8 +498,7 @@ class DPClient:
         iframe_selector: str,
         element_selector: str,
     ) -> Any:
-        """
-        Get element inside an iframe (DrissionPage handles this natively).
+        """Get element inside an iframe (DrissionPage handles this natively).
 
         DrissionPage advantage: No need to switch frames!
         Just use the element directly.
@@ -541,8 +528,7 @@ class DPClient:
         host_selector: str,
         inner_selector: str,
     ) -> Any:
-        """
-        Get element inside shadow root (DrissionPage handles this natively).
+        """Get element inside shadow root (DrissionPage handles this natively).
 
         DrissionPage advantage: Can handle non-open shadow roots!
 
@@ -661,8 +647,7 @@ class DPClient:
 
 
 class DPFetchResult:
-    """
-    Result from a DrissionPage fetch operation.
+    """Result from a DrissionPage fetch operation.
 
     Provides easy access to page content and metadata.
     """

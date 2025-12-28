@@ -27,58 +27,57 @@ Swarm Execution:
 """
 
 # Executor (TierExecutor implementation)
-from .executor import Tier1ChimeraExecutor
-
 # Client
 from .client import ChimeraClient, ChimeraResponse
 
 # Configuration
 from .config import (
+    ChallengeDetectionConfig,
     ChimeraConfig,
     ConfigLoader,
+    DetectionEvasionConfig,
+    FingerprintProfileConfig,
     # General config
     GeneralConfig,
-    SessionManagementConfig,
+    HeadersConfig,
+    NetworkConfig,
     ProxyPoolConfig,
-    DetectionEvasionConfig,
+    SessionManagementConfig,
     # Tier1 config
     Tier1Config,
-    FingerprintProfileConfig,
-    NetworkConfig,
-    HeadersConfig,
-    ChallengeDetectionConfig,
 )
 
 # Exceptions
 from .exceptions import (
+    ChimeraBlockError,
+    ChimeraConfigError,
     ChimeraException,
     ChimeraNetworkError,
-    ChimeraBlockError,
-    ChimeraRateLimitError,
-    ChimeraTimeoutError,
-    ChimeraConfigError,
-    ChimeraSessionError,
     ChimeraProxyError,
+    ChimeraRateLimitError,
+    ChimeraSessionError,
+    ChimeraTimeoutError,
 )
+from .executor import Tier1ChimeraExecutor
+
+# Proxy
+from .proxy_rotator import ProxyHealth, ProxyRotator, StickyBinding
 
 # State Management
 from .state_store import (
-    RedisStateStore,
     CookieData,
+    RedisStateStore,
     SessionData,
     extract_cookies_from_curl_cffi,
     inject_cookies_to_curl_cffi,
 )
 
-# Proxy
-from .proxy_rotator import ProxyRotator, ProxyHealth, StickyBinding
-
 # Swarm
 from .swarm import (
-    run_chimera_swarm,
-    SwarmResult,
-    SwarmConfig,
     ChimeraSwarmPool,
+    SwarmConfig,
+    SwarmResult,
+    run_chimera_swarm,
 )
 
 __all__ = [

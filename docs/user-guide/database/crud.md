@@ -21,18 +21,15 @@ Each model has a corresponding CRUD class that defines the available operations:
 # src/app/crud/crud_users.py
 from fastcrud import FastCRUD
 from app.models.user import User
-from app.schemas.user import (
-    UserCreateInternal, UserUpdate, UserUpdateInternal, 
-    UserDelete, UserRead
-)
+from app.schemas.user import UserCreateInternal, UserUpdate, UserUpdateInternal, UserDelete, UserRead
 
 CRUDUser = FastCRUD[
-    User,                # Model class
+    User,  # Model class
     UserCreateInternal,  # Create schema
-    UserUpdate,          # Update schema  
+    UserUpdate,  # Update schema
     UserUpdateInternal,  # Internal update schema
-    UserDelete,          # Delete schema
-    UserRead             # Read schema
+    UserDelete,  # Delete schema
+    UserRead,  # Read schema
 ]
 crud_users = CRUDUser(User)
 ```
@@ -55,8 +52,8 @@ user = await crud_users.get(db=db, email="john@example.com")
 
 # Get with specific fields only
 user = await crud_users.get(
-    db=db, 
-    schema_to_select=UserRead, # Only select fields defined in UserRead
+    db=db,
+    schema_to_select=UserRead,  # Only select fields defined in UserRead
     id=user_id,
 )
 ```
@@ -66,9 +63,9 @@ user = await crud_users.get(
 ```python
 # From src/app/api/v1/users.py
 db_user = await crud_users.get(
-    db=db, 
+    db=db,
     schema_to_select=UserRead,
-    username=username, 
+    username=username,
     is_deleted=False,
 )
 ```
@@ -84,16 +81,13 @@ users = await crud_users.get_multi(db=db)
 # Get with pagination
 users = await crud_users.get_multi(
     db=db,
-    offset=0,      # Skip first 0 records
-    limit=10,      # Return maximum 10 records
+    offset=0,  # Skip first 0 records
+    limit=10,  # Return maximum 10 records
 )
 
 # Get with filtering
 active_users = await crud_users.get_multi(
-    db=db,
-    is_deleted=False,  # Filter condition
-    offset=compute_offset(page, items_per_page),
-    limit=items_per_page
+    db=db, is_deleted=False, offset=compute_offset(page, items_per_page), limit=items_per_page  # Filter condition
 )
 ```
 
@@ -103,12 +97,12 @@ active_users = await crud_users.get_multi(
 {
     "data": [
         {"id": 1, "username": "john", "email": "john@example.com"},
-        {"id": 2, "username": "jane", "email": "jane@example.com"}
+        {"id": 2, "username": "jane", "email": "jane@example.com"},
     ],
     "total_count": 25,
     "has_more": true,
     "page": 1,
-    "items_per_page": 10
+    "items_per_page": 10,
 }
 ```
 
@@ -157,11 +151,7 @@ Create new records using Pydantic schemas:
 
 ```python
 # Create user
-user_data = UserCreateInternal(
-    username="john_doe",
-    email="john@example.com", 
-    hashed_password="hashed_password_here"
-)
+user_data = UserCreateInternal(username="john_doe", email="john@example.com", hashed_password="hashed_password_here")
 
 created_user = await crud_users.create(db=db, object=user_data)
 ```
@@ -185,9 +175,7 @@ When creating records with foreign keys:
 ```python
 # Create post for a user
 post_data = PostCreateInternal(
-    title="My First Post",
-    content="This is the content of my post",
-    created_by_user_id=user.id  # Foreign key reference
+    title="My First Post", content="This is the content of my post", created_by_user_id=user.id  # Foreign key reference
 )
 
 created_post = await crud_posts.create(db=db, object=post_data)
@@ -208,10 +196,7 @@ await crud_users.update(db=db, object=update_data, id=user_id)
 await crud_users.update(db=db, object=update_data, username="john_doe")
 
 # Update multiple fields
-update_data = UserUpdate(
-    email="newemail@example.com",
-    profile_image_url="https://newimage.com/photo.jpg"
-)
+update_data = UserUpdate(email="newemail@example.com", profile_image_url="https://newimage.com/photo.jpg")
 await crud_users.update(db=db, object=update_data, id=user_id)
 ```
 
@@ -289,11 +274,12 @@ posts_with_users = await crud_posts.get_multi_joined(
     join_on=Post.created_by_user_id == User.id,
     schema_to_select=PostRead,
     join_schema_to_select=UserRead,
-    join_prefix="user_"
+    join_prefix="user_",
 )
 ```
 
 Result structure:
+
 ```python
 {
     "id": 1,
@@ -301,7 +287,7 @@ Result structure:
     "content": "Post content",
     "user_id": 123,
     "user_username": "john_doe",
-    "user_email": "john@example.com"
+    "user_email": "john@example.com",
 }
 ```
 
@@ -314,13 +300,7 @@ from sqlalchemy import and_, or_
 
 # Complex filters
 users = await crud_users.get_multi(
-    db=db,
-    filter_criteria=[
-        and_(
-            User.is_deleted == False,
-            User.created_at > datetime(2024, 1, 1)
-        )
-    ]
+    db=db, filter_criteria=[and_(User.is_deleted == False, User.created_at > datetime(2024, 1, 1))]
 )
 ```
 
@@ -330,18 +310,10 @@ Select only needed fields for better performance:
 
 ```python
 # Only select id and username
-users = await crud_users.get_multi(
-    db=db,
-    schema_to_select=UserRead,  # Use schema to define fields
-    limit=100
-)
+users = await crud_users.get_multi(db=db, schema_to_select=UserRead, limit=100)  # Use schema to define fields
 
 # Or specify fields directly
-users = await crud_users.get_multi(
-    db=db,
-    schema_to_select=["id", "username", "email"],
-    limit=100
-)
+users = await crud_users.get_multi(db=db, schema_to_select=["id", "username", "email"], limit=100)
 ```
 
 ## Practical Examples
@@ -355,33 +327,26 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.crud.crud_users import crud_users
 from app.schemas.user import UserCreateInternal, UserUpdate, UserRead
 
+
 async def user_management_example(db: AsyncSession):
     # 1. CREATE
-    user_data = UserCreateInternal(
-        username="demo_user",
-        email="demo@example.com",
-        hashed_password="hashed_password"
-    )
+    user_data = UserCreateInternal(username="demo_user", email="demo@example.com", hashed_password="hashed_password")
     new_user = await crud_users.create(db=db, object=user_data)
     print(f"Created user: {new_user.id}")
-    
+
     # 2. READ
-    user = await crud_users.get(
-        db=db, 
-        id=new_user.id, 
-        schema_to_select=UserRead
-    )
+    user = await crud_users.get(db=db, id=new_user.id, schema_to_select=UserRead)
     print(f"Retrieved user: {user.username}")
-    
-    # 3. UPDATE  
+
+    # 3. UPDATE
     update_data = UserUpdate(email="updated@example.com")
     await crud_users.update(db=db, object=update_data, id=new_user.id)
     print("User updated")
-    
+
     # 4. DELETE (soft delete)
     await crud_users.delete(db=db, id=new_user.id)
     print("User soft deleted")
-    
+
     # 5. VERIFY DELETION
     deleted_user = await crud_users.get(db=db, id=new_user.id, is_deleted=True)
     print(f"User deleted at: {deleted_user.deleted_at}")
@@ -395,24 +360,16 @@ Using FastCRUD's pagination utilities:
 from fastcrud import compute_offset, paginated_response
 
 
-async def get_paginated_users(
-    db: AsyncSession, 
-    page: int = 1, 
-    items_per_page: int = 10
-):
+async def get_paginated_users(db: AsyncSession, page: int = 1, items_per_page: int = 10):
     users_data = await crud_users.get_multi(
         db=db,
         offset=compute_offset(page, items_per_page),
         limit=items_per_page,
         is_deleted=False,
-        schema_to_select=UserRead
+        schema_to_select=UserRead,
     )
-    
-    return paginated_response(
-        crud_data=users_data, 
-        page=page, 
-        items_per_page=items_per_page
-    )
+
+    return paginated_response(crud_data=users_data, page=page, items_per_page=items_per_page)
 ```
 
 ### Error Handling
@@ -422,14 +379,15 @@ Proper error handling with CRUD operations:
 ```python
 from app.core.exceptions.http_exceptions import NotFoundException, DuplicateValueException
 
+
 async def safe_user_creation(db: AsyncSession, user_data: UserCreate):
     # Check for duplicates
     if await crud_users.exists(db=db, email=user_data.email):
         raise DuplicateValueException("Email already registered")
-    
+
     if await crud_users.exists(db=db, username=user_data.username):
         raise DuplicateValueException("Username not available")
-    
+
     # Create user
     try:
         user_internal = UserCreateInternal(**user_data.model_dump())
@@ -489,4 +447,4 @@ if user:
 
 - **[Database Migrations](migrations.md)** - Managing database schema changes
 - **[API Development](../api/index.md)** - Using CRUD in API endpoints
-- **[Caching](../caching/index.md)** - Optimizing CRUD with caching 
+- **[Caching](../caching/index.md)** - Optimizing CRUD with caching

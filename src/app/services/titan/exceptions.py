@@ -1,5 +1,4 @@
-"""
-Titan Worker Custom Exceptions
+"""Titan Worker Custom Exceptions.
 
 Hierarchy:
     TitanException (base)
@@ -33,8 +32,7 @@ TitanBaseException = TitanException
 
 
 class RequestBlockedException(TitanException):
-    """
-    Raised when the request is blocked by WAF, Cloudflare, or anti-bot protection.
+    """Raised when the request is blocked by WAF, Cloudflare, or anti-bot protection.
 
     This triggers a fallback to BROWSER mode when strategy is AUTO.
     Common triggers: HTTP 403, 429, 503, or challenge page detection.
@@ -65,8 +63,7 @@ class RequestBlockedException(TitanException):
 
 
 class RequestFailedException(TitanException):
-    """
-    Raised when a request fails due to non-block reasons.
+    """Raised when a request fails due to non-block reasons.
 
     Examples: DNS failure, connection refused, SSL error, etc.
     These are typically not retryable via browser fallback.
@@ -81,11 +78,10 @@ class RequestFailedException(TitanException):
 
 
 class BrowserCrashException(TitanException):
-    """
-    Raised when the Chrome/Chromium process crashes or becomes unresponsive.
+    """Raised when the Chrome/Chromium process crashes or becomes unresponsive.
 
-    This exception indicates process-level failure, not a page-level error.
-    The ARQ worker should survive this and be able to process new tasks.
+    This exception indicates process-level failure, not a page-level error. The ARQ worker should survive this and be
+    able to process new tasks.
     """
 
     def __init__(
@@ -105,8 +101,7 @@ class BrowserCrashException(TitanException):
 
 
 class TitanTimeoutException(TitanException):
-    """
-    Raised when a scrape operation exceeds the configured timeout.
+    """Raised when a scrape operation exceeds the configured timeout.
 
     Can occur in both REQUEST and BROWSER modes.
     """
@@ -134,8 +129,7 @@ class TitanTimeoutException(TitanException):
 
 
 class ContentExtractionException(TitanException):
-    """
-    Raised when content cannot be extracted from a successful response.
+    """Raised when content cannot be extracted from a successful response.
 
     This may indicate an unexpected response format or encoding issue.
     """

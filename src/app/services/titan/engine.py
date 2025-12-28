@@ -33,16 +33,13 @@ logger = logging.getLogger(__name__)
 
 
 class TitanEngine:
-    """
-    Main orchestrator for Titan scrape operations.
+    """Main orchestrator for Titan scrape operations.
 
-    Implements the hybrid REQUEST -> BROWSER fallback strategy
-    for bypassing WAF/Cloudflare protection.
+    Implements the hybrid REQUEST -> BROWSER fallback strategy for bypassing WAF/Cloudflare protection.
     """
 
     def __init__(self, settings: "Settings") -> None:
-        """
-        Initialize TitanEngine with application settings.
+        """Initialize TitanEngine with application settings.
 
         Args:
             settings: Application settings containing Titan configuration
@@ -52,8 +49,7 @@ class TitanEngine:
         self.browser_fetcher = BrowserFetcher(settings)
 
     async def execute(self, task: ScrapeTaskCreate) -> ScrapeResult:
-        """
-        Execute a scrape task with the configured strategy.
+        """Execute a scrape task with the configured strategy.
 
         Flow:
         1. If strategy is BROWSER -> use browser directly

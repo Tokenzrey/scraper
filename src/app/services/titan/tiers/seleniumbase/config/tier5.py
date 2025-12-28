@@ -11,8 +11,7 @@ from pydantic import BaseModel, Field
 
 
 class UCModeConfig(BaseModel):
-    """
-    Undetected Chrome (UC) Mode configuration.
+    """Undetected Chrome (UC) Mode configuration.
 
     UC Mode features:
     - Bypasses bot detection services
@@ -33,8 +32,7 @@ class UCModeConfig(BaseModel):
 
 
 class CDPModeConfig(BaseModel):
-    """
-    Chrome DevTools Protocol (CDP) Mode configuration.
+    """Chrome DevTools Protocol (CDP) Mode configuration.
 
     CDP Mode features:
     - Direct access to Chrome DevTools Protocol
@@ -50,8 +48,7 @@ class CDPModeConfig(BaseModel):
 
 
 class CaptchaConfig(BaseModel):
-    """
-    CAPTCHA solving configuration.
+    """CAPTCHA solving configuration.
 
     SeleniumBase can solve:
     - Cloudflare Turnstile
@@ -65,8 +62,7 @@ class CaptchaConfig(BaseModel):
 
 
 class BrowserConfig(BaseModel):
-    """
-    Browser configuration for SeleniumBase.
+    """Browser configuration for SeleniumBase.
 
     Supports Chrome, Edge, Firefox, Safari.
     """
@@ -143,8 +139,7 @@ class ChallengeDetectionConfig(BaseModel):
 
 
 class Tier5Config(BaseModel):
-    """
-    Complete Tier 5 SeleniumBase configuration.
+    """Complete Tier 5 SeleniumBase configuration.
 
     Provides structured configuration for:
     - UC Mode (Undetected Chrome)
@@ -163,9 +158,7 @@ class Tier5Config(BaseModel):
     timeouts: TimeoutsConfig = Field(default_factory=TimeoutsConfig)
     retry: RetryConfig = Field(default_factory=RetryConfig)
     session: SessionConfig = Field(default_factory=SessionConfig)
-    challenge_detection: ChallengeDetectionConfig = Field(
-        default_factory=ChallengeDetectionConfig
-    )
+    challenge_detection: ChallengeDetectionConfig = Field(default_factory=ChallengeDetectionConfig)
 
 
 __all__ = [

@@ -8,6 +8,7 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: check-yaml
+        exclude: mkdocs.yml
       - id: check-docstring-first
       - id: check-executables-have-shebangs
       - id: check-case-conflict
@@ -24,41 +25,41 @@ repos:
         args: [--py310-plus]
         name: Upgrade code to Python 3.10+
 
-  # - repo: https://github.com/myint/docformatter
-  #   rev: v1.7.7
-  #   hooks:
-  #     - id: docformatter
-  #       args: [--in-place, --wrap-summaries=115, --wrap-descriptions=120]
+  - repo: https://github.com/myint/docformatter
+    rev: v1.7.7
+    hooks:
+      - id: docformatter
+        args: [--in-place, --wrap-summaries=115, --wrap-descriptions=120]
 
-  # - repo: https://github.com/asottile/yesqa
-  #   rev: v1.5.0
-  #   hooks:
-  #     - id: yesqa
-  #       name: Unused noqa
+  - repo: https://github.com/asottile/yesqa
+    rev: v1.5.0
+    hooks:
+      - id: yesqa
+        name: Unused noqa
 
-  # - repo: https://github.com/astral-sh/ruff-pre-commit
-  #   rev: v0.1.9
-  #   hooks:
-  #     - id: ruff
-  #       args: [--fix]
-  #     - id: ruff-format
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
 
-  # - repo: https://github.com/asottile/blacken-docs
-  #   rev: 1.16.0
-  #   hooks:
-  #     - id: blacken-docs
-  #       args: [--line-length=120]
-  #       additional_dependencies: [black==22.1.0]
-  #       exclude: ^(docs/scrapling\.md|docs/botasaurus\.md|docs/nodriver\.md|docs/captcha_resolver_backend\.md|README\.md)$
+  - repo: https://github.com/asottile/blacken-docs
+    rev: 1.16.0
+    hooks:
+      - id: blacken-docs
+        args: [--line-length=120]
+        additional_dependencies: [black==22.1.0]
+        exclude: ^(docs/scrapling\.md|docs/botasaurus\.md|docs/nodriver\.md|docs/captcha_resolver_backend\.md|README\.md|docs/user-guide/.*|docs/getting-started/.*)$
 
-  # - repo: https://github.com/executablebooks/mdformat
-  #   rev: 0.7.17
-  #   hooks:
-  #     - id: mdformat
-  #       additional_dependencies:
-  #         - mdformat-gfm
-  #         - mdformat_frontmatter
-  #       exclude: ^(CHANGELOG\.md|docs/scrapling\.md|docs/botasaurus\.md|docs/nodriver\.md|docs/captcha_resolver_backend\.md|README\.md)$
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.17
+    hooks:
+      - id: mdformat
+        additional_dependencies:
+          - mdformat-gfm
+          - mdformat_frontmatter
+        exclude: ^(CHANGELOG\.md|docs/scrapling\.md|docs/botasaurus\.md|docs/nodriver\.md|docs/captcha_resolver_backend\.md|README\.md)$
 
   # - repo: local
   #   hooks:

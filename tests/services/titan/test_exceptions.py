@@ -1,5 +1,4 @@
-"""
-Unit tests for Titan Worker exceptions.
+"""Unit tests for Titan Worker exceptions.
 
 Comprehensive tests covering:
 - TitanException (base exception)

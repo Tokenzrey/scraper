@@ -1,5 +1,4 @@
-"""
-Titan Metrics and Structured Logging Module.
+"""Titan Metrics and Structured Logging Module.
 
 Provides:
 - Structured JSON logging for scraper operations
@@ -75,8 +74,7 @@ class OperationLog:
 
 
 class TitanMetrics:
-    """
-    Thread-safe metrics collector for Titan scraper.
+    """Thread-safe metrics collector for Titan scraper.
 
     Tracks:
     - Requests per tier
@@ -264,8 +262,7 @@ def log_scrape_operation(
     fallback_used: bool = False,
     cached_session_used: bool = False,
 ) -> OperationLog:
-    """
-    Log a scrape operation with structured data.
+    """Log a scrape operation with structured data.
 
     Args:
         operation_id: Unique ID for this operation

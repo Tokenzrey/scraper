@@ -41,8 +41,8 @@ The boilerplate automatically creates the initial admin user from your environme
 Once logged in, you can create more admin users through the admin interface:
 
 1. Navigate to the admin users section in the admin panel
-2. Click "Create" or "Add New"
-3. Fill in the required fields:
+1. Click "Create" or "Add New"
+1. Fill in the required fields:
    - Username (must be unique)
    - Password (will be hashed automatically)
    - Email (optional)
@@ -96,7 +96,7 @@ Monitor admin activity by enabling event tracking:
 
 ```bash
 # Track admin actions and sessions
-CRUD_ADMIN_TRACK_EVENTS=true        # Log all admin actions  
+CRUD_ADMIN_TRACK_EVENTS=true        # Log all admin actions
 CRUD_ADMIN_TRACK_SESSIONS=true      # Track session lifecycle
 ```
 
@@ -160,9 +160,9 @@ Your boilerplate maintains two separate user systems:
 Through the admin panel, you can manage your application's users:
 
 1. Navigate to "Users" section (your application users)
-2. View, create, update user profiles
-3. Manage user tiers and subscriptions
-4. View user-generated content (posts)
+1. View, create, update user profiles
+1. Manage user tiers and subscriptions
+1. View user-generated content (posts)
 
 The User model is already registered with password hashing and proper permissions.
 
@@ -188,15 +188,16 @@ For direct database password reset:
 ```python
 # Generate bcrypt hash
 import bcrypt
+
 password = "NewPassword123!"
-hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-print(hashed.decode('utf-8'))
+hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+print(hashed.decode("utf-8"))
 ```
 
 ```sql
 -- Update in database
-UPDATE admin_users 
-SET password_hash = '<bcrypt-hash>' 
+UPDATE admin_users
+SET password_hash = '<bcrypt-hash>'
 WHERE username = 'admin';
 ```
 

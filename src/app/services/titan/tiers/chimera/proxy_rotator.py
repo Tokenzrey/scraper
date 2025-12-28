@@ -15,8 +15,6 @@ from datetime import UTC, datetime, timedelta
 from typing import Literal
 from urllib.parse import urlparse
 
-from .exceptions import ChimeraProxyError
-
 logger = logging.getLogger(__name__)
 
 
@@ -61,8 +59,7 @@ class StickyBinding:
 
 
 class ProxyRotator:
-    """
-    Manages proxy rotation with multiple strategies.
+    """Manages proxy rotation with multiple strategies.
 
     Strategies:
         - round_robin: Sequential rotation
@@ -84,9 +81,7 @@ class ProxyRotator:
         self._ban_duration = timedelta(seconds=ban_duration_seconds)
         self._max_failures = max_consecutive_failures
 
-        self._health: dict[str, ProxyHealth] = {
-            p: ProxyHealth(url=p) for p in self._proxies
-        }
+        self._health: dict[str, ProxyHealth] = {p: ProxyHealth(url=p) for p in self._proxies}
         self._rr_index = 0
         self._sticky_bindings: dict[str, StickyBinding] = {}
 
@@ -118,10 +113,7 @@ class ProxyRotator:
         self._cleanup_expired_bindings()
 
         exclude = exclude or []
-        healthy = [
-            p for p in self._proxies
-            if self._health[p].is_healthy and p not in exclude
-        ]
+        healthy = [p for p in self._proxies if self._health[p].is_healthy and p not in exclude]
 
         if not healthy:
             healthy = [p for p in self._proxies if p not in exclude]

@@ -1,3 +1,4 @@
+import fnmatch
 import functools
 import json
 import re
@@ -5,7 +6,6 @@ from collections.abc import AsyncGenerator, Callable
 from typing import Any
 
 from fastapi import Request
-import fnmatch
 from fastapi.encoders import jsonable_encoder
 from redis.asyncio import ConnectionPool, Redis
 
@@ -344,6 +344,7 @@ async def async_get_redis() -> AsyncGenerator[Redis, None]:
     # in-memory async Redis-like client so endpoints that depend on Redis
     # continue to work in tests without needing an external Redis instance.
     if pool is None:
+
         class _InMemoryRedis:
             def __init__(self) -> None:
                 self._store: dict[str, any] = {}

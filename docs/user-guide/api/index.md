@@ -38,7 +38,9 @@ async def create_user(
 ## Key Features
 
 ### 🔐 **Built-in Authentication**
+
 Add authentication to any endpoint:
+
 ```python
 from app.api.dependencies import get_current_user
 
@@ -48,7 +50,9 @@ async def get_profile(current_user: Annotated[dict, Depends(get_current_user)]):
 ```
 
 ### 📊 **Easy Pagination**
+
 Paginate any endpoint with one line:
+
 ```python
 from fastcrud import PaginatedListResponse
 
@@ -58,7 +62,9 @@ async def get_users(page: int = 1, items_per_page: int = 10):
 ```
 
 ### ✅ **Automatic Validation**
+
 Request and response validation is handled automatically:
+
 ```python
 @router.post("/", response_model=UserRead)
 async def create_user(user_data: UserCreate):  # ← Validates input
@@ -66,7 +72,9 @@ async def create_user(user_data: UserCreate):  # ← Validates input
 ```
 
 ### 🛡️ **Error Handling**
+
 Use built-in exceptions for consistent error responses:
+
 ```python
 from app.core.exceptions.http_exceptions import NotFoundException
 
@@ -93,8 +101,9 @@ SQLAlchemy Model (database)
 ```
 
 This separation makes your code:
+
 - **Testable** - Mock any layer easily
-- **Maintainable** - Clear separation of concerns  
+- **Maintainable** - Clear separation of concerns
 - **Scalable** - Add features without breaking existing code
 
 ## Directory Structure
@@ -114,12 +123,12 @@ src/app/api/
 Start with the basics:
 
 1. **[Endpoints](endpoints.md)** - Learn the common patterns for creating API endpoints
-2. **[Pagination](pagination.md)** - Add pagination to handle large datasets
-3. **[Exception Handling](exceptions.md)** - Handle errors properly with built-in exceptions
-4. **[API Versioning](versioning.md)** - Version your APIs and maintain backward compatibility
+1. **[Pagination](pagination.md)** - Add pagination to handle large datasets
+1. **[Exception Handling](exceptions.md)** - Handle errors properly with built-in exceptions
+1. **[API Versioning](versioning.md)** - Version your APIs and maintain backward compatibility
 
 Then dive deeper into the foundation:
-5. **[Database Schemas](../database/schemas.md)** - Create schemas for your data
-6. **[CRUD Operations](../database/crud.md)** - Understand the database layer
+5\. **[Database Schemas](../database/schemas.md)** - Create schemas for your data
+6\. **[CRUD Operations](../database/crud.md)** - Understand the database layer
 
-Each guide builds on the previous one with practical examples you can use immediately. 
+Each guide builds on the previous one with practical examples you can use immediately.

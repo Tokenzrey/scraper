@@ -39,8 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 class Tier4ScraplingExecutor(TierExecutor):
-    """
-    Tier 4 Executor using Scrapling StealthyFetcher.
+    """Tier 4 Executor using Scrapling StealthyFetcher.
 
     This is the most powerful tier with maximum stealth:
     - Uses Camoufox (modified Firefox) for undetectable scraping
@@ -67,9 +66,8 @@ class Tier4ScraplingExecutor(TierExecutor):
     TYPICAL_OVERHEAD_KB = 500  # Full browser + stealth features
     TYPICAL_TIME_MS = 8000  # Slower due to humanize and stealth
 
-    def __init__(self, settings: "Settings") -> None:
-        """
-        Initialize Tier 4 Scrapling executor.
+    def __init__(self, settings: Settings) -> None:
+        """Initialize Tier 4 Scrapling executor.
 
         Args:
             settings: Application settings containing Titan configuration
@@ -98,10 +96,9 @@ class Tier4ScraplingExecutor(TierExecutor):
     async def execute(
         self,
         url: str,
-        options: "ScrapeOptions | None" = None,
+        options: ScrapeOptions | None = None,
     ) -> TierResult:
-        """
-        Execute a fetch using Scrapling StealthyFetcher.
+        """Execute a fetch using Scrapling StealthyFetcher.
 
         Args:
             url: Target URL to fetch
@@ -312,8 +309,7 @@ class Tier4ScraplingExecutor(TierExecutor):
             self._client = None
 
     async def cleanup(self) -> None:
-        """
-        Release all resources.
+        """Release all resources.
 
         Called by orchestrator during shutdown or tier rotation.
         """

@@ -1,23 +1,22 @@
-from collections.abc import Callable, Generator
 import re
+from collections.abc import Callable, Generator
+from datetime import UTC, datetime
 from typing import Any
 from unittest.mock import AsyncMock, Mock
 
 import pytest
 import pytest_asyncio
 from faker import Faker
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+from uuid6 import uuid7
 
 from src.app.core.config import settings
-from src.app.main import app
 from src.app.core.db.database import async_get_db
 from src.app.core.utils.cache import async_get_redis
-from uuid6 import uuid7
-from datetime import datetime, timezone
+from src.app.main import app
 from src.app.models.captcha import CaptchaStatus
 
 DATABASE_URI = settings.POSTGRES_URI
@@ -50,8 +49,94 @@ def override_dependency(dependency: Callable[..., Any], mocked_response: Any) ->
     app.dependency_overrides[dependency] = lambda: mocked_response
 
 
+# ============== Helper functions for mock_db to reduce complexity ==============
+_MOCK_DB_STATUSES = ["pending", "in_progress", "solving", "solved", "expired", "failed", "unsolvable"]
+
+
+def _mock_db_filter_by_status(store: list, s: str, s_low: str) -> list | None:
+    """Filter store by status from query string."""
+    for st in _MOCK_DB_STATUSES:
+        if f"'{st}'" in s_low or f'"{st}"' in s:
+            return [o for o in store if getattr(getattr(o, "status", None), "value", None) == st]
+    return None
+
+
+def _mock_db_find_by_uuid(store: list, s: str) -> Any | None:
+    """Find object by UUID in query string."""
+    for obj in store:
+        try:
+            if str(obj.uuid) in s:
+                return obj
+        except Exception:
+            pass
+    return None
+
+
+def _mock_db_find_by_domain(store: list, s: str) -> Any | None:
+    """Find object by domain in query string."""
+    for obj in store:
+        try:
+            if obj.domain:
+                clean = s.replace("'", "").replace('"', "").lower()
+                if obj.domain.lower() in clean or obj.domain in s:
+                    return obj
+        except Exception:
+            pass
+    return None
+
+
+def _mock_db_apply_pagination(data: list, s_low: str) -> list:
+    """Apply limit/offset pagination to data list."""
+    limit_match = re.search(r"limit\s+(\d+)", s_low)
+    offset_match = re.search(r"offset\s+(\d+)", s_low)
+    limit = int(limit_match.group(1)) if limit_match else None
+    offset = int(offset_match.group(1)) if offset_match else 0
+    if limit is None:
+        return data
+    return data[offset : offset + limit]
+
+
+class _FakeResult:
+    """Fake SQLAlchemy result object for mock_db."""
+
+    def __init__(self, scalar_one=None, scalar_val=0, scalars_list=None, rowcount=0):
+        self._scalar_one = scalar_one
+        self._scalar = scalar_val
+        self._scalars = scalars_list or []
+        self.rowcount = rowcount
+
+    def scalar_one_or_none(self):
+        return self._scalar_one
+
+    def scalar(self):
+        return self._scalar
+
+    def scalars(self):
+        class _S:
+            def __init__(self, data):
+                self._data = data
+
+            def all(self):
+                return list(self._data)
+
+        return _S(self._scalars)
+
+
+def _mock_db_refresh_obj(obj: Any, store_len: int) -> None:
+    """Simulate DB defaults populated during refresh."""
+    if not getattr(obj, "id", None):
+        obj.id = store_len + 1
+    if not getattr(obj, "uuid", None):
+        obj.uuid = uuid7()
+    if not getattr(obj, "status", None):
+        obj.status = CaptchaStatus.PENDING
+    obj.attempts = int(getattr(obj, "attempts", 0) or 0)
+    if not getattr(obj, "created_at", None):
+        obj.created_at = datetime.now(UTC)
+
+
 @pytest.fixture
-def mock_db():  # noqa: C901  # noqa: C901
+def mock_db():
     """In-memory fake AsyncSession for unit tests.
 
     This fake session records added objects and attempts to respond to
@@ -63,29 +148,6 @@ def mock_db():  # noqa: C901  # noqa: C901
     The implementation compiles statements with literal binds using the test
     `sync_engine` dialect to inspect literal values for matching.
     """
-
-    class FakeResult:
-        def __init__(self, scalar_one=None, scalar_val=0, scalars_list=None, rowcount=0):
-            self._scalar_one = scalar_one
-            self._scalar = scalar_val
-            self._scalars = scalars_list or []
-            self.rowcount = rowcount
-
-        def scalar_one_or_none(self):
-            return self._scalar_one
-
-        def scalar(self):
-            return self._scalar
-
-        def scalars(self):
-            class _S:
-                def __init__(self, data):
-                    self._data = data
-
-                def all(self):
-                    return list(self._data)
-
-            return _S(self._scalars)
 
     class FakeAsyncSession:
         def __init__(self):
@@ -101,97 +163,55 @@ def mock_db():  # noqa: C901  # noqa: C901
 
             s_low = s.lower()
 
-            # Determine pagination if present
-            limit_match = re.search(r"limit\s+(\d+)", s_low)
-            offset_match = re.search(r"offset\s+(\d+)", s_low)
-            limit = int(limit_match.group(1)) if limit_match else None
-            offset = int(offset_match.group(1)) if offset_match else 0
-
-            # Helper to apply limit/offset to a list
-            def _page(data):
-                if limit is None:
-                    return data
-                return data[offset : offset + limit]
-
             # COUNT query
             if "count(" in s_low:
-                # If there's a WHERE with status or domain, compute filtered count
                 filtered = list(self.store)
-                # Status filter
-                statuses = ["pending", "in_progress", "solving", "solved", "expired", "failed", "unsolvable"]
-                for st in statuses:
-                    if f"'{st}'" in s_low or f'"{st}"' in s:
-                        filtered = [o for o in self.store if getattr(getattr(o, 'status', None), 'value', None) == st]
-                        break
+                status_filtered = _mock_db_filter_by_status(filtered, s, s_low)
+                if status_filtered is not None:
+                    filtered = status_filtered
                 # Domain filter
                 domain_match = re.search(r"where .*domain\s*=\s*'([^']+)'", s, flags=re.IGNORECASE)
                 if domain_match:
                     dom = domain_match.group(1)
-                    filtered = [o for o in filtered if getattr(o, 'domain', None) == dom]
-                return FakeResult(scalar_one=None, scalar_val=len(filtered), scalars_list=filtered)
+                    filtered = [o for o in filtered if getattr(o, "domain", None) == dom]
+                return _FakeResult(scalar_one=None, scalar_val=len(filtered), scalars_list=filtered)
 
             # Select all tasks (no where)
             if "where" not in s_low and "select" in s_low:
-                return FakeResult(scalar_one=None, scalar_val=len(self.store), scalars_list=_page(self.store))
+                return _FakeResult(
+                    scalar_one=None,
+                    scalar_val=len(self.store),
+                    scalars_list=_mock_db_apply_pagination(self.store, s_low),
+                )
 
             # Lookup by uuid
-            for obj in self.store:
-                try:
-                    if str(obj.uuid) in s:
-                        return FakeResult(scalar_one=obj, scalar_val=1, scalars_list=[obj])
-                except Exception:
-                    pass
+            uuid_obj = _mock_db_find_by_uuid(self.store, s)
+            if uuid_obj is not None:
+                return _FakeResult(scalar_one=uuid_obj, scalar_val=1, scalars_list=[uuid_obj])
 
             # Status filter: check for status literal in query
-            statuses = ["pending", "in_progress", "solving", "solved", "expired", "failed", "unsolvable"]
-            for st in statuses:
-                if f"'{st}'" in s_low or f'"{st}"' in s:
-                    filtered = [o for o in self.store if getattr(getattr(o, 'status', None), 'value', None) == st]
-                    return FakeResult(scalar_one=None, scalar_val=len(filtered), scalars_list=_page(filtered))
+            status_filtered = _mock_db_filter_by_status(self.store, s, s_low)
+            if status_filtered is not None:
+                return _FakeResult(
+                    scalar_one=None,
+                    scalar_val=len(status_filtered),
+                    scalars_list=_mock_db_apply_pagination(status_filtered, s_low),
+                )
 
             # Lookup by domain
-            for obj in self.store:
-                try:
-                    if obj.domain:
-                        # Match domain in various SQL renderings (with or without quotes)
-                        clean = s.replace("'", "").replace('"', "").lower()
-                        if obj.domain.lower() in clean or obj.domain in s:
-                            return FakeResult(scalar_one=obj, scalar_val=1, scalars_list=[obj])
-                except Exception:
-                    pass
+            domain_obj = _mock_db_find_by_domain(self.store, s)
+            if domain_obj is not None:
+                return _FakeResult(scalar_one=domain_obj, scalar_val=1, scalars_list=[domain_obj])
 
             # Default empty
-            return FakeResult(scalar_one=None, scalar_val=0, scalars_list=[])
+            return _FakeResult(scalar_one=None, scalar_val=0, scalars_list=[])
 
         async def commit(self):
             return None
 
         async def refresh(self, obj):
             # Simulate DB defaults populated during refresh
-            try:
-                if not getattr(obj, "id", None):
-                    obj.id = len(self.store) + 1
-            except Exception:
-                pass
-            try:
-                if not getattr(obj, "uuid", None):
-                    obj.uuid = uuid7()
-            except Exception:
-                pass
-            try:
-                if not getattr(obj, "status", None):
-                    obj.status = CaptchaStatus.PENDING
-            except Exception:
-                pass
-            try:
-                obj.attempts = int(getattr(obj, "attempts", 0) or 0)
-            except Exception:
-                obj.attempts = 0
-            try:
-                if not getattr(obj, "created_at", None):
-                    obj.created_at = datetime.now(timezone.utc)
-            except Exception:
-                pass
+            _mock_db_refresh_obj(obj, len(self.store))
 
         def add(self, obj):
             # Record the object in store for later queries

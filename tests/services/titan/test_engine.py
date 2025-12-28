@@ -1,5 +1,4 @@
-"""
-Unit tests for Titan Engine orchestrator.
+"""Unit tests for Titan Engine orchestrator.
 
 Comprehensive tests covering:
 - REQUEST mode execution (success, blocked, timeout)

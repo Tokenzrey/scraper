@@ -23,12 +23,12 @@ FastAPI-boilerplate/
 
 ### Configuration Files
 
-| File | Purpose |
-|------|---------|
-| `Dockerfile` | Defines the container image for the application |
-| `docker-compose.yml` | Orchestrates multiple services (API, database, Redis, worker) |
-| `pyproject.toml` | Modern Python project configuration with dependencies and metadata |
-| `uv.lock` | Locks exact dependency versions for reproducible builds |
+| File                 | Purpose                                                            |
+| -------------------- | ------------------------------------------------------------------ |
+| `Dockerfile`         | Defines the container image for the application                    |
+| `docker-compose.yml` | Orchestrates multiple services (API, database, Redis, worker)      |
+| `pyproject.toml`     | Modern Python project configuration with dependencies and metadata |
+| `uv.lock`            | Locks exact dependency versions for reproducible builds            |
 
 ## Source Code Structure
 
@@ -52,9 +52,11 @@ src/
 ## Core Application (`src/app/`)
 
 ### Entry Point
+
 - **`main.py`** - FastAPI application instance and configuration
 
 ### API Layer (`api/`)
+
 ```text
 api/
 ├── dependencies.py          # Shared dependencies
@@ -71,6 +73,7 @@ api/
 **Purpose**: Contains all API endpoints organized by functionality and version.
 
 ### Core System (`core/`)
+
 ```text
 core/
 ├── config.py               # Application settings
@@ -87,6 +90,7 @@ core/
 **Purpose**: Houses core functionality, configuration, and shared utilities.
 
 #### Database Core (`core/db/`)
+
 ```text
 db/
 ├── database.py             # Database connection and session management
@@ -96,6 +100,7 @@ db/
 ```
 
 #### Exceptions (`core/exceptions/`)
+
 ```text
 exceptions/
 ├── cache_exceptions.py     # Cache-related exceptions
@@ -103,6 +108,7 @@ exceptions/
 ```
 
 #### Utilities (`core/utils/`)
+
 ```text
 utils/
 ├── cache.py                # Caching utilities
@@ -111,6 +117,7 @@ utils/
 ```
 
 #### Worker (`core/worker/`)
+
 ```text
 worker/
 ├── settings.py             # Worker configuration
@@ -120,6 +127,7 @@ worker/
 ### Data Layer
 
 #### Models (`models/`)
+
 ```text
 models/
 ├── user.py                 # User model
@@ -131,6 +139,7 @@ models/
 **Purpose**: SQLAlchemy ORM models defining database schema.
 
 #### Schemas (`schemas/`)
+
 ```text
 schemas/
 ├── user.py                 # User validation schemas
@@ -143,6 +152,7 @@ schemas/
 **Purpose**: Pydantic schemas for request/response validation and serialization.
 
 #### CRUD Operations (`crud/`)
+
 ```text
 crud/
 ├── crud_base.py            # Base CRUD class
@@ -158,12 +168,14 @@ crud/
 ### Additional Components
 
 #### Middleware (`middleware/`)
+
 ```text
 middleware/
 └── client_cache_middleware.py  # Client-side caching middleware
 ```
 
 #### Logs (`logs/`)
+
 ```text
 logs/
 └── app.log                 # Application log file
@@ -209,9 +221,9 @@ tests/
 The boilerplate implements a clean layered architecture:
 
 1. **API Layer** (`api/`) - Handles HTTP requests and responses
-2. **Business Logic** (`crud/`) - Implements business rules and data operations
-3. **Data Access** (`models/`) - Defines data structure and database interaction
-4. **Core Services** (`core/`) - Provides shared functionality and configuration
+1. **Business Logic** (`crud/`) - Implements business rules and data operations
+1. **Data Access** (`models/`) - Defines data structure and database interaction
+1. **Core Services** (`core/`) - Provides shared functionality and configuration
 
 ### Dependency Injection
 
@@ -281,10 +293,10 @@ Each module has a clear, single purpose:
 ### Adding New Features
 
 1. **Model** → Define in `models/`
-2. **Schema** → Create in `schemas/`
-3. **CRUD** → Implement in `crud/`
-4. **API** → Add endpoints in `api/v1/`
-5. **Migration** → Generate with Alembic
+1. **Schema** → Create in `schemas/`
+1. **CRUD** → Implement in `crud/`
+1. **API** → Add endpoints in `api/v1/`
+1. **Migration** → Generate with Alembic
 
 ### Understanding Data Flow
 
@@ -293,4 +305,4 @@ Request → API Endpoint → Dependencies → CRUD → Model → Database
 Response ← API Response ← Schema ← CRUD ← Query Result ← Database
 ```
 
-This structure provides a solid foundation for building scalable, maintainable APIs while keeping the codebase organized and easy to navigate. 
+This structure provides a solid foundation for building scalable, maintainable APIs while keeping the codebase organized and easy to navigate.

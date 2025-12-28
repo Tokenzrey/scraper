@@ -53,15 +53,10 @@ from .config import ConfigLoader, Tier7Config
 from .exceptions import (
     HITLAdminNotConnectedError,
     HITLBrowserError,
-    HITLChallengeError,
     HITLException,
     HITLHarvestingError,
-    HITLRedisError,
     HITLSessionExpiredError,
     HITLSolveTimeoutError,
-    HITLStreamingError,
-    HITLTimeoutError,
-    HITLWebSocketError,
 )
 from .harvester import GoldenTicket, SessionHarvester
 from .streaming import BrowserStreamer, RemoteController
@@ -77,8 +72,7 @@ logger = logging.getLogger(__name__)
 
 
 class HITLSession:
-    """
-    Represents an active HITL session.
+    """Represents an active HITL session.
 
     Tracks state of human-in-the-loop interaction.
     """
@@ -177,12 +171,11 @@ class Tier7HITLExecutor(TierExecutor):
 
     def __init__(
         self,
-        settings: "Settings",
-        redis_client: "Redis | None" = None,
+        settings: Settings,
+        redis_client: Redis | None = None,
         websocket_manager: Any = None,
     ) -> None:
-        """
-        Initialize Tier 7 HITL executor.
+        """Initialize Tier 7 HITL executor.
 
         Args:
             settings: Application settings
@@ -232,10 +225,9 @@ class Tier7HITLExecutor(TierExecutor):
     async def execute(
         self,
         url: str,
-        options: "ScrapeOptions | None" = None,
+        options: ScrapeOptions | None = None,
     ) -> TierResult:
-        """
-        Execute HITL session for the given URL.
+        """Execute HITL session for the given URL.
 
         This method:
         1. Opens browser and navigates to URL
@@ -337,9 +329,7 @@ class Tier7HITLExecutor(TierExecutor):
                 execution_time_ms = (time.perf_counter() - start_time) * 1000
 
                 logger.info(
-                    f"HITL SUCCESS: {domain}, "
-                    f"solve_time={solve_time:.1f}s, "
-                    f"cookies={len(ticket.cookies)}"
+                    f"HITL SUCCESS: {domain}, " f"solve_time={solve_time:.1f}s, " f"cookies={len(ticket.cookies)}"
                 )
 
                 return TierResult(
@@ -543,8 +533,7 @@ class Tier7HITLExecutor(TierExecutor):
         page: Any,
         session: HITLSession,
     ) -> bool:
-        """
-        Wait for admin to connect and solve challenge.
+        """Wait for admin to connect and solve challenge.
 
         This method polls the page content to detect when
         the challenge has been solved (success indicators).
@@ -646,9 +635,7 @@ class Tier7HITLExecutor(TierExecutor):
         # For now, return False (to be implemented with WS manager)
         if self.ws_manager:
             # Check if any admin is connected to this session
-            return hasattr(self.ws_manager, "has_admin") and self.ws_manager.has_admin(
-                session_id
-            )
+            return hasattr(self.ws_manager, "has_admin") and self.ws_manager.has_admin(session_id)
         return False
 
     async def _publish_event(self, event_type: str, payload: dict[str, Any]) -> None:
@@ -672,10 +659,9 @@ class Tier7HITLExecutor(TierExecutor):
     async def start_streaming(
         self,
         session_id: str,
-        websocket: "WebSocket",
+        websocket: WebSocket,
     ) -> None:
-        """
-        Start streaming browser to admin WebSocket.
+        """Start streaming browser to admin WebSocket.
 
         Called when admin connects to HITL session.
 
@@ -705,8 +691,7 @@ class Tier7HITLExecutor(TierExecutor):
         logger.info(f"HITL streaming started for session: {session_id}")
 
     async def stop_streaming(self, session_id: str) -> dict[str, Any]:
-        """
-        Stop streaming for a session.
+        """Stop streaming for a session.
 
         Args:
             session_id: HITL session ID
@@ -717,9 +702,9 @@ class Tier7HITLExecutor(TierExecutor):
         stats = {}
 
         if self._streamer:
-            stats = (await self._streamer.stop_streaming()).to_dict() if hasattr(
-                self._streamer, "stop_streaming"
-            ) else {}
+            stats = (
+                (await self._streamer.stop_streaming()).to_dict() if hasattr(self._streamer, "stop_streaming") else {}
+            )
             self._streamer = None
 
         self._controller = None
@@ -732,8 +717,7 @@ class Tier7HITLExecutor(TierExecutor):
         session_id: str,
         event: dict[str, Any],
     ) -> None:
-        """
-        Handle input event from admin.
+        """Handle input event from admin.
 
         Args:
             session_id: HITL session ID
@@ -746,8 +730,7 @@ class Tier7HITLExecutor(TierExecutor):
         await self._controller.handle_event(event)
 
     async def get_golden_ticket(self, domain: str) -> GoldenTicket | None:
-        """
-        Get Golden Ticket for domain.
+        """Get Golden Ticket for domain.
 
         Used by Tier 1 to retrieve harvested credentials.
 

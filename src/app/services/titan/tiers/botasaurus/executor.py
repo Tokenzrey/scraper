@@ -30,13 +30,6 @@ from typing import TYPE_CHECKING, Any
 from ..base import TierExecutor, TierLevel, TierResult
 from .browser_client import BrowserClient, BrowserResponse
 from .config import BotasaurusConfig, ConfigLoader
-from .exceptions import (
-    BotasaurusBlockError,
-    BotasaurusBrowserError,
-    BotasaurusException,
-    BotasaurusNetworkError,
-    BotasaurusTimeoutError,
-)
 from .request_client import RequestClient, RequestResponse
 
 if TYPE_CHECKING:
@@ -61,8 +54,7 @@ def get_botasaurus_executor() -> ThreadPoolExecutor:
 
 
 class Tier2BotasaurusExecutor(TierExecutor):
-    """
-    Tier 2 Executor using Botasaurus @request and @browser.
+    """Tier 2 Executor using Botasaurus @request and @browser.
 
     Two-phase approach:
     1. @request: Lightweight, browser-like HTTP (tries first)
@@ -90,8 +82,7 @@ class Tier2BotasaurusExecutor(TierExecutor):
         proxies: list[str] | None = None,
         mode: str = "auto",  # "auto", "request", "browser"
     ) -> None:
-        """
-        Initialize Tier 2 Botasaurus Executor.
+        """Initialize Tier 2 Botasaurus Executor.
 
         Args:
             settings: Application settings (Titan configuration)
@@ -123,10 +114,7 @@ class Tier2BotasaurusExecutor(TierExecutor):
         self._request_client: RequestClient | None = None
         self._browser_client: BrowserClient | None = None
 
-        logger.info(
-            f"Tier2BotasaurusExecutor initialized: "
-            f"mode={mode}, proxies={len(self._proxies)}"
-        )
+        logger.info(f"Tier2BotasaurusExecutor initialized: " f"mode={mode}, proxies={len(self._proxies)}")
 
     def _apply_settings_overrides(self) -> None:
         """Apply overrides from Titan settings to Botasaurus config."""
@@ -181,8 +169,7 @@ class Tier2BotasaurusExecutor(TierExecutor):
         url: str,
         options: "ScrapeOptions | None" = None,
     ) -> TierResult:
-        """
-        Execute Tier 2 fetch using Botasaurus.
+        """Execute Tier 2 fetch using Botasaurus.
 
         Strategy based on mode:
         - "auto": Request first, browser if JS challenge detected
@@ -220,15 +207,11 @@ class Tier2BotasaurusExecutor(TierExecutor):
 
             # Mode: request only
             if self._mode == "request":
-                return await self._execute_request_mode(
-                    url, custom_headers, loop, executor, timeout, start_time
-                )
+                return await self._execute_request_mode(url, custom_headers, loop, executor, timeout, start_time)
 
             # Mode: browser only
             if self._mode == "browser":
-                return await self._execute_browser_mode(
-                    url, bypass_cf, profile_id, loop, executor, timeout, start_time
-                )
+                return await self._execute_browser_mode(url, bypass_cf, profile_id, loop, executor, timeout, start_time)
 
             # Mode: auto (default) - try request, escalate to browser if needed
             return await self._execute_auto_mode(

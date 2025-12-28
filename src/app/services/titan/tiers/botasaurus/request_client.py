@@ -24,8 +24,9 @@ Note:
 import logging
 import random
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from .config import BotasaurusConfig
@@ -50,8 +51,7 @@ class RequestResponse:
 
 
 def _detect_challenge(content: str, status_code: int | None = None) -> str | None:
-    """
-    Detect if response contains a challenge or block.
+    """Detect if response contains a challenge or block.
 
     Note: @request cannot solve JS challenges - these should escalate to browser.
 
@@ -107,8 +107,7 @@ def create_request_fetch_function(
     config: "BotasaurusConfig",
     proxy: str | None = None,
 ) -> Callable:
-    """
-    Create a Botasaurus @request decorated function with configuration.
+    """Create a Botasaurus @request decorated function with configuration.
 
     Args:
         config: Botasaurus configuration
@@ -129,8 +128,7 @@ def create_request_fetch_function(
         proxy=proxy,
     )
     def fetch_with_request(req: Request, data: dict[str, Any]) -> dict[str, Any]:
-        """
-        Request fetch function using Botasaurus @request.
+        """Request fetch function using Botasaurus @request.
 
         The @request decorator automatically:
         - Uses browser-like headers in correct order
@@ -240,8 +238,7 @@ def create_request_fetch_function(
 
 
 class RequestClient:
-    """
-    High-level request client for lightweight Tier 2 operations.
+    """High-level request client for lightweight Tier 2 operations.
 
     Uses Botasaurus @request for browser-like HTTP requests without
     the overhead of a real browser. Best for:
@@ -260,8 +257,7 @@ class RequestClient:
         config: "BotasaurusConfig",
         proxies: list[str] | None = None,
     ) -> None:
-        """
-        Initialize request client.
+        """Initialize request client.
 
         Args:
             config: Botasaurus configuration
@@ -299,8 +295,7 @@ class RequestClient:
         url: str,
         headers: dict[str, str] | None = None,
     ) -> RequestResponse:
-        """
-        Synchronous request fetch.
+        """Synchronous request fetch.
 
         Args:
             url: Target URL
@@ -371,14 +366,10 @@ class RequestClient:
             **self._stats,
             "proxy_count": len(self.proxies),
             "success_rate": (
-                self._stats["successes"] / self._stats["requests"]
-                if self._stats["requests"] > 0
-                else 0.0
+                self._stats["successes"] / self._stats["requests"] if self._stats["requests"] > 0 else 0.0
             ),
             "escalation_rate": (
-                self._stats["escalations_needed"] / self._stats["requests"]
-                if self._stats["requests"] > 0
-                else 0.0
+                self._stats["escalations_needed"] / self._stats["requests"] if self._stats["requests"] > 0 else 0.0
             ),
         }
 

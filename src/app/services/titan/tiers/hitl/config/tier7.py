@@ -18,11 +18,9 @@ from pydantic import BaseModel, Field
 
 
 class StreamingConfig(BaseModel):
-    """
-    Browser streaming configuration.
+    """Browser streaming configuration.
 
-    Uses Chrome DevTools Protocol (CDP) Page.startScreencast
-    to capture frames and stream via WebSocket.
+    Uses Chrome DevTools Protocol (CDP) Page.startScreencast to capture frames and stream via WebSocket.
     """
 
     # Frame rate for streaming (frames per second)
@@ -48,8 +46,7 @@ class StreamingConfig(BaseModel):
 
 
 class RemoteControlConfig(BaseModel):
-    """
-    Remote control configuration for admin input.
+    """Remote control configuration for admin input.
 
     Translates admin mouse/keyboard events to CDP commands:
     - Input.dispatchMouseEvent
@@ -76,11 +73,9 @@ class RemoteControlConfig(BaseModel):
 
 
 class HarvestingConfig(BaseModel):
-    """
-    Session harvesting configuration for "Golden Ticket".
+    """Session harvesting configuration for "Golden Ticket".
 
-    Extracts and stores validated session credentials
-    after human successfully solves challenge.
+    Extracts and stores validated session credentials after human successfully solves challenge.
     """
 
     # Enable automatic cookie harvesting
@@ -122,8 +117,7 @@ class HarvestingConfig(BaseModel):
 
 
 class RedisStorageConfig(BaseModel):
-    """
-    Redis storage configuration for harvested credentials.
+    """Redis storage configuration for harvested credentials.
 
     Stores "Golden Ticket" sessions for reuse by lower tiers.
     """
@@ -148,8 +142,7 @@ class RedisStorageConfig(BaseModel):
 
 
 class ChallengeDetectionConfig(BaseModel):
-    """
-    Challenge detection for automatic HITL triggering.
+    """Challenge detection for automatic HITL triggering.
 
     When these patterns are detected, escalate to HITL.
     """
@@ -224,8 +217,7 @@ class TimeoutsConfig(BaseModel):
 
 
 class NotificationConfig(BaseModel):
-    """
-    Notification configuration for HITL events.
+    """Notification configuration for HITL events.
 
     Sends alerts when human intervention is required.
     """
@@ -247,8 +239,7 @@ class NotificationConfig(BaseModel):
 
 
 class Tier7Config(BaseModel):
-    """
-    Complete Tier 7 HITL Bridge configuration.
+    """Complete Tier 7 HITL Bridge configuration.
 
     Provides structured configuration for:
     - Browser streaming (MJPEG-like via WebSocket)
@@ -278,9 +269,7 @@ class Tier7Config(BaseModel):
     remote_control: RemoteControlConfig = Field(default_factory=RemoteControlConfig)
     harvesting: HarvestingConfig = Field(default_factory=HarvestingConfig)
     storage: RedisStorageConfig = Field(default_factory=RedisStorageConfig)
-    challenge_detection: ChallengeDetectionConfig = Field(
-        default_factory=ChallengeDetectionConfig
-    )
+    challenge_detection: ChallengeDetectionConfig = Field(default_factory=ChallengeDetectionConfig)
     timeouts: TimeoutsConfig = Field(default_factory=TimeoutsConfig)
     notification: NotificationConfig = Field(default_factory=NotificationConfig)
 

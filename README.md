@@ -57,28 +57,28 @@ PROJECT CHIMERA adalah platform web scraping enterprise yang menggabungkan 7 tin
 
 ### Core Features
 
-| Feature | Description |
-|---------|-------------|
-| **7-Tier Scraper** | Intelligent escalation dari request ringan hingga human intervention |
-| **JWT Authentication** | Access + refresh token dengan cookie-based refresh |
-| **Rate Limiting** | Per-tier dan per-path rate limits |
-| **Background Jobs** | ARQ worker untuk async scraping tasks |
-| **Redis Caching** | Server-side caching dengan TTL |
-| **Admin Panel** | CRUDAdmin untuk manajemen data |
-| **WebSocket Events** | Real-time notifications untuk CAPTCHA events |
-| **Health Checks** | `/health` dan `/ready` endpoints |
+| Feature                | Description                                                          |
+| ---------------------- | -------------------------------------------------------------------- |
+| **7-Tier Scraper**     | Intelligent escalation dari request ringan hingga human intervention |
+| **JWT Authentication** | Access + refresh token dengan cookie-based refresh                   |
+| **Rate Limiting**      | Per-tier dan per-path rate limits                                    |
+| **Background Jobs**    | ARQ worker untuk async scraping tasks                                |
+| **Redis Caching**      | Server-side caching dengan TTL                                       |
+| **Admin Panel**        | CRUDAdmin untuk manajemen data                                       |
+| **WebSocket Events**   | Real-time notifications untuk CAPTCHA events                         |
+| **Health Checks**      | `/health` dan `/ready` endpoints                                     |
 
 ### Scraping Capabilities
 
-| Capability | Technology |
-|------------|------------|
-| TLS Fingerprinting | curl_cffi dengan browser impersonation |
-| Browser Automation | Botasaurus, Nodriver, SeleniumBase |
-| Stealth Mode | Camoufox (Firefox modified), DrissionPage |
-| CAPTCHA Solving | Auto-solve + manual HITL fallback |
-| Session Harvesting | Golden Ticket extraction dan reuse |
-| Cross-iframe | DrissionPage native support |
-| Shadow DOM | DrissionPage shadow-root handling |
+| Capability         | Technology                                |
+| ------------------ | ----------------------------------------- |
+| TLS Fingerprinting | curl_cffi dengan browser impersonation    |
+| Browser Automation | Botasaurus, Nodriver, SeleniumBase        |
+| Stealth Mode       | Camoufox (Firefox modified), DrissionPage |
+| CAPTCHA Solving    | Auto-solve + manual HITL fallback         |
+| Session Harvesting | Golden Ticket extraction dan reuse        |
+| Cross-iframe       | DrissionPage native support               |
+| Shadow DOM         | DrissionPage shadow-root handling         |
 
 ---
 
@@ -178,18 +178,18 @@ project-root/
 
 ### Tier Overview
 
-| Tier | Name | Technology | Time | Stealth | Memory | Use Case |
-|------|------|------------|------|---------|--------|----------|
-| 1 | Request | curl_cffi + TLS | ~50ms | Medium | 50KB | APIs, simple sites |
-| 1-alt | Chimera | Advanced TLS | ~100ms | High | 100KB | Bot detection |
-| 2 | Browser+Request | Botasaurus hybrid | ~500ms | High | 50KB | Initial bypass |
-| 2-alt | Botasaurus | Auto-escalation | ~1s | High | 100KB | Auto fallback |
-| 3 | Full Browser | google_get() + JS | ~2s | Very High | 2MB | JS rendering |
-| 3-alt | Nodriver | Async CDP | ~2s | Very High | 500KB | cf_verify() |
-| 4 | Scrapling | Camoufox stealth | ~3s | Very High | 500KB | OS fingerprint |
-| 5 | SeleniumBase | UC + CDP + CAPTCHA | ~5s | Maximum | 800KB | Auto CAPTCHA |
-| 6 | DrissionPage | No webdriver | ~2s | Very High | 400KB | iframe/shadow |
-| 7 | HITL | Human-in-the-Loop | Manual | Golden | 500KB | Final resort |
+| Tier  | Name            | Technology         | Time   | Stealth   | Memory | Use Case           |
+| ----- | --------------- | ------------------ | ------ | --------- | ------ | ------------------ |
+| 1     | Request         | curl_cffi + TLS    | ~50ms  | Medium    | 50KB   | APIs, simple sites |
+| 1-alt | Chimera         | Advanced TLS       | ~100ms | High      | 100KB  | Bot detection      |
+| 2     | Browser+Request | Botasaurus hybrid  | ~500ms | High      | 50KB   | Initial bypass     |
+| 2-alt | Botasaurus      | Auto-escalation    | ~1s    | High      | 100KB  | Auto fallback      |
+| 3     | Full Browser    | google_get() + JS  | ~2s    | Very High | 2MB    | JS rendering       |
+| 3-alt | Nodriver        | Async CDP          | ~2s    | Very High | 500KB  | cf_verify()        |
+| 4     | Scrapling       | Camoufox stealth   | ~3s    | Very High | 500KB  | OS fingerprint     |
+| 5     | SeleniumBase    | UC + CDP + CAPTCHA | ~5s    | Maximum   | 800KB  | Auto CAPTCHA       |
+| 6     | DrissionPage    | No webdriver       | ~2s    | Very High | 400KB  | iframe/shadow      |
+| 7     | HITL            | Human-in-the-Loop  | Manual | Golden    | 500KB  | Final resort       |
 
 ### Escalation Flow
 
@@ -224,13 +224,13 @@ Ketika human menyelesaikan challenge di Tier 7:
 
 ### System Requirements
 
-| Component | Minimum | Recommended |
-|-----------|---------|-------------|
-| OS | WSL2 Ubuntu / Linux | Ubuntu 22.04 LTS |
-| Python | 3.11+ | 3.11.9 |
-| Memory | 4GB | 8GB+ |
-| Storage | 10GB | 20GB+ |
-| Docker | 24.0+ | Latest |
+| Component | Minimum             | Recommended      |
+| --------- | ------------------- | ---------------- |
+| OS        | WSL2 Ubuntu / Linux | Ubuntu 22.04 LTS |
+| Python    | 3.11+               | 3.11.9           |
+| Memory    | 4GB                 | 8GB+             |
+| Storage   | 10GB                | 20GB+            |
+| Docker    | 24.0+               | Latest           |
 
 ### Software Dependencies
 
@@ -323,15 +323,15 @@ uv pip install -e ".[dev,all-tiers]"
 
 ### Dependencies per Tier
 
-| Tier | Package | Instalasi |
-|------|---------|-----------|
-| 1 | `curl-cffi`, `botasaurus` | `uv pip install -e ".[tier1]"` |
-| 2 | `botasaurus`, `botasaurus-driver` | `uv pip install -e ".[tier2]"` |
-| 3 | `nodriver`, `opencv-python` | `uv pip install -e ".[tier3]"` |
-| 4 | `scrapling[all]` (includes Camoufox) | `uv pip install -e ".[tier4]"` |
-| 5 | `seleniumbase` | `uv pip install -e ".[tier5]"` |
-| 6 | `DrissionPage` | `uv pip install -e ".[tier6]"` |
-| 7 | `DrissionPage`, `websockets` | `uv pip install -e ".[tier7]"` |
+| Tier | Package                              | Instalasi                      |
+| ---- | ------------------------------------ | ------------------------------ |
+| 1    | `curl-cffi`, `botasaurus`            | `uv pip install -e ".[tier1]"` |
+| 2    | `botasaurus`, `botasaurus-driver`    | `uv pip install -e ".[tier2]"` |
+| 3    | `nodriver`, `opencv-python`          | `uv pip install -e ".[tier3]"` |
+| 4    | `scrapling[all]` (includes Camoufox) | `uv pip install -e ".[tier4]"` |
+| 5    | `seleniumbase`                       | `uv pip install -e ".[tier5]"` |
+| 6    | `DrissionPage`                       | `uv pip install -e ".[tier6]"` |
+| 7    | `DrissionPage`, `websockets`         | `uv pip install -e ".[tier7]"` |
 
 ### Docker Installation (Jika belum ada)
 
@@ -580,13 +580,13 @@ uv run python -m src.scripts.create_first_superuser
 
 ### Access Points
 
-| Service | URL | Description |
-|---------|-----|-------------|
-| API | http://localhost:8000 | Main API |
-| API Docs | http://localhost:8000/docs | Swagger UI |
-| ReDoc | http://localhost:8000/redoc | Alternative docs |
-| Admin Panel | http://localhost:8000/admin | CRUDAdmin |
-| Health Check | http://localhost:8000/health | Health status |
+| Service      | URL                          | Description      |
+| ------------ | ---------------------------- | ---------------- |
+| API          | http://localhost:8000        | Main API         |
+| API Docs     | http://localhost:8000/docs   | Swagger UI       |
+| ReDoc        | http://localhost:8000/redoc  | Alternative docs |
+| Admin Panel  | http://localhost:8000/admin  | CRUDAdmin        |
+| Health Check | http://localhost:8000/health | Health status    |
 
 ---
 
@@ -604,10 +604,11 @@ curl -X POST "http://localhost:8000/api/v1/login" \
 ```
 
 Response:
+
 ```json
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIs...",
-  "token_type": "bearer"
+	"access_token": "eyJhbGciOiJIUzI1NiIs...",
+	"token_type": "bearer"
 }
 ```
 
@@ -639,12 +640,13 @@ curl -X POST "http://localhost:8000/api/v1/scrape" \
 ```
 
 Response:
+
 ```json
 {
-  "job_id": "abc123",
-  "status": "queued",
-  "url": "https://example.com",
-  "enqueue_time": "2024-01-15T10:30:00Z"
+	"job_id": "abc123",
+	"status": "queued",
+	"url": "https://example.com",
+	"enqueue_time": "2024-01-15T10:30:00Z"
 }
 ```
 
@@ -655,21 +657,22 @@ curl -X GET "http://localhost:8000/api/v1/scrape/abc123"
 ```
 
 Response:
+
 ```json
 {
-  "job_id": "abc123",
-  "status": "complete",
-  "result": {
-    "status": "success",
-    "content": "<!DOCTYPE html>...",
-    "content_type": "text/html",
-    "strategy_used": "request",
-    "tier_used": 1,
-    "execution_time_ms": 150,
-    "http_status_code": 200,
-    "fallback_used": false,
-    "response_size_bytes": 45678
-  }
+	"job_id": "abc123",
+	"status": "complete",
+	"result": {
+		"status": "success",
+		"content": "<!DOCTYPE html>...",
+		"content_type": "text/html",
+		"strategy_used": "request",
+		"tier_used": 1,
+		"execution_time_ms": 150,
+		"http_status_code": 200,
+		"fallback_used": false,
+		"response_size_bytes": 45678
+	}
 }
 ```
 
@@ -822,12 +825,12 @@ async def scrape_task(ctx, url: str, options: dict) -> dict:
 
 ### Job Status
 
-| Status | Description |
-|--------|-------------|
-| `queued` | Task dalam antrian |
-| `in_progress` | Sedang diproses |
-| `complete` | Selesai sukses |
-| `failed` | Gagal dengan error |
+| Status        | Description        |
+| ------------- | ------------------ |
+| `queued`      | Task dalam antrian |
+| `in_progress` | Sedang diproses    |
+| `complete`    | Selesai sukses     |
+| `failed`      | Gagal dengan error |
 
 ### Monitoring
 
@@ -874,21 +877,21 @@ docker compose exec redis redis-cli
 
 ```javascript
 // Connect to CAPTCHA events
-const ws = new WebSocket('ws://localhost:8000/ws/captcha');
+const ws = new WebSocket("ws://localhost:8000/ws/captcha");
 
 ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    switch(data.event) {
-        case 'task_created':
-            // New CAPTCHA task available
-            break;
-        case 'solved':
-            // Task was solved
-            break;
-        case 'expired':
-            // Task expired
-            break;
-    }
+	const data = JSON.parse(event.data);
+	switch (data.event) {
+		case "task_created":
+			// New CAPTCHA task available
+			break;
+		case "solved":
+			// Task was solved
+			break;
+		case "expired":
+			// Task expired
+			break;
+	}
 };
 ```
 
@@ -925,7 +928,7 @@ docker compose -f docker-compose.prod.yml up -d --scale worker=3
 ### Production docker-compose.yml
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   web:
@@ -945,7 +948,7 @@ services:
       context: .
       dockerfile: docker/worker/Dockerfile
     restart: always
-    shm_size: '4gb'
+    shm_size: "4gb"
     deploy:
       replicas: 3
     depends_on:
@@ -1100,14 +1103,14 @@ export DISPLAY=:99
 
 ### Daftar Test Scripts
 
-| Script | Tier | Deskripsi |
-|--------|------|-----------|
-| `test_chimera.py` | Tier 1 | Test curl_cffi dengan TLS fingerprinting |
-| `test_botasaurus.py` | Tier 2 | Test Botasaurus @request + @browser |
-| `test_nodriver.py` | Tier 3 | Test Nodriver async CDP browser |
-| `test_scrapling_e2e.py` | Tier 4 | Test Scrapling + Camoufox stealth |
-| `test_seleniumbase_e2e.py` | Tier 5 | Test SeleniumBase UC Mode + CAPTCHA |
-| `test_titan_e2e.py` | All | Full orchestrator end-to-end test |
+| Script                     | Tier   | Deskripsi                                |
+| -------------------------- | ------ | ---------------------------------------- |
+| `test_chimera.py`          | Tier 1 | Test curl_cffi dengan TLS fingerprinting |
+| `test_botasaurus.py`       | Tier 2 | Test Botasaurus @request + @browser      |
+| `test_nodriver.py`         | Tier 3 | Test Nodriver async CDP browser          |
+| `test_scrapling_e2e.py`    | Tier 4 | Test Scrapling + Camoufox stealth        |
+| `test_seleniumbase_e2e.py` | Tier 5 | Test SeleniumBase UC Mode + CAPTCHA      |
+| `test_titan_e2e.py`        | All    | Full orchestrator end-to-end test        |
 
 ### Menjalankan Test Scripts
 
@@ -1123,6 +1126,7 @@ python scripts/test_chimera.py
 ```
 
 **Output yang diharapkan:**
+
 ```
 ============================================================
 TEST 1: Single Request
@@ -1141,6 +1145,7 @@ uv run python scripts/test_botasaurus.py
 ```
 
 **Output yang diharapkan:**
+
 ```
 ============================================================
 TEST 1: Configuration Loading
@@ -1160,6 +1165,7 @@ uv run python scripts/test_nodriver.py
 ```
 
 **Output yang diharapkan:**
+
 ```
 ============================================================
 TEST 1: Configuration Loading
@@ -1177,6 +1183,7 @@ uv run python scripts/test_scrapling_e2e.py
 ```
 
 **Output yang diharapkan:**
+
 ```
 ============================================================
 TIER 4 SCRAPLING E2E TEST
@@ -1197,6 +1204,7 @@ uv run python scripts/test_seleniumbase_e2e.py
 ```
 
 **Output yang diharapkan:**
+
 ```
 ============================================================
 TIER 5 SELENIUMBASE E2E TEST
@@ -1278,6 +1286,56 @@ uv pip install scrapling[all] --force-reinstall
 
 ---
 
+## Development
+
+### Pre-commit Hooks
+
+Ensure pre-commit hooks are installed and running to maintain code quality.
+
+#### Install Pre-commit
+
+```bash
+uv tool install pre-commit
+# or
+pip install pre-commit
+```
+
+#### Run Hooks Manually
+
+Run these commands to check for violations without committing:
+
+```bash
+# Run all hooks
+pre-commit run --all-files
+
+# Basic Checks
+pre-commit run end-of-file-fixer --all-files
+pre-commit run trailing-whitespace --all-files
+pre-commit run check-yaml --all-files
+pre-commit run check-docstring-first --all-files
+pre-commit run check-executables-have-shebangs --all-files
+pre-commit run check-case-conflict --all-files
+pre-commit run check-added-large-files --all-files
+pre-commit run detect-private-key --all-files
+pre-commit run check-merge-conflict --all-files
+
+# PyUpgrade
+pre-commit run pyupgrade --all-files
+
+# Formatters & Linters (Ensure these are uncommented in .pre-commit-config.yaml)
+pre-commit run docformatter --all-files
+pre-commit run yesqa --all-files
+pre-commit run ruff --all-files
+pre-commit run ruff-format --all-files
+pre-commit run blacken-docs --all-files
+pre-commit run mdformat --all-files
+
+# Tests
+pre-commit run unit_test --hook-stage manual --all-files
+```
+
+---
+
 ## Troubleshooting
 
 ### Common Issues
@@ -1289,6 +1347,7 @@ Error: connection refused to database
 ```
 
 Solution:
+
 ```bash
 # Check if PostgreSQL is running
 docker compose ps db
@@ -1308,6 +1367,7 @@ Error: Redis connection refused
 ```
 
 Solution:
+
 ```bash
 # Check Redis status
 docker compose ps redis
@@ -1324,6 +1384,7 @@ Error: Chrome failed to start
 ```
 
 Solution:
+
 ```bash
 # Check XVFB is running
 docker compose exec worker ps aux | grep Xvfb
@@ -1343,6 +1404,7 @@ Error: Permission denied: '/app/titan-profiles'
 ```
 
 Solution:
+
 ```bash
 # Fix ownership
 docker compose exec worker chown -R app:app /app/titan-profiles
@@ -1359,6 +1421,7 @@ Error: ModuleNotFoundError: No module named 'DrissionPage'
 ```
 
 Solution:
+
 ```bash
 # Install tier spesifik
 uv pip install -e ".[tier6]"
@@ -1379,6 +1442,7 @@ Error: ModuleNotFoundError: No module named 'seleniumbase'
 ```
 
 Solution:
+
 ```bash
 # Install tier yang diperlukan
 uv pip install -e ".[tier3]"    # nodriver
@@ -1396,6 +1460,7 @@ Error: Failed to install camoufox
 ```
 
 Solution:
+
 ```bash
 # Install dengan semua extras
 uv pip install "scrapling[all]>=0.2.9"
@@ -1415,6 +1480,7 @@ Error: ChromeDriver executable needs to be in PATH
 ```
 
 Solution:
+
 ```bash
 # SeleniumBase biasanya auto-download driver
 # Jika gagal, jalankan ini:

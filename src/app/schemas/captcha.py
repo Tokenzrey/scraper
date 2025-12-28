@@ -1,5 +1,4 @@
-"""
-CAPTCHA Schemas for API endpoints.
+"""CAPTCHA Schemas for API endpoints.
 
 Defines request/response models for the Manual CAPTCHA Resolver system.
 

@@ -48,8 +48,7 @@ class NodriverResponse:
 
 
 def _detect_challenge(content: str, config: "NodriverConfig") -> str | None:
-    """
-    Detect if response contains a challenge or block.
+    """Detect if response contains a challenge or block.
 
     Args:
         content: Response HTML content
@@ -86,8 +85,7 @@ def _extract_cf_ray_id(content: str) -> str | None:
 
 
 class NodriverClient:
-    """
-    High-level async browser client using nodriver.
+    """High-level async browser client using nodriver.
 
     Nodriver advantages over Selenium/Playwright:
     - No webdriver binary needed
@@ -105,8 +103,7 @@ class NodriverClient:
         config: "NodriverConfig",
         proxy: str | None = None,
     ) -> None:
-        """
-        Initialize nodriver client.
+        """Initialize nodriver client.
 
         Args:
             config: Nodriver configuration
@@ -157,8 +154,7 @@ class NodriverClient:
         wait_selector: str | None = None,
         use_cf_verify: bool | None = None,
     ) -> NodriverResponse:
-        """
-        Fetch URL using nodriver browser.
+        """Fetch URL using nodriver browser.
 
         Args:
             url: Target URL
@@ -371,9 +367,7 @@ class NodriverClient:
         return {
             **self._stats,
             "success_rate": (
-                self._stats["successes"] / self._stats["requests"]
-                if self._stats["requests"] > 0
-                else 0.0
+                self._stats["successes"] / self._stats["requests"] if self._stats["requests"] > 0 else 0.0
             ),
         }
 

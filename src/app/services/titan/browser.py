@@ -46,8 +46,7 @@ def get_browser_executor() -> ThreadPoolExecutor:
 
 
 def _generate_profile_id(url: str, seed: str = "browser") -> str:
-    """
-    Generate consistent profile ID for URL domain.
+    """Generate consistent profile ID for URL domain.
 
     Uses HASHED approach - same domain always gets same profile,
     enabling session persistence and consistent fingerprinting.
@@ -79,8 +78,7 @@ def _sync_browser_fetch(
     use_google_get: bool = False,
     max_retries: int = 3,
 ) -> dict[str, Any]:
-    """
-    Synchronous browser fetch using Botasaurus with best practices.
+    """Synchronous browser fetch using Botasaurus with best practices.
 
     This runs in a separate thread to avoid blocking the async event loop.
     Botasaurus handles Cloudflare challenges automatically.
@@ -262,8 +260,7 @@ def _sync_browser_fetch(
 
 
 class BrowserFetcher:
-    """
-    Browser-based fetcher using Botasaurus for JavaScript rendering.
+    """Browser-based fetcher using Botasaurus for JavaScript rendering.
 
     Features:
     - Full Chrome browser automation
@@ -285,8 +282,7 @@ class BrowserFetcher:
     MAX_RETRIES = 3
 
     def __init__(self, settings: "Settings") -> None:
-        """
-        Initialize BrowserFetcher with application settings.
+        """Initialize BrowserFetcher with application settings.
 
         Args:
             settings: Application settings containing Titan configuration
@@ -302,8 +298,7 @@ class BrowserFetcher:
         url: str,
         options: "ScrapeOptions | None" = None,
     ) -> BrowserResult:
-        """
-        Fetch URL content using a full browser with Botasaurus.
+        """Fetch URL content using a full browser with Botasaurus.
 
         Args:
             url: Target URL to fetch

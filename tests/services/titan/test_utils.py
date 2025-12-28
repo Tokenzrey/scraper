@@ -1,5 +1,4 @@
-"""
-Unit tests for Titan Worker utility functions.
+"""Unit tests for Titan Worker utility functions.
 
 Comprehensive tests covering:
 - Cloudflare challenge detection (all patterns)

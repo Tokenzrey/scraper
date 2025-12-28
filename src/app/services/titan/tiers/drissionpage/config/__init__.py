@@ -43,8 +43,7 @@ logger = logging.getLogger(__name__)
 
 
 class DrissionPageConfig(BaseModel):
-    """
-    Complete DrissionPage configuration model.
+    """Complete DrissionPage configuration model.
 
     Contains version info and Tier 6 configuration.
     """
@@ -54,8 +53,7 @@ class DrissionPageConfig(BaseModel):
 
 
 class ConfigLoader:
-    """
-    Configuration loader for DrissionPage Data Bank.
+    """Configuration loader for DrissionPage Data Bank.
 
     Provides static methods to load configuration from files or dicts,
     with validation and sensible defaults.
@@ -75,8 +73,7 @@ class ConfigLoader:
 
     @classmethod
     def from_file(cls, path: str | Path) -> DrissionPageConfig:
-        """
-        Load configuration from a JSON file.
+        """Load configuration from a JSON file.
 
         Args:
             path: Path to the JSON configuration file
@@ -94,7 +91,7 @@ class ConfigLoader:
             raise FileNotFoundError(f"Configuration file not found: {path}")
 
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 data = json.load(f)
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON in configuration file: {e}") from e
@@ -104,8 +101,7 @@ class ConfigLoader:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> DrissionPageConfig:
-        """
-        Load configuration from a dictionary.
+        """Load configuration from a dictionary.
 
         Args:
             data: Configuration dictionary
@@ -125,8 +121,7 @@ class ConfigLoader:
 
     @classmethod
     def default(cls) -> DrissionPageConfig:
-        """
-        Get default configuration.
+        """Get default configuration.
 
         Returns:
             DrissionPageConfig with default values
@@ -135,8 +130,7 @@ class ConfigLoader:
 
     @classmethod
     def from_default_file(cls) -> DrissionPageConfig:
-        """
-        Load configuration from the default databank.json file.
+        """Load configuration from the default databank.json file.
 
         Returns:
             DrissionPageConfig instance
@@ -161,8 +155,7 @@ class ConfigLoader:
         base: DrissionPageConfig,
         overrides: dict[str, Any],
     ) -> DrissionPageConfig:
-        """
-        Merge override values into a base configuration.
+        """Merge override values into a base configuration.
 
         Args:
             base: Base configuration

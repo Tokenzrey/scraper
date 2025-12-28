@@ -7,7 +7,7 @@ This guide covers database migrations using Alembic, the migration tool for SQLA
 The FastAPI Boilerplate uses [Alembic](https://alembic.sqlalchemy.org/) for database migrations. Alembic provides:
 
 - **Version-controlled schema changes** - Track every database modification
-- **Automatic migration generation** - Generate migrations from model changes  
+- **Automatic migration generation** - Generate migrations from model changes
 - **Reversible migrations** - Upgrade and downgrade database versions
 - **Environment-specific configurations** - Different settings for dev/staging/production
 - **Safe schema evolution** - Apply changes incrementally
@@ -18,17 +18,13 @@ For simple projects or development, the boilerplate includes `create_tables_on_s
 
 ```python
 # This is enabled by default in create_application()
-app = create_application(
-    router=router, 
-    settings=settings, 
-    create_tables_on_start=True  # Default: True
-)
+app = create_application(router=router, settings=settings, create_tables_on_start=True)  # Default: True
 ```
 
 **When to use:**
 
 - ✅ **Development** - Quick setup without migration management
-- ✅ **Simple projects** - When you don't need migration history  
+- ✅ **Simple projects** - When you don't need migration history
 - ✅ **Prototyping** - Fast iteration without migration complexity
 - ✅ **Testing** - Clean database state for each test run
 
@@ -41,11 +37,7 @@ app = create_application(
 
 ```python
 # Disable for production environments
-app = create_application(
-    router=router, 
-    settings=settings, 
-    create_tables_on_start=False  # Use migrations instead
-)
+app = create_application(router=router, settings=settings, create_tables_on_start=False)  # Use migrations instead
 ```
 
 For production deployments and team development, use proper Alembic migrations as described below.
@@ -106,6 +98,7 @@ uv run alembic revision --autogenerate -m "Add user profile fields"
 ```
 
 **What happens:**
+
 - Alembic compares current models with database schema
 - Generates a new migration file in `src/migrations/versions/`
 - Migration includes upgrade and downgrade functions
@@ -127,24 +120,26 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers
-revision = 'abc123def456'
-down_revision = 'previous_revision_id'
+revision = "abc123def456"
+down_revision = "previous_revision_id"
 branch_labels = None
 depends_on = None
 
+
 def upgrade() -> None:
     # Add new columns
-    op.add_column('user', sa.Column('bio', sa.String(500), nullable=True))
-    op.add_column('user', sa.Column('website', sa.String(255), nullable=True))
-    
+    op.add_column("user", sa.Column("bio", sa.String(500), nullable=True))
+    op.add_column("user", sa.Column("website", sa.String(255), nullable=True))
+
     # Create index
-    op.create_index('ix_user_website', 'user', ['website'])
+    op.create_index("ix_user_website", "user", ["website"])
+
 
 def downgrade() -> None:
     # Remove changes (reverse order)
-    op.drop_index('ix_user_website', 'user')
-    op.drop_column('user', 'website')
-    op.drop_column('user', 'bio')
+    op.drop_index("ix_user_website", "user")
+    op.drop_column("user", "website")
+    op.drop_column("user", "bio")
 ```
 
 ### 3. Apply Migration
@@ -190,9 +185,10 @@ from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 from app.core.db.database import Base
 
+
 class Category(Base):
     __tablename__ = "category"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, init=False)
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     slug: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
@@ -237,9 +233,9 @@ uv run alembic revision --autogenerate -m "Add category_id to posts"
 ```python
 # Generated migration will include:
 def upgrade() -> None:
-    op.add_column('post', sa.Column('category_id', sa.Integer(), nullable=True))
-    op.create_foreign_key('fk_post_category_id', 'post', 'category', ['category_id'], ['id'])
-    op.create_index('ix_post_category_id', 'post', ['category_id'])
+    op.add_column("post", sa.Column("category_id", sa.Integer(), nullable=True))
+    op.create_foreign_key("fk_post_category_id", "post", "category", ["category_id"], ["id"])
+    op.create_index("ix_post_category_id", "post", ["category_id"])
 ```
 
 ### Data Migrations
@@ -250,27 +246,25 @@ Sometimes you need to migrate data, not just schema:
 # Example: Populate default category for existing posts
 def upgrade() -> None:
     # Add the column
-    op.add_column('post', sa.Column('category_id', sa.Integer(), nullable=True))
-    
+    op.add_column("post", sa.Column("category_id", sa.Integer(), nullable=True))
+
     # Data migration
     connection = op.get_bind()
-    
+
     # Create default category
     connection.execute(
         "INSERT INTO category (name, slug, description) VALUES ('General', 'general', 'Default category')"
     )
-    
+
     # Get default category ID
     result = connection.execute("SELECT id FROM category WHERE slug = 'general'")
     default_category_id = result.fetchone()[0]
-    
+
     # Update existing posts
-    connection.execute(
-        f"UPDATE post SET category_id = {default_category_id} WHERE category_id IS NULL"
-    )
-    
+    connection.execute(f"UPDATE post SET category_id = {default_category_id} WHERE category_id IS NULL")
+
     # Make column non-nullable after data migration
-    op.alter_column('post', 'category_id', nullable=False)
+    op.alter_column("post", "category_id", nullable=False)
 ```
 
 ### Renaming Columns
@@ -278,11 +272,12 @@ def upgrade() -> None:
 ```python
 def upgrade() -> None:
     # Rename column
-    op.alter_column('user', 'full_name', new_column_name='name')
+    op.alter_column("user", "full_name", new_column_name="name")
+
 
 def downgrade() -> None:
     # Reverse the rename
-    op.alter_column('user', 'name', new_column_name='full_name')
+    op.alter_column("user", "name", new_column_name="full_name")
 ```
 
 ### Dropping Tables
@@ -290,14 +285,16 @@ def downgrade() -> None:
 ```python
 def upgrade() -> None:
     # Drop table (be careful!)
-    op.drop_table('old_table')
+    op.drop_table("old_table")
+
 
 def downgrade() -> None:
     # Recreate table structure
-    op.create_table('old_table',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('name', sa.String(50), nullable=True),
-        sa.PrimaryKeyConstraint('id')
+    op.create_table(
+        "old_table",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("name", sa.String(50), nullable=True),
+        sa.PrimaryKeyConstraint("id"),
     )
 ```
 
@@ -393,7 +390,7 @@ services:
     depends_on:
       - db
     command: alembic upgrade head
-    
+
   web:
     # ... web service config
     depends_on:
@@ -428,13 +425,13 @@ uv run alembic revision --autogenerate -m "Update user model"
 # When adding non-nullable columns to existing tables:
 def upgrade() -> None:
     # 1. Add as nullable first
-    op.add_column('user', sa.Column('phone', sa.String(20), nullable=True))
-    
+    op.add_column("user", sa.Column("phone", sa.String(20), nullable=True))
+
     # 2. Populate with default data
     op.execute("UPDATE user SET phone = '' WHERE phone IS NULL")
-    
+
     # 3. Make non-nullable
-    op.alter_column('user', 'phone', nullable=False)
+    op.alter_column("user", "phone", nullable=False)
 ```
 
 ### 4. Test Rollbacks
@@ -467,4 +464,4 @@ def upgrade() -> None:
 
 - **[CRUD Operations](crud.md)** - Working with migrated database schema
 - **[API Development](../api/index.md)** - Building endpoints for your models
-- **[Testing](../testing.md)** - Testing database migrations 
+- **[Testing](../testing.md)** - Testing database migrations

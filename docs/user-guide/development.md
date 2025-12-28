@@ -17,37 +17,40 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..core.db.database import Base
+```
 
+class Category(Base):
+__tablename__ = "category"
 
 ```
-class Category(Base):
-    __tablename__ = "category"
+id: Mapped[int] = mapped_column(
+    "id",
+    autoincrement=True,
+    nullable=False,
+    unique=True,
+    primary_key=True,
+    init=False,
+)
 
-    id: Mapped[int] = mapped_column(
-        "id",
-        autoincrement=True,
-        nullable=False,
-        unique=True,
-        primary_key=True,
-        init=False,
-    )
-
-    name: Mapped[str] = mapped_column(String(50))
-    description: Mapped[str | None] = mapped_column(String(255), default=None)
-
+name: Mapped[str] = mapped_column(String(50))
+description: Mapped[str | None] = mapped_column(String(255), default=None)
+```
 
 class Post(Base):
-    __tablename__ = "post"
+__tablename__ = "post"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(100))
-
-    category_id: Mapped[int | None] = mapped_column(
-        ForeignKey("category.id"),
-        index=True,
-        default=None
-    )
 ```
+id: Mapped[int] = mapped_column(primary_key=True)
+title: Mapped[str] = mapped_column(String(100))
+
+category_id: Mapped[int | None] = mapped_column(
+    ForeignKey("category.id"),
+    index=True,
+    default=None
+)
+```
+
+````
 
 #### 2. Create Pydantic Schemas
 
@@ -70,14 +73,14 @@ class CategoryCreate(CategoryBase):
 
 class CategoryRead(CategoryBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     created_at: datetime
 
 
 class CategoryUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    
+
     name: Annotated[str | None, Field(min_length=1, max_length=50, default=None)]
     description: Annotated[str | None, Field(max_length=255, default=None)]
 
@@ -88,10 +91,10 @@ class CategoryUpdateInternal(CategoryUpdate):
 
 class CategoryDelete(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    
+
     is_deleted: bool
     deleted_at: datetime
-```
+````
 
 #### 3. Create CRUD Operations
 
@@ -115,6 +118,7 @@ Add your new model to `src/app/models/__init__.py`:
 from .category import Category
 from .user import User
 from .post import Post
+
 # ... other imports
 ```
 
@@ -186,12 +190,7 @@ async def read_category(
     category_id: int,
     db: Annotated[AsyncSession, Depends(async_get_db)],
 ):
-    db_category = await crud_categories.get(
-        db=db, 
-        schema_to_select=CategoryRead, 
-        id=category_id,
-        is_deleted=False
-    )
+    db_category = await crud_categories.get(db=db, schema_to_select=CategoryRead, id=category_id, is_deleted=False)
     if not db_category:
         raise NotFoundException("Category not found")
 
@@ -240,6 +239,7 @@ Add your router to `src/app/api/v1/__init__.py`:
 ```python
 from fastapi import APIRouter
 from .categories import router as categories_router
+
 # ... other imports
 
 router = APIRouter()
@@ -260,14 +260,14 @@ class CustomHeaderMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Pre-processing
         start_time = time.time()
-        
+
         # Process request
         response = await call_next(request)
-        
+
         # Post-processing
         process_time = time.time() - start_time
         response.headers["X-Process-Time"] = str(process_time)
-        
+
         return response
 ```
 
@@ -306,19 +306,17 @@ TEST_DATABASE_URL = "postgresql+asyncpg://test_user:test_pass@localhost:5432/tes
 
 # Create test engine
 test_engine = create_async_engine(TEST_DATABASE_URL, echo=True)
-TestSessionLocal = sessionmaker(
-    test_engine, class_=AsyncSession, expire_on_commit=False
-)
+TestSessionLocal = sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
 
 
 @pytest_asyncio.fixture
 async def async_session():
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     async with TestSessionLocal() as session:
         yield session
-    
+
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
@@ -327,12 +325,12 @@ async def async_session():
 async def async_client(async_session):
     def get_test_db():
         return async_session
-    
+
     app.dependency_overrides[async_get_db] = get_test_db
-    
+
     async with AsyncClient(app=app, base_url="http://test") as client:
         yield client
-    
+
     app.dependency_overrides.clear()
 ```
 
@@ -348,12 +346,7 @@ from src.app.models.user import User
 
 @pytest_asyncio.fixture
 async def test_user(async_session):
-    user = User(
-        name="Test User",
-        username="testuser",
-        email="test@example.com",
-        hashed_password="hashed_password"
-    )
+    user = User(name="Test User", username="testuser", email="test@example.com", hashed_password="hashed_password")
     async_session.add(user)
     await async_session.commit()
     await async_session.refresh(user)
@@ -375,16 +368,11 @@ from httpx import AsyncClient
 
 
 async def test_create_user(async_client: AsyncClient):
-    user_data = {
-        "name": "New User",
-        "username": "newuser",
-        "email": "new@example.com",
-        "password": "SecurePass123!"
-    }
-    
+    user_data = {"name": "New User", "username": "newuser", "email": "new@example.com", "password": "SecurePass123!"}
+
     response = await async_client.post("/api/v1/users", json=user_data)
     assert response.status_code == 201
-    
+
     data = response.json()
     assert data["name"] == "New User"
     assert data["username"] == "newuser"
@@ -394,7 +382,7 @@ async def test_create_user(async_client: AsyncClient):
 async def test_read_users(async_client: AsyncClient):
     response = await async_client.get("/api/v1/users")
     assert response.status_code == 200
-    
+
     data = response.json()
     assert "data" in data
     assert "total_count" in data
@@ -410,23 +398,15 @@ from src.app.schemas.user import UserCreate
 
 
 async def test_crud_create_user(async_session):
-    user_data = UserCreate(
-        name="CRUD User",
-        username="cruduser",
-        email="crud@example.com",
-        password="password123"
-    )
-    
+    user_data = UserCreate(name="CRUD User", username="cruduser", email="crud@example.com", password="password123")
+
     user = await crud_users.create(db=async_session, object=user_data)
     assert user["name"] == "CRUD User"
     assert user["username"] == "cruduser"
 
 
 async def test_crud_get_user(async_session, test_user):
-    retrieved_user = await crud_users.get(
-        db=async_session, 
-        id=test_user.id
-    )
+    retrieved_user = await crud_users.get(db=async_session, id=test_user.id)
     assert retrieved_user["name"] == test_user.name
 ```
 
@@ -460,17 +440,20 @@ Create environment-specific settings:
 class LocalSettings(Settings):
     ENVIRONMENT: str = "local"
     DEBUG: bool = True
-    
+
+
 class ProductionSettings(Settings):
     ENVIRONMENT: str = "production"
     DEBUG: bool = False
     # Production-specific settings
+
 
 def get_settings():
     env = os.getenv("ENVIRONMENT", "local")
     if env == "production":
         return ProductionSettings()
     return LocalSettings()
+
 
 settings = get_settings()
 ```
@@ -483,6 +466,7 @@ Configure logging in `src/app/core/config.py`:
 import logging
 from pythonjsonlogger import jsonlogger
 
+
 def setup_logging():
     # JSON logging for production
     if settings.ENVIRONMENT == "production":
@@ -494,10 +478,7 @@ def setup_logging():
         logger.setLevel(logging.INFO)
     else:
         # Simple logging for development
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 ```
 
 ## Opting Out of Services
@@ -505,7 +486,7 @@ def setup_logging():
 ### Disabling Redis Caching
 
 1. Remove cache decorators from endpoints
-2. Update dependencies in `src/app/core/config.py`:
+1. Update dependencies in `src/app/core/config.py`:
 
 ```python
 class Settings(BaseSettings):
@@ -520,9 +501,9 @@ class Settings(BaseSettings):
 ### Disabling Background Tasks (ARQ)
 
 1. Remove ARQ from `pyproject.toml` dependencies
-2. Remove worker configuration from `docker-compose.yml`
-3. Delete `src/app/core/worker/` directory
-4. Remove task-related endpoints
+1. Remove worker configuration from `docker-compose.yml`
+1. Delete `src/app/core/worker/` directory
+1. Remove task-related endpoints
 
 ### Disabling Rate Limiting
 
@@ -530,18 +511,18 @@ class Settings(BaseSettings):
 
 ```python
 # Remove this dependency
-dependencies=[Depends(rate_limiter_dependency)]
+dependencies = [Depends(rate_limiter_dependency)]
 ```
 
 2. Remove rate limiting models and schemas
-3. Update database migrations to remove rate limit tables
+1. Update database migrations to remove rate limit tables
 
 ### Disabling Authentication
 
 1. Remove JWT dependencies from protected endpoints
-2. Remove user-related models and endpoints
-3. Update database to remove user tables
-4. Remove authentication middleware
+1. Remove user-related models and endpoints
+1. Update database to remove user tables
+1. Remove authentication middleware
 
 ### Minimal FastAPI Setup
 
@@ -551,15 +532,13 @@ For a minimal setup with just basic FastAPI:
 # src/app/main.py (minimal version)
 from fastapi import FastAPI
 
-app = FastAPI(
-    title="Minimal API",
-    description="Basic FastAPI application",
-    version="1.0.0"
-)
+app = FastAPI(title="Minimal API", description="Basic FastAPI application", version="1.0.0")
+
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
 
 @app.get("/health")
 async def health_check():
@@ -630,26 +609,28 @@ async def health_check():
 ## Database Migrations
 
 !!! warning "Important Setup for Docker Users"
-    If you're using the database in Docker, you need to expose the port to run migrations. Change this in `docker-compose.yml`:
+If you're using the database in Docker, you need to expose the port to run migrations. Change this in `docker-compose.yml`:
 
-    ```yaml
-    db:
-      image: postgres:13
-      env_file:
-        - ./src/.env
-      volumes:
-        - postgres-data:/var/lib/postgresql/data
-      # -------- replace with comment to run migrations with docker --------
-      ports:
-        - 5432:5432
-      # expose:
-      #   - "5432"
-    ```
+````
+```yaml
+db:
+  image: postgres:13
+  env_file:
+    - ./src/.env
+  volumes:
+    - postgres-data:/var/lib/postgresql/data
+  # -------- replace with comment to run migrations with docker --------
+  ports:
+    - 5432:5432
+  # expose:
+  #   - "5432"
+```
+````
 
 ### Creating Migrations
 
 !!! warning "Model Import Requirement"
-    To create tables if you haven't created endpoints yet, ensure you import the models in `src/app/models/__init__.py`. This step is crucial for Alembic to detect new tables.
+To create tables if you haven't created endpoints yet, ensure you import the models in `src/app/models/__init__.py`. This step is crucial for Alembic to detect new tables.
 
 While in the `src` folder, run Alembic migrations:
 
@@ -662,16 +643,16 @@ uv run alembic upgrade head
 ```
 
 !!! note "Without uv"
-    If you don't have uv, run `pip install alembic` first, then use `alembic` commands directly.
+If you don't have uv, run `pip install alembic` first, then use `alembic` commands directly.
 
 ### Migration Workflow
 
 1. **Make Model Changes** - Modify your SQLAlchemy models
-2. **Import Models** - Ensure models are imported in `src/app/models/__init__.py`
-3. **Generate Migration** - Run `alembic revision --autogenerate`
-4. **Review Migration** - Check the generated migration file in `src/migrations/versions/`
-5. **Apply Migration** - Run `alembic upgrade head`
-6. **Test Changes** - Verify your changes work as expected
+1. **Import Models** - Ensure models are imported in `src/app/models/__init__.py`
+1. **Generate Migration** - Run `alembic revision --autogenerate`
+1. **Review Migration** - Check the generated migration file in `src/migrations/versions/`
+1. **Apply Migration** - Run `alembic upgrade head`
+1. **Test Changes** - Verify your changes work as expected
 
 ### Common Migration Tasks
 
@@ -684,9 +665,10 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.db.database import Base
 
+
 class Category(Base):
     __tablename__ = "categories"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(50))
     description: Mapped[str] = mapped_column(String(255), nullable=True)
@@ -726,4 +708,4 @@ uv run alembic revision --autogenerate -m "Add bio field to users"
 uv run alembic upgrade head
 ```
 
-This guide provides the foundation for extending and customizing the FastAPI boilerplate. For specific implementation details, refer to the existing code examples throughout the boilerplate. 
+This guide provides the foundation for extending and customizing the FastAPI boilerplate. For specific implementation details, refer to the existing code examples throughout the boilerplate.

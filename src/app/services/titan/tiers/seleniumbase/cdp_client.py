@@ -37,14 +37,13 @@ from .exceptions import (
 )
 
 if TYPE_CHECKING:
-    from seleniumbase import SB
+    pass
 
 logger = logging.getLogger(__name__)
 
 
 class CDPClient:
-    """
-    Async wrapper for SeleniumBase UC Mode + CDP Mode.
+    """Async wrapper for SeleniumBase UC Mode + CDP Mode.
 
     Uses undetected Chrome with CDP for maximum stealth:
     - Bypasses bot detection automatically
@@ -66,8 +65,7 @@ class CDPClient:
         config: Tier5Config | None = None,
         thread_pool: ThreadPoolExecutor | None = None,
     ) -> None:
-        """
-        Initialize CDPClient.
+        """Initialize CDPClient.
 
         Args:
             config: Tier 5 configuration. If None, loads from databank.json
@@ -83,7 +81,7 @@ class CDPClient:
         self._owns_pool = thread_pool is None
         self._cdp_activated = False
 
-    async def __aenter__(self) -> "CDPClient":
+    async def __aenter__(self) -> CDPClient:
         """Async context manager entry."""
         await self._ensure_browser()
         return self
@@ -155,8 +153,7 @@ class CDPClient:
         self._sb = self._sb_context.__enter__()
 
         logger.info(
-            f"SeleniumBase initialized: uc={self.config.uc_mode.enabled}, "
-            f"headless={self.config.uc_mode.headless}"
+            f"SeleniumBase initialized: uc={self.config.uc_mode.enabled}, " f"headless={self.config.uc_mode.headless}"
         )
 
     async def fetch(
@@ -165,9 +162,8 @@ class CDPClient:
         wait_selector: str | None = None,
         timeout: int | None = None,
         use_cdp_mode: bool = True,
-    ) -> "CDPFetchResult":
-        """
-        Fetch a URL using SeleniumBase UC Mode + CDP Mode.
+    ) -> CDPFetchResult:
+        """Fetch a URL using SeleniumBase UC Mode + CDP Mode.
 
         Args:
             url: Target URL to fetch
@@ -216,9 +212,8 @@ class CDPClient:
         url: str,
         wait_selector: str | None = None,
         timeout: int | None = None,
-    ) -> "CDPFetchResult":
-        """
-        Fetch a URL and automatically solve any CAPTCHA.
+    ) -> CDPFetchResult:
+        """Fetch a URL and automatically solve any CAPTCHA.
 
         Uses sb.solve_captcha() to handle:
         - Cloudflare Turnstile
@@ -258,9 +253,8 @@ class CDPClient:
         timeout: int | None,
         use_cdp_mode: bool,
         solve_captcha: bool,
-    ) -> "CDPFetchResult":
-        """
-        Synchronous fetch implementation.
+    ) -> CDPFetchResult:
+        """Synchronous fetch implementation.
 
         This runs in a thread pool to avoid blocking the event loop.
         """
@@ -427,8 +421,7 @@ class CDPClient:
             ) from e
 
     async def execute_cdp(self, method: str, params: dict | None = None) -> Any:
-        """
-        Execute a raw CDP command.
+        """Execute a raw CDP command.
 
         Args:
             method: CDP method name (e.g., "Page.navigate")
@@ -474,8 +467,7 @@ class CDPClient:
 
 
 class CDPFetchResult:
-    """
-    Result from a SeleniumBase CDP Mode fetch operation.
+    """Result from a SeleniumBase CDP Mode fetch operation.
 
     Provides easy access to page content and metadata.
     """
@@ -509,11 +501,9 @@ class CDPFetchResult:
         return re.findall(r'href=["\']([^"\']+)["\']', self.html)
 
     def extract_text(self, selector: str | None = None) -> str:
-        """
-        Extract text content from HTML.
+        """Extract text content from HTML.
 
-        If selector is provided, returns empty string (use with SB methods).
-        Otherwise returns stripped text from HTML.
+        If selector is provided, returns empty string (use with SB methods). Otherwise returns stripped text from HTML.
         """
         if selector:
             return ""  # Use SB methods for selector-based extraction

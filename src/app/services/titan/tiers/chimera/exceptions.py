@@ -49,8 +49,7 @@ class ChimeraException(Exception):
 
 
 class ChimeraNetworkError(ChimeraException):
-    """
-    Network-level failures that prevent request completion.
+    """Network-level failures that prevent request completion.
 
     Includes: DNS resolution failures, connection refused, SSL errors.
     These errors typically should NOT trigger escalation to browser tiers.
@@ -84,8 +83,7 @@ class ChimeraNetworkError(ChimeraException):
 
 
 class ChimeraBlockError(ChimeraException):
-    """
-    WAF/anti-bot detection triggered.
+    """WAF/anti-bot detection triggered.
 
     These errors SHOULD trigger escalation to browser tiers.
     """

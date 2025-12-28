@@ -1,5 +1,4 @@
-"""
-WebSocket Endpoints for Real-time Notifications
+"""WebSocket Endpoints for Real-time Notifications.
 
 Provides WebSocket connections for:
 - CAPTCHA events (task_created, solved, failed, etc.)
@@ -37,6 +36,7 @@ class ConnectionManager:
 
     def __init__(self):
         self.active_connections: list[WebSocket] = []
+
     async def connect(self, websocket: WebSocket) -> None:
         """Accept a new WebSocket connection."""
         await websocket.accept()
@@ -82,8 +82,7 @@ captcha_manager = ConnectionManager()
 
 @router.websocket("/ws/captcha")
 async def captcha_websocket(websocket: WebSocket):
-    """
-    WebSocket endpoint for CAPTCHA events.
+    """WebSocket endpoint for CAPTCHA events.
 
     Subscribes to Redis pub/sub and forwards events to connected clients.
     Events include: task_created, task_assigned, solved, failed, unsolvable, expired
@@ -196,11 +195,10 @@ async def captcha_websocket(websocket: WebSocket):
 
 @router.websocket("/ws/captcha/{domain}")
 async def captcha_domain_websocket(websocket: WebSocket, domain: str):
-    """
-    WebSocket endpoint for CAPTCHA events filtered by domain.
+    """WebSocket endpoint for CAPTCHA events filtered by domain.
 
-    Only forwards events for the specified domain. Useful for workers
-    waiting for a specific domain's CAPTCHA to be solved.
+    Only forwards events for the specified domain. Useful for workers waiting for a specific domain's CAPTCHA to be
+    solved.
     """
     await captcha_manager.connect(websocket)
 
@@ -282,8 +280,7 @@ async def captcha_domain_websocket(websocket: WebSocket, domain: str):
 
 
 async def broadcast_captcha_event(event_type: str, data: dict[str, Any]):
-    """
-    Helper function to broadcast a CAPTCHA event to all connected clients.
+    """Helper function to broadcast a CAPTCHA event to all connected clients.
 
     Can be called from API endpoints after publishing to Redis.
     """

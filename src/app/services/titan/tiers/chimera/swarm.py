@@ -7,8 +7,9 @@ Concurrent execution of multiple requests using ChimeraClient pool.
 import asyncio
 import logging
 import time
+from collections.abc import Callable, Coroutine
 from dataclasses import dataclass, field
-from typing import Any, Callable, Coroutine
+from typing import Any
 
 from .client import ChimeraClient, ChimeraResponse
 from .config import ChimeraConfig, ConfigLoader
@@ -74,8 +75,7 @@ async def run_chimera_swarm(
     headers: dict[str, str] | None = None,
     callback: Callable[[str, ChimeraResponse], Coroutine[Any, Any, None]] | None = None,
 ) -> SwarmResult:
-    """
-    Execute concurrent requests across multiple URLs.
+    """Execute concurrent requests across multiple URLs.
 
     Args:
         urls: List of URLs to fetch
@@ -176,9 +176,7 @@ async def run_chimera_swarm(
 
             if response.detected_challenge:
                 challenge = response.detected_challenge
-                result.challenges_detected[challenge] = (
-                    result.challenges_detected.get(challenge, 0) + 1
-                )
+                result.challenges_detected[challenge] = result.challenges_detected.get(challenge, 0) + 1
 
     result.total_time_ms = (time.time() - start_time) * 1000
 

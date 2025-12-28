@@ -71,8 +71,7 @@ HTTPBIN_IS_LOCAL = False
 
 
 def check_httpbin_health(url: str, timeout: int = 5) -> tuple[bool, str]:
-    """
-    Check if httpbin is healthy and reachable.
+    """Check if httpbin is healthy and reachable.
 
     Returns:
         Tuple of (is_healthy, error_message)
@@ -94,8 +93,7 @@ def check_httpbin_health(url: str, timeout: int = 5) -> tuple[bool, str]:
 
 
 def get_httpbin_base_url() -> str:
-    """
-    Get the best available httpbin URL with comprehensive health checking.
+    """Get the best available httpbin URL with comprehensive health checking.
 
     Priority:
     1. Environment variable (TEST_HTTPBIN_URL or HTTPBIN_URL)
@@ -470,7 +468,10 @@ def create_scrape_task(
     strategy: str = "auto",
     max_retries: int = MAX_RATE_LIMIT_RETRIES,
 ) -> str | None:
-    """Create a scrape task and return job_id. Handles rate limiting with retries."""
+    """Create a scrape task and return job_id.
+
+    Handles rate limiting with retries.
+    """
     backoff = RATE_LIMIT_BACKOFF
 
     for attempt in range(max_retries + 1):
@@ -581,8 +582,7 @@ def poll_task_status(
 # TEST VALIDATION
 # =============================================================================
 def validate_result(test_case: Case, result: dict | None) -> tuple[bool, list[str]]:
-    """
-    Validate scrape result against test case expectations.
+    """Validate scrape result against test case expectations.
 
     Supports smart test expectations:
     - acceptable_statuses: Multiple OK statuses for external services
@@ -744,8 +744,7 @@ def run_tests_by_category(
     client: httpx.Client,
     category: Category,
 ) -> tuple[int, int, int]:
-    """
-    Run all tests in a category.
+    """Run all tests in a category.
 
     Returns (passed, failed, skipped).
     """

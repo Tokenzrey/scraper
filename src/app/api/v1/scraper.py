@@ -29,8 +29,7 @@ router = APIRouter(prefix="/scrape", tags=["scraper"])
     description="Submit a URL for scraping. The task is queued and processed asynchronously by the Titan Worker.",
 )
 async def create_scrape_task(task: ScrapeTaskCreate) -> dict[str, str]:
-    """
-    Create a new scrape task and queue it for processing.
+    """Create a new scrape task and queue it for processing.
 
     The task will be processed by the Titan Worker using the specified strategy:
     - **auto**: Try fast REQUEST mode first, fallback to BROWSER if blocked
@@ -62,8 +61,7 @@ async def create_scrape_task(task: ScrapeTaskCreate) -> dict[str, str]:
     description="Retrieve the current status of a scrape task. If complete, includes the full result.",
 )
 async def get_scrape_task(task_id: str) -> dict[str, Any]:
-    """
-    Get information about a specific scrape task.
+    """Get information about a specific scrape task.
 
     Returns the task status and result (if completed).
     Possible statuses:
@@ -164,11 +162,10 @@ async def get_scrape_task(task_id: str) -> dict[str, Any]:
     description="Retrieve only the result of a completed scrape task. Returns 404 if not complete.",
 )
 async def get_scrape_result(task_id: str) -> dict[str, Any]:
-    """
-    Get the result of a completed scrape task.
+    """Get the result of a completed scrape task.
 
-    Returns only the ScrapeResult object. Use this endpoint when you
-    only need the scraped content without task metadata.
+    Returns only the ScrapeResult object. Use this endpoint when you only need the scraped content without task
+    metadata.
 
     Raises 404 if the task is not found or not yet complete.
     """
@@ -220,11 +217,10 @@ async def get_scrape_result(task_id: str) -> dict[str, Any]:
     description="Attempt to cancel a queued scrape task. Cannot cancel tasks already in progress.",
 )
 async def cancel_scrape_task(task_id: str) -> None:
-    """
-    Cancel a queued scrape task.
+    """Cancel a queued scrape task.
 
-    Only works for tasks that are still in the queue (status: queued).
-    Tasks that are already in progress cannot be cancelled.
+    Only works for tasks that are still in the queue (status: queued). Tasks that are already in progress cannot be
+    cancelled.
     """
     if queue.pool is None:
         raise HTTPException(status_code=503, detail="Queue service is not available")

@@ -1,5 +1,4 @@
-"""
-Unit Tests for CAPTCHA Resolver API
+"""Unit Tests for CAPTCHA Resolver API.
 
 Tests for:
 - POST /api/v1/captcha/tasks - Create task
@@ -80,7 +79,7 @@ def sample_solution_data():
 
 
 class TestCreateCaptchaTask:
-    """Tests for POST /api/v1/captcha/tasks"""
+    """Tests for POST /api/v1/captcha/tasks."""
 
     async def test_create_task_success(self, client: AsyncClient, mock_redis, sample_task_data):
         """Test successful task creation."""
@@ -152,7 +151,7 @@ class TestCreateCaptchaTask:
 
 
 class TestListCaptchaTasks:
-    """Tests for GET /api/v1/captcha/tasks"""
+    """Tests for GET /api/v1/captcha/tasks."""
 
     async def test_list_tasks_empty(self, client: AsyncClient, mock_redis):
         """Test listing tasks when empty."""
@@ -223,7 +222,7 @@ class TestListCaptchaTasks:
 
 
 class TestAssignCaptchaTask:
-    """Tests for POST /api/v1/captcha/tasks/{id}/assign"""
+    """Tests for POST /api/v1/captcha/tasks/{id}/assign."""
 
     async def test_assign_task_success(self, client: AsyncClient, mock_redis):
         """Test successful task assignment."""
@@ -280,7 +279,7 @@ class TestAssignCaptchaTask:
 
 
 class TestSubmitSolution:
-    """Tests for POST /api/v1/captcha/tasks/{id}/solve"""
+    """Tests for POST /api/v1/captcha/tasks/{id}/solve."""
 
     async def test_submit_solution_success(self, client: AsyncClient, mock_redis, sample_solution_data):
         """Test successful solution submission."""
@@ -340,7 +339,7 @@ class TestSubmitSolution:
 
 
 class TestMarkUnsolvable:
-    """Tests for POST /api/v1/captcha/tasks/{id}/mark-unsolvable"""
+    """Tests for POST /api/v1/captcha/tasks/{id}/mark-unsolvable."""
 
     async def test_mark_unsolvable_success(self, client: AsyncClient, mock_redis):
         """Test marking task as unsolvable."""
@@ -434,7 +433,7 @@ class TestProxyRender:
 
 
 class TestCleanup:
-    """Tests for DELETE /api/v1/captcha/expired"""
+    """Tests for DELETE /api/v1/captcha/expired."""
 
     async def test_cleanup_expired_tasks(self, client: AsyncClient, mock_redis):
         """Test cleanup endpoint."""

@@ -12,8 +12,8 @@ from pydantic import BaseModel, Field
 
 
 class SessionManagementConfig(BaseModel):
-    """
-    Session and cookie persistence configuration.
+    """Session and cookie persistence configuration.
+
     Shared across all tiers.
     """
 
@@ -25,14 +25,12 @@ class SessionManagementConfig(BaseModel):
 
 
 class ProxyPoolConfig(BaseModel):
-    """
-    Proxy pool configuration.
+    """Proxy pool configuration.
+
     Shared across all tiers.
     """
 
-    rotation_strategy: Literal["round_robin", "random", "sticky_session"] = (
-        "sticky_session"
-    )
+    rotation_strategy: Literal["round_robin", "random", "sticky_session"] = "sticky_session"
     sticky_ttl_seconds: int = 300
     ban_duration_seconds: int = 300
     max_consecutive_failures: int = 5
@@ -63,28 +61,25 @@ class RequestDelayConfig(BaseModel):
 
 
 class DetectionEvasionConfig(BaseModel):
-    """Detection evasion settings. Shared across tiers."""
+    """Detection evasion settings.
+
+    Shared across tiers.
+    """
 
     request_delay: RequestDelayConfig = Field(default_factory=RequestDelayConfig)
     header_order_randomization: bool = True
 
 
 class GeneralConfig(BaseModel):
-    """
-    General configuration shared across all tiers.
+    """General configuration shared across all tiers.
 
-    This includes settings that apply to the entire Chimera system
-    regardless of which tier is being used.
+    This includes settings that apply to the entire Chimera system regardless of which tier is being used.
     """
 
     project_id: str = "CHIMERA_V4_5"
     log_level: str = "INFO"
     metrics_enabled: bool = True
 
-    session_management: SessionManagementConfig = Field(
-        default_factory=SessionManagementConfig
-    )
+    session_management: SessionManagementConfig = Field(default_factory=SessionManagementConfig)
     proxy_pool: ProxyPoolConfig = Field(default_factory=ProxyPoolConfig)
-    detection_evasion: DetectionEvasionConfig = Field(
-        default_factory=DetectionEvasionConfig
-    )
+    detection_evasion: DetectionEvasionConfig = Field(default_factory=DetectionEvasionConfig)

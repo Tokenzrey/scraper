@@ -124,8 +124,7 @@ class SessionData:
 
 
 class RedisStateStore:
-    """
-    Redis-based state store for Chimera sessions.
+    """Redis-based state store for Chimera sessions.
 
     Features:
         - Cookie serialization compatible with curl_cffi
@@ -145,9 +144,7 @@ class RedisStateStore:
         self._memory_store: dict[str, dict[str, Any]] = {}
         self._use_redis = redis_client is not None
 
-        logger.info(
-            f"RedisStateStore initialized: backend={'redis' if self._use_redis else 'memory'}"
-        )
+        logger.info(f"RedisStateStore initialized: backend={'redis' if self._use_redis else 'memory'}")
 
     @property
     def cookie_prefix(self) -> str:

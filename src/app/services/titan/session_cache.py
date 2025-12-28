@@ -1,5 +1,4 @@
-"""
-Session Cache Manager for Titan Scraper.
+"""Session Cache Manager for Titan Scraper.
 
 Manages caching of Cloudflare clearance cookies and other session data.
 Uses Redis for distributed caching with automatic TTL.
@@ -67,18 +66,16 @@ class CachedSession:
 
 
 class SessionCacheManager:
-    """
-    Manages session caching for Cloudflare bypass cookies.
+    """Manages session caching for Cloudflare bypass cookies.
 
-    Supports both Redis (distributed) and in-memory (local) caching.
-    Uses Redis when available, falls back to in-memory for development.
+    Supports both Redis (distributed) and in-memory (local) caching. Uses Redis when available, falls back to in-memory
+    for development.
     """
 
     CACHE_KEY_PREFIX = "titan:session:"
 
     def __init__(self, redis_client=None):
-        """
-        Initialize cache manager.
+        """Initialize cache manager.
 
         Args:
             redis_client: Optional Redis client. If None, uses in-memory cache.
@@ -103,8 +100,7 @@ class SessionCacheManager:
         return parsed.netloc or parsed.path.split("/")[0]
 
     async def get_session(self, url_or_domain: str) -> CachedSession | None:
-        """
-        Get cached session for a URL or domain.
+        """Get cached session for a URL or domain.
 
         Args:
             url_or_domain: URL or domain to get session for
@@ -155,8 +151,7 @@ class SessionCacheManager:
         cookies: dict[str, str] | None = None,
         ttl_seconds: int = DEFAULT_SESSION_TTL_SECONDS,
     ) -> CachedSession:
-        """
-        Cache a session for a domain.
+        """Cache a session for a domain.
 
         Args:
             url_or_domain: URL or domain to cache session for
@@ -199,8 +194,7 @@ class SessionCacheManager:
         return session
 
     async def invalidate_session(self, url_or_domain: str) -> bool:
-        """
-        Invalidate (remove) cached session for a domain.
+        """Invalidate (remove) cached session for a domain.
 
         Args:
             url_or_domain: URL or domain to invalidate
@@ -232,8 +226,7 @@ class SessionCacheManager:
         return False
 
     async def get_all_sessions(self) -> list[CachedSession]:
-        """
-        Get all cached sessions (for debugging/admin).
+        """Get all cached sessions (for debugging/admin).
 
         Returns:
             List of all cached sessions
@@ -260,8 +253,7 @@ class SessionCacheManager:
         return sessions
 
     def clear_memory_cache(self) -> int:
-        """
-        Clear all in-memory cached sessions.
+        """Clear all in-memory cached sessions.
 
         Returns:
             Number of sessions cleared
@@ -277,8 +269,7 @@ _session_cache: SessionCacheManager | None = None
 
 
 def get_session_cache(redis_client=None) -> SessionCacheManager:
-    """
-    Get or create the global session cache manager.
+    """Get or create the global session cache manager.
 
     Args:
         redis_client: Optional Redis client for first initialization
@@ -297,8 +288,7 @@ async def inject_cached_cookies(
     headers: dict[str, str] | None = None,
     cache: SessionCacheManager | None = None,
 ) -> tuple[dict[str, str], CachedSession | None]:
-    """
-    Helper function to inject cached cookies into request headers.
+    """Helper function to inject cached cookies into request headers.
 
     Args:
         url: Target URL

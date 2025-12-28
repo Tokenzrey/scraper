@@ -4,7 +4,6 @@ about: Create a report to help us improve
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
 **Describe the bug or question**
@@ -12,6 +11,7 @@ A clear and concise description of what the bug or question is.
 
 **To Reproduce**
 Please provide a self-contained, minimal, and reproducible example of your use case
+
 ```python
 # Your code here
 ```

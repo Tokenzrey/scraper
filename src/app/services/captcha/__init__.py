@@ -1,5 +1,4 @@
-"""
-CAPTCHA Resolver Services
+"""CAPTCHA Resolver Services.
 
 This module provides services for the Manual CAPTCHA Resolver system:
 - CaptchaProxyService: Proxied iframe rendering with cookie capture

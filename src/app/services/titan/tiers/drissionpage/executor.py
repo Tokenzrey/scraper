@@ -48,8 +48,7 @@ logger = logging.getLogger(__name__)
 
 
 class Tier6DrissionPageExecutor(TierExecutor):
-    """
-    Tier 6 Executor using DrissionPage.
+    """Tier 6 Executor using DrissionPage.
 
     This tier uses DrissionPage which is NOT based on webdriver:
     - No chromedriver/geckodriver needed
@@ -87,9 +86,8 @@ class Tier6DrissionPageExecutor(TierExecutor):
     TYPICAL_OVERHEAD_KB = 400  # No webdriver overhead
     TYPICAL_TIME_MS = 8000  # Fast startup, no driver management
 
-    def __init__(self, settings: "Settings") -> None:
-        """
-        Initialize Tier 6 DrissionPage executor.
+    def __init__(self, settings: Settings) -> None:
+        """Initialize Tier 6 DrissionPage executor.
 
         Args:
             settings: Application settings containing Titan configuration
@@ -118,10 +116,9 @@ class Tier6DrissionPageExecutor(TierExecutor):
     async def execute(
         self,
         url: str,
-        options: "ScrapeOptions | None" = None,
+        options: ScrapeOptions | None = None,
     ) -> TierResult:
-        """
-        Execute a fetch using DrissionPage.
+        """Execute a fetch using DrissionPage.
 
         Args:
             url: Target URL to fetch
@@ -358,10 +355,9 @@ class Tier6DrissionPageExecutor(TierExecutor):
         self,
         url: str,
         actions: list[dict],
-        options: "ScrapeOptions | None" = None,
+        options: ScrapeOptions | None = None,
     ) -> TierResult:
-        """
-        Execute a fetch with custom browser actions.
+        """Execute a fetch with custom browser actions.
 
         DrissionPage action syntax:
         - {"action": "click", "selector": "@text:Submit"}
@@ -430,10 +426,9 @@ class Tier6DrissionPageExecutor(TierExecutor):
         url: str,
         iframe_selector: str,
         element_selector: str | None = None,
-        options: "ScrapeOptions | None" = None,
+        options: ScrapeOptions | None = None,
     ) -> TierResult:
-        """
-        Fetch content from within an iframe.
+        """Fetch content from within an iframe.
 
         DrissionPage advantage: No need to switch frames!
         Access iframe content directly.
@@ -505,10 +500,9 @@ class Tier6DrissionPageExecutor(TierExecutor):
         url: str,
         host_selector: str,
         inner_selector: str,
-        options: "ScrapeOptions | None" = None,
+        options: ScrapeOptions | None = None,
     ) -> TierResult:
-        """
-        Fetch content from within a shadow root.
+        """Fetch content from within a shadow root.
 
         DrissionPage advantage: Can handle non-open shadow roots!
 
@@ -581,8 +575,7 @@ class Tier6DrissionPageExecutor(TierExecutor):
             self._client = None
 
     async def cleanup(self) -> None:
-        """
-        Release all resources.
+        """Release all resources.
 
         Called by orchestrator during shutdown or tier rotation.
         """

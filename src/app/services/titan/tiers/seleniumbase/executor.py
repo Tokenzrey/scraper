@@ -40,8 +40,7 @@ logger = logging.getLogger(__name__)
 
 
 class Tier5SeleniumBaseExecutor(TierExecutor):
-    """
-    Tier 5 Executor using SeleniumBase UC Mode + CDP Mode.
+    """Tier 5 Executor using SeleniumBase UC Mode + CDP Mode.
 
     This is the ultimate tier with CAPTCHA solving:
     - Uses Undetected Chrome (UC Mode) to bypass bot detection
@@ -68,9 +67,8 @@ class Tier5SeleniumBaseExecutor(TierExecutor):
     TYPICAL_OVERHEAD_KB = 800  # Full browser + UC features + CDP
     TYPICAL_TIME_MS = 10000  # Slower due to CAPTCHA solving
 
-    def __init__(self, settings: "Settings") -> None:
-        """
-        Initialize Tier 5 SeleniumBase executor.
+    def __init__(self, settings: Settings) -> None:
+        """Initialize Tier 5 SeleniumBase executor.
 
         Args:
             settings: Application settings containing Titan configuration
@@ -100,10 +98,9 @@ class Tier5SeleniumBaseExecutor(TierExecutor):
     async def execute(
         self,
         url: str,
-        options: "ScrapeOptions | None" = None,
+        options: ScrapeOptions | None = None,
     ) -> TierResult:
-        """
-        Execute a fetch using SeleniumBase UC Mode + CDP Mode.
+        """Execute a fetch using SeleniumBase UC Mode + CDP Mode.
 
         Automatically attempts CAPTCHA solving if configured.
 
@@ -358,10 +355,9 @@ class Tier5SeleniumBaseExecutor(TierExecutor):
         self,
         url: str,
         actions: list[dict],
-        options: "ScrapeOptions | None" = None,
+        options: ScrapeOptions | None = None,
     ) -> TierResult:
-        """
-        Execute a fetch with custom browser actions.
+        """Execute a fetch with custom browser actions.
 
         Allows performing complex interactions like:
         - Clicking buttons
@@ -392,8 +388,7 @@ class Tier5SeleniumBaseExecutor(TierExecutor):
             self._client = None
 
     async def cleanup(self) -> None:
-        """
-        Release all resources.
+        """Release all resources.
 
         Called by orchestrator during shutdown or tier rotation.
         """

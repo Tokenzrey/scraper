@@ -9,7 +9,7 @@ Redis serves as a high-performance cache layer between your API and database. Wh
 ### Why Redis?
 
 **Performance**: In-memory storage provides sub-millisecond data access
-**Scalability**: Handles thousands of concurrent connections efficiently  
+**Scalability**: Handles thousands of concurrent connections efficiently
 **Persistence**: Optional data persistence for cache warm-up after restarts
 **Atomic Operations**: Thread-safe operations for concurrent applications
 **Pattern Matching**: Advanced key pattern operations for bulk cache invalidation
@@ -39,9 +39,9 @@ async def get_post(request: Request, post_id: int, db: Session = Depends(get_db)
 **How It Works:**
 
 1. **Cache Check**: On GET requests, checks Redis for existing cached data
-2. **Cache Miss**: If no cache exists, executes the function and stores the result
-3. **Cache Hit**: Returns cached data directly, bypassing function execution
-4. **Invalidation**: Automatically removes cache on non-GET requests (POST, PUT, DELETE)
+1. **Cache Miss**: If no cache exists, executes the function and stores the result
+1. **Cache Hit**: Returns cached data directly, bypassing function execution
+1. **Invalidation**: Automatically removes cache on non-GET requests (POST, PUT, DELETE)
 
 ### Decorator Parameters
 
@@ -66,7 +66,7 @@ The key prefix creates unique cache identifiers:
 # Generates keys like: "user_data:123"
 
 # Dynamic prefix with placeholders
-@cache(key_prefix="{username}_posts")  
+@cache(key_prefix="{username}_posts")
 # Generates keys like: "johndoe_posts:456"
 
 # Complex prefix with multiple parameters
@@ -167,7 +167,7 @@ Invalidate related cache entries when data changes:
 @router.post("/posts")
 @cache(
     key_prefix="new_post",
-    resource_id_name="user_id", 
+    resource_id_name="user_id",
     to_invalidate_extra={
         "user_posts": "{user_id}",           # Invalidate user's post list
         "latest_posts": "global",            # Invalidate global latest posts
@@ -203,8 +203,8 @@ async def update_user_profile(request: Request, user_id: int, data: UserUpdate):
 
 **Pattern Examples:**
 
-- `user_*` - All keys starting with "user_"
-- `*_posts` - All keys ending with "_posts"  
+- `user_*` - All keys starting with "user\_"
+- `*_posts` - All keys ending with "\_posts"
 - `user_*_posts_*` - Complex patterns with wildcards
 - `temp_*` - Temporary cache entries
 
@@ -218,7 +218,7 @@ Configure Redis connection in your environment settings:
 # core/config.py
 class RedisCacheSettings(BaseSettings):
     REDIS_CACHE_HOST: str = config("REDIS_CACHE_HOST", default="localhost")
-    REDIS_CACHE_PORT: int = config("REDIS_CACHE_PORT", default=6379) 
+    REDIS_CACHE_PORT: int = config("REDIS_CACHE_PORT", default=6379)
     REDIS_CACHE_PASSWORD: str = config("REDIS_CACHE_PASSWORD", default="")
     REDIS_CACHE_DB: int = config("REDIS_CACHE_DB", default=0)
     REDIS_CACHE_URL: str = f"redis://:{REDIS_CACHE_PASSWORD}@{REDIS_CACHE_HOST}:{REDIS_CACHE_PORT}/{REDIS_CACHE_DB}"
@@ -231,7 +231,7 @@ class RedisCacheSettings(BaseSettings):
 REDIS_CACHE_HOST=localhost
 REDIS_CACHE_PORT=6379
 
-# Production Configuration  
+# Production Configuration
 REDIS_CACHE_HOST=redis.production.com
 REDIS_CACHE_PORT=6379
 REDIS_CACHE_PASSWORD=your-secure-password
@@ -270,20 +270,20 @@ from app.core.utils.cache import client
 async def custom_cache_operation():
     if client is None:
         raise MissingClientError("Redis client not initialized")
-    
+
     # Set custom cache entry
     await client.set("custom_key", "custom_value", ex=3600)
-    
+
     # Get cached value
     cached_value = await client.get("custom_key")
-    
+
     # Delete cache entry
     await client.delete("custom_key")
-    
+
     # Bulk operations
     pipe = client.pipeline()
     pipe.set("key1", "value1")
-    pipe.set("key2", "value2") 
+    pipe.set("key2", "value2")
     pipe.expire("key1", 3600)
     await pipe.execute()
 ```
@@ -327,11 +327,13 @@ The cache decorator automatically generates keys using this pattern:
 ```
 
 **What you control:**
+
 - `key_prefix` template with placeholders like `{username}`, `{page}`
 - `resource_id_name` to specify which parameter to use as the ID
 - The decorator handles the rest
 
 **Generated key examples from the boilerplate:**
+
 ```python
 # From posts.py
 "{username}_posts:page_{page}:items_per_page_{items_per_page}" → "john_posts:page_1:items_per_page_10:789"
@@ -356,4 +358,4 @@ Choose appropriate expiration times based on data characteristics:
 @cache(key_prefix="search", expiration=3600)      # 1 hour
 ```
 
-This comprehensive Redis caching system provides high-performance data access while maintaining data consistency through intelligent invalidation strategies. 
+This comprehensive Redis caching system provides high-performance data access while maintaining data consistency through intelligent invalidation strategies.
